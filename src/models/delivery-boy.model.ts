@@ -1,0 +1,94 @@
+import { Schema, model, ObjectId } from 'mongoose';
+import { ISchema } from './interfaces/schema.interface';
+
+export interface IDeliveryBoy extends ISchema {
+  name: string;
+  mobile: string;
+  email?: string;
+  panCard: {
+    number: string;
+    images: string[];
+  };
+  license: {
+    number: string;
+    images: string[];
+  };
+  bankDetails: {
+    accountNumber: string;
+    ifscCode: string;
+    bankName?: string;
+    branch?: string;
+  };
+  profileImage?: string;
+  vehicle: 'bike' | 'scooter' | 'cycle';
+  location: {
+    latitude: number;
+    longitude: number;
+  };
+  status: 'pending' | 'verified' | 'active' | 'inactive' | 'rejected';
+  isOnline: boolean;
+  isVerified: boolean;
+  isActive: boolean;
+  rejectionReason?: string;
+  zone: {
+    id: string;
+    name: string;
+  };
+}
+
+const deliveryBoySchema = new Schema<IDeliveryBoy>(
+  {
+    name: { type: String },
+    mobile: { type: String, required: true, unique: true },
+    email: { type: String, unique: true, sparse: true },
+    panCard: {
+      number: { type: String },
+      images: { type: [String], default: [] },
+    },
+    license: {
+      number: { type: String },
+      images: { type: [String], default: [] },
+    },
+    bankDetails: {
+      accountNumber: { type: String },
+      ifscCode: { type: String },
+      bankName: { type: String, trim: true },
+      branch: { type: String, trim: true },
+    },
+    profileImage: { type: String },
+    vehicle: {
+      type: String,
+      enum: {
+        values: ['bike', 'scooter', 'cycle'],
+        message: 'Vehicle must be bike, scooter, or cycle',
+      },
+    },
+    location: {
+      latitude: { type: Number },
+      longitude: { type: Number },
+    },
+    status: {
+      type: String,
+      enum: ['pending', 'verified', 'active', 'inactive', 'rejected'],
+      default: 'pending',
+    },
+    isOnline: { type: Boolean, default: false },
+    isActive: { type: Boolean, default: true },
+    isVerified: { type: Boolean, default: false },
+    rejectionReason: { type: String },
+    zone: {
+      id: { type: Schema.Types.ObjectId, ref: 'Zone' },
+      name: { type: String },
+    },
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now },
+  },
+  { timestamps: true }
+);
+
+deliveryBoySchema.pre('save', function (next) {
+  this.updatedAt = new Date();
+  next();
+});
+
+export const DeliveryBoy = model<IDeliveryBoy>('DeliveryBoy', deliveryBoySchema);
