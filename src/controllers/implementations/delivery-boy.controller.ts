@@ -56,6 +56,18 @@ export class DeliveryBoyController implements IDeliveryBoyController {
   async getAllDeliveryBoys(data: any) {
     try {
       const fetchDeliveryBoys = await this.deliveryBoyService.getAllDeliveryBoys();
+      console.log('fetch the all delivery boy :',fetchDeliveryBoys);
+      
+      return { message: 'success', fetchDeliveryBoys };
+    } catch (error) {
+      throw new Error(`Error fetching delivery boys: ${(error as Error).message}`);
+    }
+  }
+  async getAllDeliveryBoy(data: any) {
+    try {
+      const fetchDeliveryBoys = await this.deliveryBoyService.getAllDeliveryBoy();
+      console.log('fetch the all delivery boy :',fetchDeliveryBoys);
+      
       return { message: 'success', fetchDeliveryBoys };
     } catch (error) {
       throw new Error(`Error fetching delivery boys: ${(error as Error).message}`);
@@ -73,7 +85,11 @@ export class DeliveryBoyController implements IDeliveryBoyController {
 
   async fetchDeliveryBoyDetails(data: { id: string }) {
     try {
+      console.log('delivery-boy controller data :',data);
+      
       const response = await this.deliveryBoyService.fetchDeliveryBoyDetails(data.id);
+      console.log('delivery-boy controller :',response);
+      
       return { message: 'success', response };
     } catch (error) {
       throw new Error(`Error fetching delivery boy details: ${(error as Error).message}`);

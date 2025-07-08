@@ -34,6 +34,14 @@ export interface IDeliveryBoy extends ISchema {
     id: string;
     name: string;
   };
+  rating?: number;
+  earnings?: {
+    today: number;
+    week: number;
+  };
+  loginHours?: string;
+  ordersCompleted?: number;
+  pendingOrders?: number;
 }
 
 const deliveryBoySchema = new Schema<IDeliveryBoy>(
@@ -80,6 +88,14 @@ const deliveryBoySchema = new Schema<IDeliveryBoy>(
       id: { type: Schema.Types.ObjectId, ref: 'Zone' },
       name: { type: String },
     },
+    rating: { type: Number, default: 0 },
+    earnings: {
+      today: { type: Number, default: 0 },
+      week: { type: Number, default: 0 },
+    },
+    loginHours: { type: String, default: "0:00" },
+    ordersCompleted: { type: Number, default: 0 },
+    pendingOrders: { type: Number, default: 0 },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
   },

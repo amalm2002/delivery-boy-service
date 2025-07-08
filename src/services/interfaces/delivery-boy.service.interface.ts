@@ -30,6 +30,7 @@ export interface IDeliveryBoyService {
   updateVehicle(dto: UpdateVehicleDto): Promise<{ success: boolean; message: string; data?: IDeliveryBoy }>;
   updateZone(dto: UpdateZoneDto): Promise<{ success: boolean; message: string; data?: IDeliveryBoy }>;
   getAllDeliveryBoys(): Promise<Partial<IDeliveryBoy>[]>;
+  getAllDeliveryBoy(): Promise<Partial<IDeliveryBoy>[]>;
   updateDeliveryBoyStatus(deliveryBoyId: string): Promise<IDeliveryBoy | null>;
   fetchDeliveryBoyDetails(deliveryBoyId: string): Promise<IDeliveryBoy | null>;
   verifyDocuments(dto: VerifyDocumentsDto): Promise<IDeliveryBoy | { message: string }>;

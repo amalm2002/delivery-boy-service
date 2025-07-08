@@ -11,7 +11,7 @@ import { VerifyDocumentsDto } from '../../dto/delivery-boy/verify.documents.dto'
 import { RejectDocumentsDto } from '../../dto/delivery-boy/reject.documents.dto';
 import { IDeliveryBoy } from '../../models/delivery-boy.model';
 import { IAuthService } from '../interfaces/auth.service.interface';
-import { response } from 'express';
+
 
 export class DeliveryBoyService implements IDeliveryBoyService {
   constructor(
@@ -112,6 +112,7 @@ export class DeliveryBoyService implements IDeliveryBoyService {
     }
 
     const loginData = await this.handleLogin(deliveryBoy);
+    console.log('missing messages :', missingMessages);
 
     if (missingMessages) {
       return {
@@ -273,6 +274,13 @@ export class DeliveryBoyService implements IDeliveryBoyService {
       throw new Error(`Error fetching delivery boys: ${(error as Error).message}`);
     }
   }
+  async getAllDeliveryBoy(): Promise<Partial<IDeliveryBoy>[]> {
+    try {
+      return await this.deliveryBoyRepository.getAllDeliveryBoy();
+    } catch (error) {
+      throw new Error(`Error fetching delivery boys: ${(error as Error).message}`);
+    }
+  }
 
   async updateDeliveryBoyStatus(deliveryBoyId: string): Promise<IDeliveryBoy | null> {
     try {
@@ -284,7 +292,10 @@ export class DeliveryBoyService implements IDeliveryBoyService {
 
   async fetchDeliveryBoyDetails(deliveryBoyId: string): Promise<IDeliveryBoy | null> {
     try {
-      return await this.deliveryBoyRepository.findById(deliveryBoyId);
+      // console.log('service side data :', deliveryBoyId);
+      const response = await this.deliveryBoyRepository.findById(deliveryBoyId);
+      // console.log('response on the sevice side :', response);
+      return response
     } catch (error) {
       throw new Error(`Error fetching delivery boy details: ${(error as Error).message}`);
     }
@@ -309,8 +320,8 @@ export class DeliveryBoyService implements IDeliveryBoyService {
   async getRejectedDocuments(deliveryBoyId: string): Promise<{ success: boolean; data?: Partial<IDeliveryBoy>; message?: string }> {
     try {
       const response = await this.deliveryBoyRepository.getRejectedDocuments(deliveryBoyId);
-      console.log('service side response :',response);
-      
+      console.log('service side response :', response);
+
       return response
     } catch (error) {
       return { success: false, message: (error as Error).message };

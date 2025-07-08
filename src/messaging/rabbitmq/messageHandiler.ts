@@ -1,6 +1,7 @@
 import { DeliveryBoyController } from '../../controllers/implementations/delivery-boy.controller';
+import { DeliveryTrackingController } from '../../controllers/implementations/delivery-tarcking.controller';
 import { ZoneController } from '../../controllers/implementations/zone.controller';
-import  RabbitMQClient  from './client';
+import RabbitMQClient from './client';
 
 export class MessageHandler {
   static async handle(
@@ -11,9 +12,10 @@ export class MessageHandler {
     controllers: {
       deliveryBoyController: DeliveryBoyController;
       zoneController: ZoneController;
+      deliveryTrackingController: DeliveryTrackingController;
     }
   ) {
-    const { deliveryBoyController, zoneController } = controllers;
+    const { deliveryBoyController, zoneController, deliveryTrackingController } = controllers;
     let response;
 
     console.log('Operation:', operation, 'Data:', data);
@@ -38,6 +40,9 @@ export class MessageHandler {
       case 'Fetch-All-Delivery-Boys':
         response = await deliveryBoyController.getAllDeliveryBoys(data);
         break;
+      case 'Fetch-All-Delivery-Boy':
+        response = await deliveryBoyController.getAllDeliveryBoy(data);
+        break;
       case 'Update-The-Delivery-Boy-Status':
         response = await deliveryBoyController.updateDeliveryBoyStatus(data);
         break;
@@ -61,6 +66,27 @@ export class MessageHandler {
         break;
       case 'Delete-Delivery-Boy-Zone':
         response = await zoneController.deleteZone(data);
+        break;
+      case 'Partner-Enable-Online-Status':
+        response = await deliveryTrackingController.updateOnlineStatus(data);
+        break;
+      case 'Get-Delivery-Boy-Details':
+        response = await deliveryTrackingController.getDeliveryBoyDetails(data);
+        break;
+      case 'Find-The-Nearest-Delivery-Partner':
+        response = await deliveryTrackingController.findNearestDeliveryPartners(data);
+        break;
+      case 'Delivery-Boy-Location-Update':
+        response = await deliveryTrackingController.updateLocation(data);
+        break;
+      case 'Assign-Delivery-Boy':
+        response = await deliveryTrackingController.assignOrder(data);
+        break;
+      case 'Update-Delivery-Boy-Location':
+        response = await deliveryTrackingController.updateDeliveryBoyLocation(data);
+        break;
+      case 'Complete-Delivery':
+        response = await deliveryTrackingController.completeDelivery(data);
         break;
       default:
         response = { error: 'Unknown operation' };

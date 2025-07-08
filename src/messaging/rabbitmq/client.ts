@@ -1,75 +1,3 @@
-
-// import { Channel, connect, Connection } from "amqplib";
-// import Consumer from "./consumer";
-// import Producer from "./producer";
-// import rabbitMq from "../../config/rabbitmq.config";
-
-// class RabbitMQClient {
-//     private static instance: RabbitMQClient;
-//     private isInitialized = false;
-//     private producer: Producer | undefined;
-//     private consumer: Consumer | undefined;
-//     private connection: Connection | undefined;
-//     private producerChannel: Channel | undefined;
-//     private consumerChannel: Channel | undefined;
-
-//     private constructor() {}
-
-//     public static getInstance() {
-//         if (!this.instance) {
-//             this.instance = new RabbitMQClient();
-//         }
-//         return this.instance;
-//     }
-
-//     async initialize() {
-//         if (this.isInitialized) {
-//             return;
-//         }
-
-//         try {
-//             this.connection = await connect(rabbitMq.rebbitMQ.url);
-
-//             const [producerChannel, consumerChannel] = await Promise.all([
-//                 this.connection.createChannel(),
-//                 this.connection.createChannel()
-//             ]);
-//             this.producerChannel = producerChannel;
-//             this.consumerChannel = consumerChannel;
-
-//             const { queue: rpcQueue } = await this.consumerChannel.assertQueue(
-//                 rabbitMq.queue.deliveryBoyQueue,
-//                 { exclusive: true }
-//             );
-
-//             this.producer = new Producer(this.producerChannel);
-//             this.consumer = new Consumer(this.consumerChannel, rpcQueue);
-
-//             this.consumer.consumeMessage();
-
-//             this.isInitialized = true;
-//         } catch (error) {
-//             console.log('rabbitMQ error........', error);
-//         }
-//     }
-
-//     async produce(data: any, correlationId: string, replyToQueue: string) {
-//         if (!this.isInitialized) {
-//             await this.initialize();
-//         }
-
-//         return await this.producer?.produceMessages(
-//             data,
-//             correlationId,
-//             replyToQueue
-//         );
-//     }
-// }
-
-// export default RabbitMQClient.getInstance();
-
-
-
 import { Channel, connect, Connection } from 'amqplib';
 import Consumer from './consumer';
 import Producer from './producer';
@@ -93,39 +21,52 @@ export class RabbitMQClient {
     return this.instance;
   }
 
+  async initializeWithRetry(retries = 5, delay = 1000) {
+    for (let attempt = 0; attempt < retries; attempt++) {
+      try {
+        await this.initialize();
+        console.log('RabbitMQ connected.');
+        return;
+      } catch (err) {
+        console.error(`RabbitMQ connection failed. Retry ${attempt + 1}/${retries}`);
+        await new Promise((res) => setTimeout(res, delay * (attempt + 1)));
+      }
+    }
+    console.error('Could not connect to RabbitMQ after retries.');
+  }
+
   async initialize() {
-    if (this.isInitialized) {
-      return;
-    }
+    if (this.isInitialized) return;
 
-    try {
-      this.connection = await connect(rabbitMQConfig.rebbitMQ.url);
+    this.connection = await connect(rabbitMQConfig.rebbitMQ.url);
+    const [producerChannel, consumerChannel] = await Promise.all([
+      this.connection.createChannel(),
+      this.connection.createChannel(),
+    ]);
 
-      const [producerChannel, consumerChannel] = await Promise.all([
-        this.connection.createChannel(),
-        this.connection.createChannel(),
-      ]);
-      this.producerChannel = producerChannel;
-      this.consumerChannel = consumerChannel;
+    this.producerChannel = producerChannel;
+    this.consumerChannel = consumerChannel;
 
-      const { queue: rpcQueue } = await this.consumerChannel.assertQueue(rabbitMQConfig.queue.deliveryBoyQueue, { exclusive: true });
+    const { queue: rpcQueue } = await this.consumerChannel.assertQueue(
+      rabbitMQConfig.queue.deliveryBoyQueue,
+      {
+        durable: true,
+        deadLetterExchange: '',
+        deadLetterRoutingKey: 'deliveryboy.dlq',
+      }
+    );
 
-      this.producer = new Producer(this.producerChannel);
-      this.consumer = new Consumer(this.consumerChannel, rpcQueue);
+    this.producer = new Producer(this.producerChannel);
+    this.consumer = new Consumer(this.consumerChannel, rpcQueue);
+    this.consumer.consumeMessage();
 
-      this.consumer.consumeMessage();
-
-      this.isInitialized = true;
-    } catch (error) {
-      console.error('RabbitMQ error:', error);
-    }
+    this.isInitialized = true;
   }
 
   async produce(data: any, correlationId: string, replyToQueue: string) {
     if (!this.isInitialized) {
-      await this.initialize();
+      await this.initializeWithRetry();
     }
-
     return await this.producer?.produceMessages(data, correlationId, replyToQueue);
   }
 }

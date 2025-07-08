@@ -15,6 +15,7 @@ export interface IDeliveryBoyController {
   updateVehicle(data: UpdateVehicleDto): Promise<any>;
   updateZone(data: UpdateZoneDto): Promise<any>;
   getAllDeliveryBoys(data: any): Promise<{ message: string; fetchDeliveryBoys: Partial<IDeliveryBoy>[] }>;
+  getAllDeliveryBoy(data: any): Promise<{ message: string; fetchDeliveryBoys: Partial<IDeliveryBoy>[] }>;
   updateDeliveryBoyStatus(data: { id: string }): Promise<{ message: string; response: IDeliveryBoy | null }>;
   fetchDeliveryBoyDetails(data: { id: string }): Promise<{ message: string; response: IDeliveryBoy | null }>;
   verifyDocuments(data: VerifyDocumentsDto): Promise<any>;

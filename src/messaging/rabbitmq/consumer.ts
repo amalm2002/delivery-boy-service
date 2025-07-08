@@ -7,6 +7,8 @@ import { ZoneRepository } from '../../repositories/implementations/zone.reposito
 import { DeliveryBoyService } from '../../services/implementations/delivery-boy.service';
 import { ZoneService } from '../../services/implementations/zone.service';
 import { AuthService } from '../../services/implementations/auth.service';
+import { DeliveryTrackingController } from '../../controllers/implementations/delivery-tarcking.controller';
+import { DeliveryBoyTrackingService } from '../../services/implementations/delivery-tracking.service';
 
 export default class Consumer {
   private channel: Channel;
@@ -14,6 +16,7 @@ export default class Consumer {
   private controllers: {
     deliveryBoyController: DeliveryBoyController;
     zoneController: ZoneController;
+    deliveryTrackingController: DeliveryTrackingController;
   };
 
   constructor(channel: Channel, rpcQueue: string) {
@@ -25,10 +28,12 @@ export default class Consumer {
     const zoneRepository = new ZoneRepository();
     const deliveryBoyService = new DeliveryBoyService(deliveryBoyRepository, zoneRepository, authService);
     const zoneService = new ZoneService(zoneRepository);
+    const deliveryTrackingService = new DeliveryBoyTrackingService(deliveryBoyRepository);
 
     this.controllers = {
       deliveryBoyController: new DeliveryBoyController(deliveryBoyService),
       zoneController: new ZoneController(zoneService),
+      deliveryTrackingController: new DeliveryTrackingController(deliveryTrackingService),
     };
   }
 
@@ -38,35 +43,27 @@ export default class Consumer {
     this.channel.consume(
       this.rpcQueue,
       async (message: ConsumeMessage | null) => {
-        if (message) {
-          if (message.properties) {
-            const { correlationId, replyTo } = message.properties;
-            const operation = message.properties.headers?.function;
+        if (!message) return;
 
-            if (!correlationId || !replyTo) {
-              console.log('Missing some properties...');
-              return;
-            }
+        const { correlationId, replyTo } = message.properties;
+        const operation = message.properties.headers?.function;
 
-            if (message.content) {
-              await MessageHandler.handle(
-                operation,
-                JSON.parse(message.content.toString()),
-                correlationId,
-                replyTo,
-                this.controllers
-              );
-            } else {
-              console.log('Received message content is null or undefined.');
-            }
-          } else {
-            console.log('Received message is null');
-          }
-        } else {
-          console.log('Missing message properties');
+        if (!correlationId || !replyTo) {
+          console.log('Missing correlationId or replyTo.');
+          this.channel.ack(message);
+          return;
+        }
+
+        try {
+          const content = JSON.parse(message.content.toString());
+          await MessageHandler.handle(operation, content, correlationId, replyTo, this.controllers);
+          this.channel.ack(message);
+        } catch (err) {
+          console.error('Error handling message:', err);
+          this.channel.nack(message, false, true);
         }
       },
-      { noAck: true }
+      { noAck: false }
     );
   }
 }
