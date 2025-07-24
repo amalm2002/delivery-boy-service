@@ -2,15 +2,17 @@ import mongoose from 'mongoose';
 import { IDeliveryBoyRepository } from '../../repositories/interfaces/delivery-boy.repository.interface';
 import { IZoneRepository } from '../../repositories/interfaces/zone.repository.interface';
 import { IDeliveryBoyService } from '../interfaces/delivery-boy.service.interface';
-import { CreateDeliveryBoyDto } from '../../dto/delivery-boy/create.delivery-boy.dto';
-import { UpdateLocationDto } from '../../dto/delivery-boy/update.location.dto';
-import { UpdateDetailsDto } from '../../dto/delivery-boy/update.details.dto';
-import { UpdateVehicleDto } from '../../dto/delivery-boy/update.vehicle.dto';
-import { UpdateZoneDto } from '../../dto/delivery-boy/update.zone.dto';
+import { CreateDeliveryBoyDto, CreateDeliveryBoyResponseDTO } from '../../dto/delivery-boy/create.delivery-boy.dto';
+import { DeliveryBoyDto, UpdateLocationDto, UpdateLocationResponseDto } from '../../dto/delivery-boy/update.location.dto';
+import { UpdateDetailsDto, UpdateDetailsResponseDTO } from '../../dto/delivery-boy/update.details.dto';
+import { UpdateVehicleDto, UpdateVehicleResponseDTO } from '../../dto/delivery-boy/update.vehicle.dto';
+import { UpdateZoneDto, UpdateZoneResponseDTO } from '../../dto/delivery-boy/update.zone.dto';
 import { VerifyDocumentsDto } from '../../dto/delivery-boy/verify.documents.dto';
-import { RejectDocumentsDto } from '../../dto/delivery-boy/reject.documents.dto';
+import { GetRejectedDocumentDTO, GetRejectedDocumentServiceResponseDTO, RejectDocumentsDto } from '../../dto/delivery-boy/reject.documents.dto';
 import { IDeliveryBoy } from '../../models/delivery-boy.model';
 import { IAuthService } from '../interfaces/auth.service.interface';
+import { UpdateOnlineStatusDTO } from '../../dto/delivery-boy/update.online.status.dto';
+import { FetchDeliveryBoyDTO } from '../../dto/delivery-boy/fetch-delivery-boy.dto';
 
 
 export class DeliveryBoyService implements IDeliveryBoyService {
@@ -20,21 +22,7 @@ export class DeliveryBoyService implements IDeliveryBoyService {
     private authService: IAuthService
   ) { }
 
-  private async handleLogin(deliveryBoy: IDeliveryBoy): Promise<{
-    message: string;
-    deliveryBoyName?: string;
-    mobile?: string;
-    token?: string;
-    _id?: string;
-    isOnline?: boolean;
-    isVerified?: boolean;
-    refreshToken?: string;
-    isActive?: boolean;
-    isRejected?: boolean;
-    deliveryBoy?: IDeliveryBoy;
-    role?: string;
-    rejectionReason?: string;
-  }> {
+  private async handleLogin(deliveryBoy: IDeliveryBoy): Promise<CreateDeliveryBoyResponseDTO> {
     const role = 'DeliveryBoy';
     const token = await this.authService.createToken(deliveryBoy._id.toString(), '15m', role);
     const refreshToken = await this.authService.createToken(deliveryBoy._id.toString(), '7d', role);
@@ -56,23 +44,7 @@ export class DeliveryBoyService implements IDeliveryBoyService {
     };
   }
 
-  async registerDeliveryBoy(dto: CreateDeliveryBoyDto): Promise<{
-    success: boolean;
-    message: string;
-    deliveryBoyName?: string;
-    mobile?: string;
-    token?: string;
-    _id?: string;
-    isOnline?: boolean;
-    isVerified?: boolean;
-    refreshToken?: string;
-    isActive?: boolean;
-    isRejected?: boolean;
-    deliveryBoy?: IDeliveryBoy;
-    role?: string;
-    rejectionReason?: string;
-    missingFields?: string;
-  }> {
+  async registerDeliveryBoy(dto: CreateDeliveryBoyDto): Promise<CreateDeliveryBoyResponseDTO> {
     const { mobile } = dto;
     if (!mobile) {
       return { message: 'Mobile number is required', success: false };
@@ -81,7 +53,7 @@ export class DeliveryBoyService implements IDeliveryBoyService {
     let deliveryBoy = await this.deliveryBoyRepository.findByMobile(mobile);
 
     if (!deliveryBoy) {
-      const deliveryBoyData: Partial<IDeliveryBoy> = {
+      const deliveryBoyData: Partial<DeliveryBoyDto> = {
         mobile,
         isOnline: false,
         isVerified: false,
@@ -112,8 +84,6 @@ export class DeliveryBoyService implements IDeliveryBoyService {
     }
 
     const loginData = await this.handleLogin(deliveryBoy);
-    console.log('missing messages :', missingMessages);
-
     if (missingMessages) {
       return {
         ...loginData,
@@ -130,7 +100,7 @@ export class DeliveryBoyService implements IDeliveryBoyService {
     };
   }
 
-  async updateLocation(dto: UpdateLocationDto) {
+  async updateLocation(dto: UpdateLocationDto): Promise<UpdateLocationResponseDto> {
     try {
       const result = await this.deliveryBoyRepository.deliveryBoyLocationUpdate(dto);
 
@@ -154,7 +124,7 @@ export class DeliveryBoyService implements IDeliveryBoyService {
     }
   }
 
-  async updateDetails(dto: UpdateDetailsDto) {
+  async updateDetails(dto: UpdateDetailsDto): Promise<UpdateDetailsResponseDTO> {
     try {
       const { deliveryBoyId, ...updateFields } = dto;
       //   const updateData: Partial<IDeliveryBoy> = {};
@@ -199,7 +169,7 @@ export class DeliveryBoyService implements IDeliveryBoyService {
     }
   }
 
-  async updateVehicle(dto: UpdateVehicleDto) {
+  async updateVehicle(dto: UpdateVehicleDto): Promise<UpdateVehicleResponseDTO> {
     try {
       const { deliveryBoyId, vehicle } = dto;
       const updateData: Partial<IDeliveryBoy> = { vehicle };
@@ -226,7 +196,7 @@ export class DeliveryBoyService implements IDeliveryBoyService {
     }
   }
 
-  async updateZone(dto: UpdateZoneDto) {
+  async updateZone(dto: UpdateZoneDto): Promise<UpdateZoneResponseDTO> {
     try {
       const { deliveryBoyId, zone } = dto;
 
@@ -267,14 +237,15 @@ export class DeliveryBoyService implements IDeliveryBoyService {
     }
   }
 
-  async getAllDeliveryBoys(): Promise<Partial<IDeliveryBoy>[]> {
+  async getAllDeliveryBoys(): Promise<Partial<DeliveryBoyDto>[]> {
     try {
       return await this.deliveryBoyRepository.getAllDeliveryBoys();
     } catch (error) {
       throw new Error(`Error fetching delivery boys: ${(error as Error).message}`);
     }
   }
-  async getAllDeliveryBoy(): Promise<Partial<IDeliveryBoy>[]> {
+
+  async getAllDeliveryBoy(): Promise<Partial<DeliveryBoyDto>[]> {
     try {
       return await this.deliveryBoyRepository.getAllDeliveryBoy();
     } catch (error) {
@@ -282,26 +253,29 @@ export class DeliveryBoyService implements IDeliveryBoyService {
     }
   }
 
-  async updateDeliveryBoyStatus(deliveryBoyId: string): Promise<IDeliveryBoy | null> {
+  async updateDeliveryBoyStatus(data: FetchDeliveryBoyDTO): Promise<DeliveryBoyDto | null> {
     try {
+      const { id } = data
+      const deliveryBoyId = id
       return await this.deliveryBoyRepository.updateTheDeliveryBoyStatus(deliveryBoyId);
     } catch (error) {
       throw new Error(`Error updating delivery boy status: ${(error as Error).message}`);
     }
   }
 
-  async fetchDeliveryBoyDetails(deliveryBoyId: string): Promise<IDeliveryBoy | null> {
+  async fetchDeliveryBoyDetails(data: FetchDeliveryBoyDTO): Promise<DeliveryBoyDto | null> {
     try {
-      // console.log('service side data :', deliveryBoyId);
+      const { id } = data
+      const deliveryBoyId = id
       const response = await this.deliveryBoyRepository.findById(deliveryBoyId);
-      // console.log('response on the sevice side :', response);
+      console.log('response on the sevice side :', response);
       return response
     } catch (error) {
       throw new Error(`Error fetching delivery boy details: ${(error as Error).message}`);
     }
   }
 
-  async verifyDocuments(dto: VerifyDocumentsDto): Promise<IDeliveryBoy | { message: string }> {
+  async verifyDocuments(dto: VerifyDocumentsDto): Promise<DeliveryBoyDto | { message: string }> {
     try {
       return await this.deliveryBoyRepository.verifyDeliveryBoyDocuments(dto.deliveryBoyId);
     } catch (error) {
@@ -309,7 +283,7 @@ export class DeliveryBoyService implements IDeliveryBoyService {
     }
   }
 
-  async rejectDocuments(dto: RejectDocumentsDto): Promise<IDeliveryBoy | { message: string }> {
+  async rejectDocuments(dto: RejectDocumentsDto): Promise<DeliveryBoyDto | { message: string }> {
     try {
       return await this.deliveryBoyRepository.rejectDeliveryBoyDocuments(dto.deliveryBoyId, dto.rejectionReason);
     } catch (error) {
@@ -317,11 +291,9 @@ export class DeliveryBoyService implements IDeliveryBoyService {
     }
   }
 
-  async getRejectedDocuments(deliveryBoyId: string): Promise<{ success: boolean; data?: Partial<IDeliveryBoy>; message?: string }> {
+  async getRejectedDocuments(data: GetRejectedDocumentDTO): Promise<GetRejectedDocumentServiceResponseDTO> {
     try {
-      const response = await this.deliveryBoyRepository.getRejectedDocuments(deliveryBoyId);
-      console.log('service side response :', response);
-
+      const response = await this.deliveryBoyRepository.getRejectedDocuments(data.id);
       return response
     } catch (error) {
       return { success: false, message: (error as Error).message };

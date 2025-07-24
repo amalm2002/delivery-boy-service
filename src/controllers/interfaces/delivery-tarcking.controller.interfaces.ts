@@ -1,11 +1,16 @@
-import { UpdateOnlineStatusDTO } from '../../dto/delivery-boy/update.online.status.dto';
+import { AssignOrderDTO, AssignOrderResponseDTO } from '../../dto/delivery-boy/assign-order.dto';
+import { completeDeliveryDTO, completeDeliveryResponseDTO } from '../../dto/delivery-boy/complete-delivery.dto';
+import { GetDeliveryBoyDetailsResponseDto } from '../../dto/delivery-boy/delivery-boy.details.dto';
+import { FindNearestDeliveryPartnersRequestDto, FindNearestDeliveryPartnersResponseDto } from '../../dto/delivery-boy/find-nearest-delivery-partners.dto';
+import { UpdateLocationDto, UpdateLocationResponseDto } from '../../dto/delivery-boy/update.location.dto';
+import { UpdateOnlineStatusDTO, UpdateOnlineStatusResponseDto } from '../../dto/delivery-boy/update.online.status.dto';
 
 export interface IDeliveryTrackingController {
-    updateOnlineStatus(data: UpdateOnlineStatusDTO): Promise<any>;
-    getDeliveryBoyDetails(data: UpdateOnlineStatusDTO): Promise<any>;
-    findNearestDeliveryPartners(data: { location: { latitude: number; longitude: number } }): Promise<any>;
-    updateLocation(data: { deliveryBoyId: string; latitude: number; longitude: number }): Promise<any>;
-    assignOrder(data: { deliveryBoyId: string; orderId: string }): Promise<any>;
-    updateDeliveryBoyLocation(data: { deliveryBoyId: string; latitude: number; longitude: number }): Promise<any>
-    completeDelivery(data: { orderId: string; deliveryBoyId: string }): Promise<any>;
+    updateOnlineStatus(data: UpdateOnlineStatusDTO): Promise<UpdateOnlineStatusResponseDto>;
+    getDeliveryBoyDetails(data: UpdateOnlineStatusDTO): Promise<GetDeliveryBoyDetailsResponseDto>;
+    findNearestDeliveryPartners(data: FindNearestDeliveryPartnersRequestDto): Promise<FindNearestDeliveryPartnersResponseDto>;
+    updateLocation(data: UpdateLocationDto): Promise<UpdateLocationResponseDto>;
+    assignOrder(data: AssignOrderDTO): Promise<AssignOrderResponseDTO>;
+    updateDeliveryBoyLocation(data: UpdateLocationDto): Promise<UpdateLocationResponseDto>
+    completeDelivery(data: completeDeliveryDTO): Promise<completeDeliveryResponseDTO>;
 }

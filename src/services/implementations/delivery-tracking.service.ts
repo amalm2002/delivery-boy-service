@@ -1,19 +1,19 @@
 import { IDeliveryBoyRepository } from '../../repositories/interfaces/delivery-boy.repository.interface';
 import { IDeliveryBoyTrackingService } from '../interfaces/delivery-tracking.service.interfaces';
-import { UpdateOnlineStatusDTO } from '../../dto/delivery-boy/update.online.status.dto';
-import { DeliveryBoyDetailsDTO } from '../../dto/delivery-boy/delivery-boy.details.dto';
+import { UpdateOnlineStatusDTO, UpdateOnlineStatusResponseDto } from '../../dto/delivery-boy/update.online.status.dto';
+import { DeliveryBoyDetailsDTO, GetDeliveryBoyDetailsResponseDto } from '../../dto/delivery-boy/delivery-boy.details.dto';
 import { IDeliveryBoy } from '../../models/delivery-boy.model';
 import redisClient from '../../config/redis.config';
+import { UpdateLocationDto, UpdateLocationResponseDto } from '../../dto/delivery-boy/update.location.dto';
+import { FindNearestDeliveryPartnersRequestDto, FindNearestDeliveryPartnersResponseDto } from '../../dto/delivery-boy/find-nearest-delivery-partners.dto';
+import { AssignOrderDTO, AssignOrderResponseDTO } from '../../dto/delivery-boy/assign-order.dto';
+import { completeDeliveryDTO, completeDeliveryResponseDTO } from '../../dto/delivery-boy/complete-delivery.dto';
 
 
 export class DeliveryBoyTrackingService implements IDeliveryBoyTrackingService {
   constructor(private repository: IDeliveryBoyRepository) { }
 
-  async updateOnlineStatus(dto: UpdateOnlineStatusDTO): Promise<{
-    success: boolean;
-    data?: IDeliveryBoy;
-    message?: string;
-  }> {
+  async updateOnlineStatus(dto: UpdateOnlineStatusDTO): Promise<UpdateOnlineStatusResponseDto> {
     try {
       const { deliveryBoyId, isOnline } = dto;
       const deliveryBoy = await this.repository.findById(deliveryBoyId);
@@ -37,11 +37,7 @@ export class DeliveryBoyTrackingService implements IDeliveryBoyTrackingService {
     }
   }
 
-  async getDeliveryBoyDetails(dto: UpdateOnlineStatusDTO): Promise<{
-    success: boolean;
-    data?: DeliveryBoyDetailsDTO;
-    message?: string;
-  }> {
+  async getDeliveryBoyDetails(dto: UpdateOnlineStatusDTO): Promise<GetDeliveryBoyDetailsResponseDto> {
     try {
       const { deliveryBoyId } = dto;
       const deliveryBoy = await this.repository.findById(deliveryBoyId);
@@ -75,21 +71,13 @@ export class DeliveryBoyTrackingService implements IDeliveryBoyTrackingService {
     }
   }
 
-  async findNearestDeliveryPartners(location: { latitude: number; longitude: number }): Promise<{
-    success: boolean;
-    data?: DeliveryBoyDetailsDTO[];
-    message?: string;
-  }> {
+  async findNearestDeliveryPartners(location: FindNearestDeliveryPartnersRequestDto['location']): Promise<FindNearestDeliveryPartnersResponseDto> {
     try {
 
       const deliveryBoys = await this.repository.getAllDeliveryBoys();
-      console.log('delivery boys :', deliveryBoys);
-
-      console.log('locations :', location);
 
       const eligibleDeliveryBoys = deliveryBoys.filter(
         (db) => db.isOnline && db.pendingOrders === 0 && db.location?.latitude && db.location?.longitude
-
       );
 
       if (!eligibleDeliveryBoys.length) {
@@ -105,7 +93,8 @@ export class DeliveryBoyTrackingService implements IDeliveryBoyTrackingService {
         let liveLocation = db.location;
         if (redisData) {
           try {
-            liveLocation = JSON.parse(redisData);
+            // liveLocation = JSON.parse(redisData);
+            liveLocation = JSON.parse(redisData.toString());
           } catch (error) {
             console.error(`Error parsing Redis location for ${db._id}:`, error);
           }
@@ -163,11 +152,7 @@ export class DeliveryBoyTrackingService implements IDeliveryBoyTrackingService {
     return R * c;
   }
 
-  async updateLocation(data: { deliveryBoyId: string; latitude: number; longitude: number }): Promise<{
-    success: boolean;
-    data?: IDeliveryBoy;
-    message?: string;
-  }> {
+  async updateLocation(data: UpdateLocationDto): Promise<UpdateLocationResponseDto> {
     try {
       const { deliveryBoyId, latitude, longitude } = data;
       const result = await this.repository.deliveryBoyLocationUpdate({ deliveryBoyId, latitude, longitude });
@@ -180,8 +165,6 @@ export class DeliveryBoyTrackingService implements IDeliveryBoyTrackingService {
           { EX: 60 }
         );
         console.log('redis data :', x);
-
-
       }
 
       return result;
@@ -190,11 +173,7 @@ export class DeliveryBoyTrackingService implements IDeliveryBoyTrackingService {
     }
   }
 
-  async assignOrder(data: { deliveryBoyId: string; orderId: string }): Promise<{
-    success: boolean;
-    data?: IDeliveryBoy;
-    message?: string;
-  }> {
+  async assignOrder(data: AssignOrderDTO): Promise<AssignOrderResponseDTO> {
     try {
       const { deliveryBoyId } = data;
 
@@ -223,14 +202,7 @@ export class DeliveryBoyTrackingService implements IDeliveryBoyTrackingService {
     }
   }
 
-  async updateDeliveryBoyLocation(data: {
-    deliveryBoyId: string;
-    latitude: number;
-    longitude: number;
-  }): Promise<{
-    success: boolean;
-    message?: string;
-  }> {
+  async updateDeliveryBoyLocation(data: UpdateLocationDto): Promise<UpdateLocationResponseDto> {
     try {
       const { deliveryBoyId, latitude, longitude } = data;
 
@@ -242,7 +214,7 @@ export class DeliveryBoyTrackingService implements IDeliveryBoyTrackingService {
       await redisClient.set(
         `deliveryBoy:${deliveryBoyId}:location`,
         JSON.stringify({ latitude, longitude }),
-        { EX: 60 } 
+        { EX: 60 }
       );
 
       return { success: true, message: 'Location updated in Redis successfully' };
@@ -252,7 +224,7 @@ export class DeliveryBoyTrackingService implements IDeliveryBoyTrackingService {
     }
   }
 
-  async completeDelivery(data: { orderId: string; deliveryBoyId: string }): Promise<any> {
+  async completeDelivery(data: completeDeliveryDTO): Promise<completeDeliveryResponseDTO> {
     try {
       const { deliveryBoyId } = data;
 
@@ -271,7 +243,6 @@ export class DeliveryBoyTrackingService implements IDeliveryBoyTrackingService {
       if (!updatedDeliveryBoy.success) {
         return { success: false, message: updatedDeliveryBoy.message || 'Failed to update delivery boy' };
       }
-
       return {
         success: true,
         data: updatedDeliveryBoy.data,

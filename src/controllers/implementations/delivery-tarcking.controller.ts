@@ -1,11 +1,16 @@
 import { IDeliveryBoyTrackingService } from '../../services/interfaces/delivery-tracking.service.interfaces';
 import { IDeliveryTrackingController } from '../interfaces/delivery-tarcking.controller.interfaces';
-import { UpdateOnlineStatusDTO } from '../../dto/delivery-boy/update.online.status.dto';
+import { UpdateOnlineStatusDTO, UpdateOnlineStatusResponseDto } from '../../dto/delivery-boy/update.online.status.dto';
+import { UpdateLocationDto, UpdateLocationResponseDto } from '../../dto/delivery-boy/update.location.dto';
+import { GetDeliveryBoyDetailsResponseDto } from '../../dto/delivery-boy/delivery-boy.details.dto';
+import { FindNearestDeliveryPartnersRequestDto, FindNearestDeliveryPartnersResponseDto } from '../../dto/delivery-boy/find-nearest-delivery-partners.dto';
+import { AssignOrderDTO, AssignOrderResponseDTO } from '../../dto/delivery-boy/assign-order.dto';
+import { completeDeliveryDTO, completeDeliveryResponseDTO } from '../../dto/delivery-boy/complete-delivery.dto';
 
 export class DeliveryTrackingController implements IDeliveryTrackingController {
   constructor(private deliveryBoyService: IDeliveryBoyTrackingService) { }
 
-  async updateOnlineStatus(data: UpdateOnlineStatusDTO): Promise<any> {
+  async updateOnlineStatus(data: UpdateOnlineStatusDTO): Promise<UpdateOnlineStatusResponseDto> {
     try {
       const result = await this.deliveryBoyService.updateOnlineStatus(data);
 
@@ -29,7 +34,7 @@ export class DeliveryTrackingController implements IDeliveryTrackingController {
     }
   }
 
-  async getDeliveryBoyDetails(data: UpdateOnlineStatusDTO): Promise<any> {
+  async getDeliveryBoyDetails(data: UpdateOnlineStatusDTO): Promise<GetDeliveryBoyDetailsResponseDto> {
     try {
       const result = await this.deliveryBoyService.getDeliveryBoyDetails(data);
 
@@ -53,7 +58,7 @@ export class DeliveryTrackingController implements IDeliveryTrackingController {
     }
   }
 
-  async findNearestDeliveryPartners(data: { location: { latitude: number; longitude: number } }): Promise<any> {
+  async findNearestDeliveryPartners(data: FindNearestDeliveryPartnersRequestDto): Promise<FindNearestDeliveryPartnersResponseDto> {
     try {
       const { location } = data;
       if (!location || !location.latitude || !location.longitude) {
@@ -82,7 +87,7 @@ export class DeliveryTrackingController implements IDeliveryTrackingController {
     }
   }
 
-  async updateLocation(data: { deliveryBoyId: string; latitude: number; longitude: number }): Promise<any> {
+  async updateLocation(data: UpdateLocationDto): Promise<UpdateLocationResponseDto> {
     try {
       const result = await this.deliveryBoyService.updateLocation(data);
       if (!result.success) {
@@ -94,7 +99,7 @@ export class DeliveryTrackingController implements IDeliveryTrackingController {
     }
   }
 
-  async assignOrder(data: { deliveryBoyId: string; orderId: string }): Promise<any> {
+  async assignOrder(data: AssignOrderDTO): Promise<AssignOrderResponseDTO> {
     try {
       const result = await this.deliveryBoyService.assignOrder(data);
       if (!result.success) {
@@ -116,11 +121,7 @@ export class DeliveryTrackingController implements IDeliveryTrackingController {
     }
   }
 
-  async updateDeliveryBoyLocation(data: {
-    deliveryBoyId: string;
-    latitude: number;
-    longitude: number;
-  }): Promise<any> {
+  async updateDeliveryBoyLocation(data: UpdateLocationDto): Promise<UpdateLocationResponseDto> {
     try {
       const result = await this.deliveryBoyService.updateDeliveryBoyLocation(data);
       return result;
@@ -130,7 +131,7 @@ export class DeliveryTrackingController implements IDeliveryTrackingController {
     }
   }
 
-  async completeDelivery(data: { orderId: string; deliveryBoyId: string }): Promise<any> {
+  async completeDelivery(data: completeDeliveryDTO): Promise<completeDeliveryResponseDTO> {
     return await this.deliveryBoyService.completeDelivery(data);
   }
 

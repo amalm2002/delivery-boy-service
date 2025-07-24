@@ -1,14 +1,14 @@
 
 import { IZoneService } from '../../services/interfaces/zone.service.interface';
 import { IZoneController } from '../interfaces/zone.controller.interface';
-import { CreateZoneDto } from '../../dto/zone/create.zone.dto';
+import { CreateZoneDto, CreateZoneResponseControllerDto } from '../../dto/zone/create.zone.dto';
 import { DeleteZoneDto } from '../../dto/zone/delete.zone.dto';
-import { IZone } from '../../models/zone.model';
+import { FetchZonesResponseDTO } from '../../dto/zone/fetch.zone.dto';
 
 export class ZoneController implements IZoneController {
   constructor(private zoneService: IZoneService) { }
 
-  async zoneCreation(data: CreateZoneDto) {
+  async zoneCreation(data: CreateZoneDto): Promise<CreateZoneResponseControllerDto> {
     try {
       const createdZone = await this.zoneService.createZone(data);
       return { message: 'Zone created successfully', id: createdZone._id, zone: createdZone };
@@ -20,7 +20,7 @@ export class ZoneController implements IZoneController {
     }
   }
 
-  async fetchZones(data: any) {
+  async fetchZones(data: any): Promise<FetchZonesResponseDTO> {
     try {
       const fetchZones = await this.zoneService.fetchZones();
       // console.log('zone.controllerrrrrr :', fetchZones);

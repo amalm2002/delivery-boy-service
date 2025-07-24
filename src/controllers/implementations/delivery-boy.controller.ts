@@ -1,19 +1,21 @@
 
 import { IDeliveryBoyService } from '../../services/interfaces/delivery-boy.service.interface';
 import { IDeliveryBoyController } from '../interfaces/delivery-boy.controller.interface';
-import { CreateDeliveryBoyDto } from '../../dto/delivery-boy/create.delivery-boy.dto';
-import { UpdateDetailsDto } from '../../dto/delivery-boy/update.details.dto';
-import { UpdateVehicleDto } from '../../dto/delivery-boy/update.vehicle.dto';
-import { UpdateZoneDto } from '../../dto/delivery-boy/update.zone.dto';
-import { VerifyDocumentsDto } from '../../dto/delivery-boy/verify.documents.dto';
-import { RejectDocumentsDto } from '../../dto/delivery-boy/reject.documents.dto';
-import { IDeliveryBoy } from '../../models/delivery-boy.model';
-import { UpdateLocationDto } from '../../dto/delivery-boy/update.location.dto';
+import { CreateDeliveryBoyDto, CreateDeliveryBoyResponseDTO } from '../../dto/delivery-boy/create.delivery-boy.dto';
+import { UpdateDetailsDto, UpdateDetailsResponseDTO } from '../../dto/delivery-boy/update.details.dto';
+import { UpdateVehicleDto, UpdateVehicleResponseDTO } from '../../dto/delivery-boy/update.vehicle.dto';
+import { UpdateZoneDto, UpdateZoneResponseDTO } from '../../dto/delivery-boy/update.zone.dto';
+import { VerifyDocumentsDto, VerifyDocumentsResponseDTO } from '../../dto/delivery-boy/verify.documents.dto';
+import { GetRejectedDocumentControllerResponseDTO, GetRejectedDocumentDTO, RejectDocumentsDto, RejectDocumentsResponseDTO } from '../../dto/delivery-boy/reject.documents.dto';
+import { UpdateLocationDto, UpdateLocationResponseDto } from '../../dto/delivery-boy/update.location.dto';
+import { GetAllDeliveryBoysResponseDTO } from '../../dto/delivery-boy/get-all-delivery-boys.dto';
+import { UpdateOnlineStatusDTO, UpdateOnlineStatusResponseDTO } from '../../dto/delivery-boy/update.online.status.dto';
+import { FetchDeliveryBoyDTO } from '../../dto/delivery-boy/fetch-delivery-boy.dto';
 
 export class DeliveryBoyController implements IDeliveryBoyController {
-  constructor(private deliveryBoyService: IDeliveryBoyService) {}
+  constructor(private deliveryBoyService: IDeliveryBoyService) { }
 
-  async register(data: CreateDeliveryBoyDto) {
+  async register(data: CreateDeliveryBoyDto): Promise<CreateDeliveryBoyResponseDTO> {
     try {
       return await this.deliveryBoyService.registerDeliveryBoy(data);
     } catch (error) {
@@ -21,7 +23,7 @@ export class DeliveryBoyController implements IDeliveryBoyController {
     }
   }
 
-  async updateLocation(data: UpdateLocationDto) {
+  async updateLocation(data: UpdateLocationDto): Promise<UpdateLocationResponseDto> {
     try {
       return await this.deliveryBoyService.updateLocation(data);
     } catch (error) {
@@ -29,7 +31,7 @@ export class DeliveryBoyController implements IDeliveryBoyController {
     }
   }
 
-  async updateDetails(data: UpdateDetailsDto) {
+  async updateDetails(data: UpdateDetailsDto): Promise<UpdateDetailsResponseDTO> {
     try {
       return await this.deliveryBoyService.updateDetails(data);
     } catch (error) {
@@ -37,7 +39,7 @@ export class DeliveryBoyController implements IDeliveryBoyController {
     }
   }
 
-  async updateVehicle(data: UpdateVehicleDto) {
+  async updateVehicle(data: UpdateVehicleDto): Promise<UpdateVehicleResponseDTO> {
     try {
       return await this.deliveryBoyService.updateVehicle(data);
     } catch (error) {
@@ -45,7 +47,7 @@ export class DeliveryBoyController implements IDeliveryBoyController {
     }
   }
 
-  async updateZone(data: UpdateZoneDto) {
+  async updateZone(data: UpdateZoneDto): Promise<UpdateZoneResponseDTO> {
     try {
       return await this.deliveryBoyService.updateZone(data);
     } catch (error) {
@@ -53,50 +55,43 @@ export class DeliveryBoyController implements IDeliveryBoyController {
     }
   }
 
-  async getAllDeliveryBoys(data: any) {
+  async getAllDeliveryBoys(data: void): Promise<GetAllDeliveryBoysResponseDTO> {
     try {
       const fetchDeliveryBoys = await this.deliveryBoyService.getAllDeliveryBoys();
-      console.log('fetch the all delivery boy :',fetchDeliveryBoys);
-      
-      return { message: 'success', fetchDeliveryBoys };
-    } catch (error) {
-      throw new Error(`Error fetching delivery boys: ${(error as Error).message}`);
-    }
-  }
-  async getAllDeliveryBoy(data: any) {
-    try {
-      const fetchDeliveryBoys = await this.deliveryBoyService.getAllDeliveryBoy();
-      console.log('fetch the all delivery boy :',fetchDeliveryBoys);
-      
       return { message: 'success', fetchDeliveryBoys };
     } catch (error) {
       throw new Error(`Error fetching delivery boys: ${(error as Error).message}`);
     }
   }
 
-  async updateDeliveryBoyStatus(data: { id: string }) {
+  async getAllDeliveryBoy(data: void): Promise<GetAllDeliveryBoysResponseDTO> {
     try {
-      const response = await this.deliveryBoyService.updateDeliveryBoyStatus(data.id);
+      const fetchDeliveryBoys = await this.deliveryBoyService.getAllDeliveryBoy();
+      return { message: 'success', fetchDeliveryBoys };
+    } catch (error) {
+      throw new Error(`Error fetching delivery boys: ${(error as Error).message}`);
+    }
+  }
+
+  async updateDeliveryBoyStatus(data: FetchDeliveryBoyDTO): Promise<UpdateOnlineStatusResponseDTO> {
+    try {
+      const response = await this.deliveryBoyService.updateDeliveryBoyStatus(data);
       return { message: 'success', response };
     } catch (error) {
       throw new Error(`Error updating delivery boy status: ${(error as Error).message}`);
     }
   }
 
-  async fetchDeliveryBoyDetails(data: { id: string }) {
+  async fetchDeliveryBoyDetails(data: FetchDeliveryBoyDTO): Promise<UpdateOnlineStatusResponseDTO> {
     try {
-      console.log('delivery-boy controller data :',data);
-      
-      const response = await this.deliveryBoyService.fetchDeliveryBoyDetails(data.id);
-      console.log('delivery-boy controller :',response);
-      
+      const response = await this.deliveryBoyService.fetchDeliveryBoyDetails(data);      
       return { message: 'success', response };
     } catch (error) {
       throw new Error(`Error fetching delivery boy details: ${(error as Error).message}`);
     }
   }
 
-  async verifyDocuments(data: VerifyDocumentsDto) {
+  async verifyDocuments(data: VerifyDocumentsDto): Promise<VerifyDocumentsResponseDTO> {
     try {
       const result = await this.deliveryBoyService.verifyDocuments(data);
       return { message: 'success', response: result };
@@ -105,7 +100,7 @@ export class DeliveryBoyController implements IDeliveryBoyController {
     }
   }
 
-  async rejectDocuments(data: RejectDocumentsDto) {
+  async rejectDocuments(data: RejectDocumentsDto): Promise<RejectDocumentsResponseDTO> {
     try {
       const result = await this.deliveryBoyService.rejectDocuments(data);
       return { message: 'success', result };
@@ -114,11 +109,9 @@ export class DeliveryBoyController implements IDeliveryBoyController {
     }
   }
 
-  async getRejectedDocuments(data: { id: string }) {
+  async getRejectedDocuments(data: GetRejectedDocumentDTO): Promise<GetRejectedDocumentControllerResponseDTO> {
     try {
-      const fetchRejectedDocs = await this.deliveryBoyService.getRejectedDocuments(data.id);
-      console.log('fetch rejected docs :',fetchRejectedDocs);
-      
+      const fetchRejectedDocs = await this.deliveryBoyService.getRejectedDocuments(data);
       return { message: 'success', fetchRejectedDocs };
     } catch (error) {
       throw new Error(`Error fetching rejected documents: ${(error as Error).message}`);

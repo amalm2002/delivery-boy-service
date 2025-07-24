@@ -1,24 +1,30 @@
-
-import { CreateDeliveryBoyDto } from '../../dto/delivery-boy/create.delivery-boy.dto';
-import { UpdateLocationDto } from '../../dto/delivery-boy/update.location.dto';
-import { UpdateDetailsDto } from '../../dto/delivery-boy/update.details.dto';
-import { UpdateVehicleDto } from '../../dto/delivery-boy/update.vehicle.dto';
-import { UpdateZoneDto } from '../../dto/delivery-boy/update.zone.dto';
-import { VerifyDocumentsDto } from '../../dto/delivery-boy/verify.documents.dto';
-import { RejectDocumentsDto } from '../../dto/delivery-boy/reject.documents.dto';
-import { IDeliveryBoy } from '../../models/delivery-boy.model';
+import { CreateDeliveryBoyDto, CreateDeliveryBoyResponseDTO } from '../../dto/delivery-boy/create.delivery-boy.dto';
+import { UpdateLocationDto, UpdateLocationResponseDto } from '../../dto/delivery-boy/update.location.dto';
+import { UpdateDetailsDto, UpdateDetailsResponseDTO } from '../../dto/delivery-boy/update.details.dto';
+import { UpdateVehicleDto, UpdateVehicleResponseDTO } from '../../dto/delivery-boy/update.vehicle.dto';
+import { UpdateZoneDto, UpdateZoneResponseDTO } from '../../dto/delivery-boy/update.zone.dto';
+import { VerifyDocumentsDto, VerifyDocumentsResponseDTO } from '../../dto/delivery-boy/verify.documents.dto';
+import {
+  GetRejectedDocumentControllerResponseDTO,
+  GetRejectedDocumentDTO,
+  RejectDocumentsDto,
+  RejectDocumentsResponseDTO
+} from '../../dto/delivery-boy/reject.documents.dto';
+import { GetAllDeliveryBoysResponseDTO } from '../../dto/delivery-boy/get-all-delivery-boys.dto';
+import { UpdateOnlineStatusDTO, UpdateOnlineStatusResponseDTO } from '../../dto/delivery-boy/update.online.status.dto';
+import { FetchDeliveryBoyDTO } from '../../dto/delivery-boy/fetch-delivery-boy.dto';
 
 export interface IDeliveryBoyController {
-  register(data: CreateDeliveryBoyDto): Promise<any>;
-  updateLocation(data: UpdateLocationDto): Promise<any>;
-  updateDetails(data: UpdateDetailsDto): Promise<any>;
-  updateVehicle(data: UpdateVehicleDto): Promise<any>;
-  updateZone(data: UpdateZoneDto): Promise<any>;
-  getAllDeliveryBoys(data: any): Promise<{ message: string; fetchDeliveryBoys: Partial<IDeliveryBoy>[] }>;
-  getAllDeliveryBoy(data: any): Promise<{ message: string; fetchDeliveryBoys: Partial<IDeliveryBoy>[] }>;
-  updateDeliveryBoyStatus(data: { id: string }): Promise<{ message: string; response: IDeliveryBoy | null }>;
-  fetchDeliveryBoyDetails(data: { id: string }): Promise<{ message: string; response: IDeliveryBoy | null }>;
-  verifyDocuments(data: VerifyDocumentsDto): Promise<any>;
-  rejectDocuments(data: RejectDocumentsDto): Promise<any>;
-  getRejectedDocuments(data: { id: string }): Promise<{ message: string; fetchRejectedDocs: { success: boolean; data?: Partial<IDeliveryBoy>; message?: string } }>;
+  register(data: CreateDeliveryBoyDto): Promise<CreateDeliveryBoyResponseDTO>;
+  updateLocation(data: UpdateLocationDto): Promise<UpdateLocationResponseDto>;
+  updateDetails(data: UpdateDetailsDto): Promise<UpdateDetailsResponseDTO>;
+  updateVehicle(data: UpdateVehicleDto): Promise<UpdateVehicleResponseDTO>;
+  updateZone(data: UpdateZoneDto): Promise<UpdateZoneResponseDTO>;
+  getAllDeliveryBoys(data: void): Promise<GetAllDeliveryBoysResponseDTO>;
+  getAllDeliveryBoy(data: void): Promise<GetAllDeliveryBoysResponseDTO>;
+  updateDeliveryBoyStatus(data: FetchDeliveryBoyDTO): Promise<UpdateOnlineStatusResponseDTO>;
+  fetchDeliveryBoyDetails(data: FetchDeliveryBoyDTO): Promise<UpdateOnlineStatusResponseDTO>;
+  verifyDocuments(data: VerifyDocumentsDto): Promise<VerifyDocumentsResponseDTO>;
+  rejectDocuments(data: RejectDocumentsDto): Promise<RejectDocumentsResponseDTO>;
+  getRejectedDocuments(data: GetRejectedDocumentDTO): Promise<GetRejectedDocumentControllerResponseDTO>;
 }

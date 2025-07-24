@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+  delivery-boy:
+    build: .
+    container_name: delivery-boy-service
+    ports:
+      - "3006:3006"
+    env_file:
+      - .env
+      - .env.docker
+    networks:
+      - backend
+
+networks:
+  backend:
+    external: true

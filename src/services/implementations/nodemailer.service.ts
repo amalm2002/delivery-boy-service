@@ -1,4 +1,3 @@
-
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
 import { INodemailerService } from '../interfaces/nodemailer.service.interface';

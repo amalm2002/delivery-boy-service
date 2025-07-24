@@ -1,4 +1,4 @@
-import { Schema, model, ObjectId } from 'mongoose';
+import { Schema, model } from 'mongoose';
 import { ISchema } from './interfaces/schema.interface';
 
 export interface IDeliveryBoy extends ISchema {

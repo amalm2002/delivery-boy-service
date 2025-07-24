@@ -1,5 +1,5 @@
 export interface DeliveryBoyDetailsDTO {
-    _id?:any|undefined;
+    _id?: any | undefined;
     name: string;
     email?: string;
     mobile: string;
@@ -17,7 +17,14 @@ export interface DeliveryBoyDetailsDTO {
         longitude: number;
     };
     zone?: {
-    id: string; 
-    name: string;
-  }
+        id: string;
+        name: string;
+    }
+}
+
+export interface GetDeliveryBoyDetailsResponseDto {
+    success?: boolean;
+    data?: DeliveryBoyDetailsDTO;
+    message?: string;
+    status?: string;
 }

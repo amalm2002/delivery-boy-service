@@ -1,14 +1,15 @@
 
 import { IZoneRepository } from '../../repositories/interfaces/zone.repository.interface';
 import { IZoneService } from '../interfaces/zone.service.interface';
-import { CreateZoneDto } from '../../dto/zone/create.zone.dto';
+import { CreateZoneDto, CreateZoneResponseDto } from '../../dto/zone/create.zone.dto';
 import { DeleteZoneDto } from '../../dto/zone/delete.zone.dto';
 import { IZone } from '../../models/zone.model';
+import { ZoneDetailsDTO } from '../../dto/zone/zone-details.dto';
 
 export class ZoneService implements IZoneService {
-  constructor(private zoneRepository: IZoneRepository) {}
+  constructor(private zoneRepository: IZoneRepository) { }
 
-  async createZone(dto: CreateZoneDto): Promise<IZone> {
+  async createZone(dto: CreateZoneDto): Promise<CreateZoneResponseDto> {
     const existingZone = await this.zoneRepository.findByName(dto.name);
     if (existingZone) {
       throw new Error('Zone with the same name already exists');
@@ -25,8 +26,17 @@ export class ZoneService implements IZoneService {
     });
   }
 
-  async fetchZones(): Promise<IZone[]> {
-    return await this.zoneRepository.getAllZones();
+  async fetchZones(): Promise<ZoneDetailsDTO[]> {
+    const zones = await this.zoneRepository.getAllZones();
+
+    return zones.map(zone => ({
+      _id: zone._id.toString(),
+      name: zone.name,
+      coordinates: zone.coordinates.map(coord => ({
+        latitude: coord.latitude,
+        longitude: coord.longitude,
+      })),
+    }));
   }
 
   async deleteZone(dto: DeleteZoneDto): Promise<IZone | null> {
