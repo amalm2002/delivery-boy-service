@@ -9,6 +9,7 @@ import { ZoneService } from '../../services/implementations/zone.service';
 import { AuthService } from '../../services/implementations/auth.service';
 import { DeliveryTrackingController } from '../../controllers/implementations/delivery-tarcking.controller';
 import { DeliveryBoyTrackingService } from '../../services/implementations/delivery-tracking.service';
+import { DeliveryRateModelRepository } from '../../repositories/implementations/delivery-rate-model.repository';
 
 export default class Consumer {
   private channel: Channel;
@@ -26,7 +27,8 @@ export default class Consumer {
     const authService = new AuthService();
     const deliveryBoyRepository = new DeliveryBoyRepository();
     const zoneRepository = new ZoneRepository();
-    const deliveryBoyService = new DeliveryBoyService(deliveryBoyRepository, zoneRepository, authService);
+    const deliveryRateModelRepository=new DeliveryRateModelRepository()
+    const deliveryBoyService = new DeliveryBoyService(deliveryBoyRepository, zoneRepository, authService,deliveryRateModelRepository);
     const zoneService = new ZoneService(zoneRepository);
     const deliveryTrackingService = new DeliveryBoyTrackingService(deliveryBoyRepository);
 
@@ -60,7 +62,8 @@ export default class Consumer {
           this.channel.ack(message);
         } catch (err) {
           console.error('Error handling message:', err);
-          this.channel.nack(message, false, true);
+          // this.channel.nack(message, false, true);
+          this.channel.nack(message, false, false);
         }
       },
       { noAck: false }

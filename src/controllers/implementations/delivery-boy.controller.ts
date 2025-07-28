@@ -11,6 +11,7 @@ import { UpdateLocationDto, UpdateLocationResponseDto } from '../../dto/delivery
 import { GetAllDeliveryBoysResponseDTO } from '../../dto/delivery-boy/get-all-delivery-boys.dto';
 import { UpdateOnlineStatusDTO, UpdateOnlineStatusResponseDTO } from '../../dto/delivery-boy/update.online.status.dto';
 import { FetchDeliveryBoyDTO } from '../../dto/delivery-boy/fetch-delivery-boy.dto';
+import { AddRidePaymentRuleDTO, AddRidePaymentRuleResponseDTO } from '../../dto/delivery-boy/ride-payment-rule.dto';
 
 export class DeliveryBoyController implements IDeliveryBoyController {
   constructor(private deliveryBoyService: IDeliveryBoyService) { }
@@ -84,7 +85,7 @@ export class DeliveryBoyController implements IDeliveryBoyController {
 
   async fetchDeliveryBoyDetails(data: FetchDeliveryBoyDTO): Promise<UpdateOnlineStatusResponseDTO> {
     try {
-      const response = await this.deliveryBoyService.fetchDeliveryBoyDetails(data);      
+      const response = await this.deliveryBoyService.fetchDeliveryBoyDetails(data);
       return { message: 'success', response };
     } catch (error) {
       throw new Error(`Error fetching delivery boy details: ${(error as Error).message}`);
@@ -115,6 +116,15 @@ export class DeliveryBoyController implements IDeliveryBoyController {
       return { message: 'success', fetchRejectedDocs };
     } catch (error) {
       throw new Error(`Error fetching rejected documents: ${(error as Error).message}`);
+    }
+  }
+
+  async addRidePaymentRule(data: AddRidePaymentRuleDTO): Promise<AddRidePaymentRuleResponseDTO> {
+    try {
+      const response = await this.deliveryBoyService.addRidePaymentRule(data)
+      return response
+    } catch (error) {
+      throw new Error(`Error add ride payment rule: ${(error as Error).message}`);
     }
   }
 }

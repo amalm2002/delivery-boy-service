@@ -8,6 +8,7 @@ import { GetRejectedDocumentDTO, GetRejectedDocumentServiceResponseDTO, RejectDo
 import { IDeliveryBoy } from '../../models/delivery-boy.model';
 import { UpdateOnlineStatusDTO } from '../../dto/delivery-boy/update.online.status.dto';
 import { FetchDeliveryBoyDTO } from '../../dto/delivery-boy/fetch-delivery-boy.dto';
+import { AddRidePaymentRuleDTO, AddRidePaymentRuleResponseDTO } from '../../dto/delivery-boy/ride-payment-rule.dto';
 
 export interface IDeliveryBoyService {
   registerDeliveryBoy(dto: CreateDeliveryBoyDto): Promise<CreateDeliveryBoyResponseDTO>;
@@ -22,4 +23,5 @@ export interface IDeliveryBoyService {
   verifyDocuments(dto: VerifyDocumentsDto): Promise<DeliveryBoyDto | { message: string }>;
   rejectDocuments(dto: RejectDocumentsDto): Promise<DeliveryBoyDto | { message: string }>;
   getRejectedDocuments(data: GetRejectedDocumentDTO): Promise<GetRejectedDocumentServiceResponseDTO>;
+  addRidePaymentRule(data: AddRidePaymentRuleDTO): Promise<AddRidePaymentRuleResponseDTO>
 }

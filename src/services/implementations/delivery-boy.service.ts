@@ -13,13 +13,16 @@ import { IDeliveryBoy } from '../../models/delivery-boy.model';
 import { IAuthService } from '../interfaces/auth.service.interface';
 import { UpdateOnlineStatusDTO } from '../../dto/delivery-boy/update.online.status.dto';
 import { FetchDeliveryBoyDTO } from '../../dto/delivery-boy/fetch-delivery-boy.dto';
+import { AddRidePaymentRuleDTO, AddRidePaymentRuleResponseDTO } from '../../dto/delivery-boy/ride-payment-rule.dto';
+import { IDeliveryRateModelRepository } from '../../repositories/interfaces/delivery-rate-model.repository.interfaces';
 
 
 export class DeliveryBoyService implements IDeliveryBoyService {
   constructor(
     private deliveryBoyRepository: IDeliveryBoyRepository,
     private zoneRepository: IZoneRepository,
-    private authService: IAuthService
+    private authService: IAuthService,
+    private deliveryRateRepository: IDeliveryRateModelRepository,
   ) { }
 
   private async handleLogin(deliveryBoy: IDeliveryBoy): Promise<CreateDeliveryBoyResponseDTO> {
@@ -295,6 +298,20 @@ export class DeliveryBoyService implements IDeliveryBoyService {
     try {
       const response = await this.deliveryBoyRepository.getRejectedDocuments(data.id);
       return response
+    } catch (error) {
+      return { success: false, message: (error as Error).message };
+    }
+  }
+
+  async addRidePaymentRule(data: AddRidePaymentRuleDTO): Promise<AddRidePaymentRuleResponseDTO> {
+    try {
+      const response = await this.deliveryRateRepository.createRidePaymentRule(data)
+      console.log('response :', response);
+      return {
+        success: true,
+        message: 'Ride payment rule created successfully',
+        data: response
+      }
     } catch (error) {
       return { success: false, message: (error as Error).message };
     }

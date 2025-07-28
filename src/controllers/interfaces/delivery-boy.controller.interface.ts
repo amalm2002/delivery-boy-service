@@ -13,6 +13,7 @@ import {
 import { GetAllDeliveryBoysResponseDTO } from '../../dto/delivery-boy/get-all-delivery-boys.dto';
 import { UpdateOnlineStatusDTO, UpdateOnlineStatusResponseDTO } from '../../dto/delivery-boy/update.online.status.dto';
 import { FetchDeliveryBoyDTO } from '../../dto/delivery-boy/fetch-delivery-boy.dto';
+import { AddRidePaymentRuleDTO, AddRidePaymentRuleResponseDTO } from '../../dto/delivery-boy/ride-payment-rule.dto';
 
 export interface IDeliveryBoyController {
   register(data: CreateDeliveryBoyDto): Promise<CreateDeliveryBoyResponseDTO>;
@@ -27,4 +28,5 @@ export interface IDeliveryBoyController {
   verifyDocuments(data: VerifyDocumentsDto): Promise<VerifyDocumentsResponseDTO>;
   rejectDocuments(data: RejectDocumentsDto): Promise<RejectDocumentsResponseDTO>;
   getRejectedDocuments(data: GetRejectedDocumentDTO): Promise<GetRejectedDocumentControllerResponseDTO>;
+  addRidePaymentRule(data: AddRidePaymentRuleDTO): Promise<AddRidePaymentRuleResponseDTO>
 }
