@@ -306,12 +306,105 @@ export class DeliveryBoyService implements IDeliveryBoyService {
   async addRidePaymentRule(data: AddRidePaymentRuleDTO): Promise<AddRidePaymentRuleResponseDTO> {
     try {
       const response = await this.deliveryRateRepository.createRidePaymentRule(data)
-      console.log('response :', response);
       return {
         success: true,
         message: 'Ride payment rule created successfully',
         data: response
       }
+    } catch (error) {
+      return { success: false, message: (error as Error).message };
+    }
+  }
+
+  async getRideratePaymentRule(data: void): Promise<any> {
+    try {
+      const response = await this.deliveryRateRepository.getRideRatePaymentRules(data)
+      return {
+        success: true,
+        message: 'Fetch the all ride rate payments successfully',
+        data: response
+      }
+    } catch (error) {
+      return { success: false, message: (error as Error).message };
+    }
+  }
+
+  async updateRidePaymentRule(data: { id: string; KM: number; ratePerKm: number; vehicleType: string; isActive: boolean }): Promise<any> {
+    try {
+      const existingRule = await this.deliveryRateRepository.findOne({ _id: data.id });
+      if (!existingRule) {
+        throw new Error(`Rule with ID "${data.id}" not found`);
+      }
+      const response = await this.deliveryRateRepository.updateOne(
+        { _id: data.id },
+        {
+          minKm: data.KM,
+          ratePerKm: data.ratePerKm,
+          vehicleType: data.vehicleType as 'bike' | 'scooter' | 'cycle',
+          isActive: data.isActive,
+        }
+      );
+      return {
+        success: true,
+        message: 'Ride payment rule updated successfully',
+        data: response,
+      };
+    } catch (error) {
+      return { success: false, message: (error as Error).message };
+    }
+  }
+
+  async blockRidePaymentRule(data: { id: string; vehicleType: string }): Promise<any> {
+    try {
+      console.log('Service blocking rule with id:', data.id, 'vehicleType:', data.vehicleType);
+      // Check for pending orders
+      const pendingOrders = await this.deliveryBoyRepository.countPendingOrdersByVehicleType(data.vehicleType);
+      if (pendingOrders > 0) {
+        throw new Error(`Cannot block rule for "${data.vehicleType}" because ${pendingOrders} delivery boy(s) have pending orders`);
+      }
+
+      const existingRule = await this.deliveryRateRepository.findOne({ _id: data.id });
+      if (!existingRule) {
+        throw new Error(`Rule with ID "${data.id}" not found`);
+      }
+      if (!existingRule.isActive) {
+        throw new Error(`Rule with ID "${data.id}" is already blocked`);
+      }
+
+      const response = await this.deliveryRateRepository.updateOne(
+        { _id: data.id },
+        { isActive: false, updatedAt: new Date() }
+      );
+      return {
+        success: true,
+        message: 'Ride payment rule blocked successfully',
+        data: response,
+      };
+    } catch (error) {
+      return { success: false, message: (error as Error).message };
+    }
+  }
+
+  async unblockRidePaymentRule(data: { id: string }): Promise<any> {
+    try {
+      console.log('Service unblocking rule with id:', data.id);
+      const existingRule = await this.deliveryRateRepository.findOne({ _id: data.id });
+      if (!existingRule) {
+        throw new Error(`Rule with ID "${data.id}" not found`);
+      }
+      if (existingRule.isActive) {
+        throw new Error(`Rule with ID "${data.id}" is already active`);
+      }
+
+      const response = await this.deliveryRateRepository.updateOne(
+        { _id: data.id },
+        { isActive: true, updatedAt: new Date() }
+      );
+      return {
+        success: true,
+        message: 'Ride payment rule unblocked successfully',
+        data: response,
+      };
     } catch (error) {
       return { success: false, message: (error as Error).message };
     }

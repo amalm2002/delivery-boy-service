@@ -253,4 +253,12 @@ export class DeliveryBoyRepository extends BaseRepository<IDeliveryBoy> implemen
       return { success: false, message: (error as Error).message };
     }
   }
+
+  async countPendingOrdersByVehicleType(vehicleType: string): Promise<number> {
+    const count = await this.model.countDocuments({
+      vehicle: vehicleType,
+      pendingOrders: { $gt: 0 },
+    });
+    return count;
+  }
 }

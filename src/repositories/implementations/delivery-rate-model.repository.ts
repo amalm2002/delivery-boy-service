@@ -17,12 +17,29 @@ export class DeliveryRateModelRepository extends BaseRepository<IDeliveryRate> i
 
         const newRule = await this.create({
             minKm: data.KM,
-            ratePerKm: data.ratePerKm,
+            ratePerKm: Number(data.ratePerKm.toFixed(1)),
             vehicleType: data.vehicleType as 'bike' | 'scooter' | 'cycle',
             isActive: data.isActive,
         });
 
         return newRule;
+    }
+
+    async getRideRatePaymentRules(data: void): Promise<IDeliveryRate[]> {
+        const datas = await this.model.find()
+        return datas
+    }
+
+    async findOne(query: any): Promise<IDeliveryRate | null> {
+        return await this.model.findOne(query);
+    }
+
+    async updateOne(query: any, data: any): Promise<IDeliveryRate> {
+        const updatedRule = await this.model.findOneAndUpdate(query, { $set: data }, { new: true });
+        if (!updatedRule) {
+            throw new Error('Rule not found');
+        }
+        return updatedRule;
     }
 
 }

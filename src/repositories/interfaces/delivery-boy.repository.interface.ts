@@ -23,4 +23,5 @@ export interface IDeliveryBoyRepository {
     success: boolean;
     message?: string;
   }>;
+  countPendingOrdersByVehicleType(vehicleType: string): Promise<number>;
 }

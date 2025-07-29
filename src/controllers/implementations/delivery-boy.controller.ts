@@ -127,4 +127,42 @@ export class DeliveryBoyController implements IDeliveryBoyController {
       throw new Error(`Error add ride payment rule: ${(error as Error).message}`);
     }
   }
+
+  async getRidePaymentRules(data: void): Promise<any> {
+    try {
+      const response = await this.deliveryBoyService.getRideratePaymentRule(data)
+      return response
+    } catch (error) {
+      throw new Error(`Error get ride rate payment rule: ${(error as Error).message}`);
+    }
+  }
+
+  async updateRidePaymentRule(data: { id: string; KM: number; ratePerKm: number; vehicleType: string; isActive: boolean }): Promise<any> {
+    try {
+      const response = await this.deliveryBoyService.updateRidePaymentRule(data);
+      return response;
+    } catch (error) {
+      throw new Error(`Error updating ride rate payment rule: ${(error as Error).message}`);
+    }
+  }
+
+  async blockRidePaymentRule(data: { id: string; vehicleType: string }): Promise<any> {
+    try {
+      console.log('Blocking rule for id:', data.id, 'vehicleType:', data.vehicleType);
+      const response = await this.deliveryBoyService.blockRidePaymentRule(data);
+      return response;
+    } catch (error) {
+      throw new Error(`Error blocking ride rate payment rule: ${(error as Error).message}`);
+    }
+  }
+
+  async unblockRidePaymentRule(data: { id: string }): Promise<any> {
+    try {
+      console.log('Unblocking rule for id:', data.id);
+      const response = await this.deliveryBoyService.unblockRidePaymentRule(data);
+      return response;
+    } catch (error) {
+      throw new Error(`Error unblocking ride rate payment rule: ${(error as Error).message}`);
+    }
+  }
 }

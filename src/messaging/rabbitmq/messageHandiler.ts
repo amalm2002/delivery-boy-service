@@ -91,6 +91,18 @@ export class MessageHandler {
       case 'Add-Ride-Payment-Rule':
         response = await deliveryBoyController.addRidePaymentRule(data);
         break;
+      case 'Get-Ride-Rate-Payment-Rules':
+        response = await deliveryBoyController.getRidePaymentRules(data);
+        break;
+      case 'Update-Ride-Payment-Rule':
+        response = await deliveryBoyController.updateRidePaymentRule(data);
+        break;
+      case 'Block-Ride-Payment-Rule':
+        response = await deliveryBoyController.blockRidePaymentRule(data);
+        break;
+      case 'Unblock-Ride-Payment-Rule':
+        response = await deliveryBoyController.unblockRidePaymentRule(data);
+        break;
       default:
         response = { error: 'Unknown operation' };
     }

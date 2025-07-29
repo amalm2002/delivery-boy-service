@@ -24,4 +24,8 @@ export interface IDeliveryBoyService {
   rejectDocuments(dto: RejectDocumentsDto): Promise<DeliveryBoyDto | { message: string }>;
   getRejectedDocuments(data: GetRejectedDocumentDTO): Promise<GetRejectedDocumentServiceResponseDTO>;
   addRidePaymentRule(data: AddRidePaymentRuleDTO): Promise<AddRidePaymentRuleResponseDTO>
+  getRideratePaymentRule(data: void): Promise<any>
+  updateRidePaymentRule(data: { id: string; KM: number; ratePerKm: number; vehicleType: string; isActive: boolean }): Promise<any>;
+  blockRidePaymentRule(data: { id: string; vehicleType: string }): Promise<any>;
+  unblockRidePaymentRule(data: { id: string }): Promise<any>;
 }
