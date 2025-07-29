@@ -42,6 +42,7 @@ export interface IDeliveryBoy extends ISchema {
   loginHours?: string;
   ordersCompleted?: number;
   pendingOrders?: number;
+  inHandCash?: number;
 }
 
 const deliveryBoySchema = new Schema<IDeliveryBoy>(
@@ -96,6 +97,7 @@ const deliveryBoySchema = new Schema<IDeliveryBoy>(
     loginHours: { type: String, default: "0:00" },
     ordersCompleted: { type: Number, default: 0 },
     pendingOrders: { type: Number, default: 0 },
+    inHandCash: { type: Number, default: 0 },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
   },

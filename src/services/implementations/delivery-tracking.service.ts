@@ -8,10 +8,14 @@ import { UpdateLocationDto, UpdateLocationResponseDto } from '../../dto/delivery
 import { FindNearestDeliveryPartnersRequestDto, FindNearestDeliveryPartnersResponseDto } from '../../dto/delivery-boy/find-nearest-delivery-partners.dto';
 import { AssignOrderDTO, AssignOrderResponseDTO } from '../../dto/delivery-boy/assign-order.dto';
 import { completeDeliveryDTO, completeDeliveryResponseDTO } from '../../dto/delivery-boy/complete-delivery.dto';
+import { IDeliveryRateModelRepository } from '../../repositories/interfaces/delivery-rate-model.repository.interfaces';
 
 
 export class DeliveryBoyTrackingService implements IDeliveryBoyTrackingService {
-  constructor(private repository: IDeliveryBoyRepository) { }
+  constructor(
+    private repository: IDeliveryBoyRepository,
+    private rideRateRepository: IDeliveryRateModelRepository
+  ) { }
 
   async updateOnlineStatus(dto: UpdateOnlineStatusDTO): Promise<UpdateOnlineStatusResponseDto> {
     try {
@@ -251,6 +255,67 @@ export class DeliveryBoyTrackingService implements IDeliveryBoyTrackingService {
     } catch (error) {
       console.error('Error in completeDelivery:', error);
       return { success: false, message: `Failed to complete delivery: ${(error as Error).message}` };
+    }
+  }
+
+  async orderEarnings(data: { paymentMethod: string; deliveryBoyId: string; finalTotalDistance: number; orderAmount: number }): Promise<any> {
+    try {
+      const { paymentMethod, deliveryBoyId, finalTotalDistance, orderAmount } = data;
+
+      const deliveryBoy = await this.repository.findById(deliveryBoyId);
+
+      if (!deliveryBoy) {
+        throw new Error('Delivery boy not found');
+      }
+      const vehicleType = deliveryBoy.vehicle;
+
+      const rateModel = await this.rideRateRepository.findOne({ vehicleType });
+
+      if (!rateModel) {
+        throw new Error('No active rate model found for vehicle type');
+      }
+
+      const distanceInKm = Math.round(finalTotalDistance) / 1000;
+
+      const calculatedEarnings = Math.round(distanceInKm * rateModel.ratePerKm);
+
+      const existingEarnings = deliveryBoy.earnings;
+
+      const updatedEarnings = {
+        today: calculatedEarnings,
+        week: existingEarnings.week + calculatedEarnings,
+      };
+
+      let updatedInHandCash = deliveryBoy.inHandCash || 0;
+
+      if (paymentMethod.toLowerCase() === 'cash') {
+        updatedInHandCash += Math.round(orderAmount);
+      }
+
+      const updateResult = await this.repository.updateEarningsAndCash(
+        deliveryBoyId,
+        {
+          today: updatedEarnings.today,
+          week: updatedEarnings.week,
+        },
+        updatedInHandCash
+      );
+
+      if (!updateResult.success) {
+        throw new Error(updateResult.message || 'Failed to update earnings and cash');
+      }
+
+      return {
+        success: true,
+        message: 'Earnings updated successfully',
+        data: {
+          earnings: updatedEarnings,
+          inHandCash: updatedInHandCash,
+        },
+      };
+    } catch (error) {
+      console.error('Error in orderEarnings:', error);
+      return { success: false, message: `Failed to update order earnings: ${(error as Error).message}` };
     }
   }
 }

@@ -24,4 +24,9 @@ export interface IDeliveryBoyRepository {
     message?: string;
   }>;
   countPendingOrdersByVehicleType(vehicleType: string): Promise<number>;
+  updateEarningsAndCash(
+    id: string,
+    earnings: { today: number; week: number },
+    inHandCash: number
+  ): Promise<{ success: boolean; data?: IDeliveryBoy; message?: string }>;
 }

@@ -261,4 +261,35 @@ export class DeliveryBoyRepository extends BaseRepository<IDeliveryBoy> implemen
     });
     return count;
   }
+
+  async updateEarningsAndCash(
+    id: string,
+    earnings: { today: number; week: number },
+    inHandCash: number
+  ): Promise<{ success: boolean; data?: IDeliveryBoy; message?: string }> {
+    try {
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        return { success: false, message: 'Invalid deliveryBoyId' };
+      }
+
+      const updateData = {
+        'earnings.today': Math.round(earnings.today),
+        'earnings.week': Math.round(earnings.week),
+        inHandCash: Math.round(inHandCash),
+      };
+
+      const response = await this.model
+        .findByIdAndUpdate(id, { $set: updateData }, { new: true })
+        .populate('zone.id', 'name coordinates')
+        .exec();
+
+      if (!response) {
+        return { success: false, message: 'DeliveryBoy not found or update failed' };
+      }
+
+      return { success: true, data: response };
+    } catch (error) {
+      return { success: false, message: (error as Error).message };
+    }
+  }
 }

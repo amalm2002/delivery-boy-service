@@ -30,7 +30,7 @@ export default class Consumer {
     const deliveryRateModelRepository=new DeliveryRateModelRepository()
     const deliveryBoyService = new DeliveryBoyService(deliveryBoyRepository, zoneRepository, authService,deliveryRateModelRepository);
     const zoneService = new ZoneService(zoneRepository);
-    const deliveryTrackingService = new DeliveryBoyTrackingService(deliveryBoyRepository);
+    const deliveryTrackingService = new DeliveryBoyTrackingService(deliveryBoyRepository,deliveryRateModelRepository);
 
     this.controllers = {
       deliveryBoyController: new DeliveryBoyController(deliveryBoyService),

@@ -88,6 +88,9 @@ export class MessageHandler {
       case 'Complete-Delivery':
         response = await deliveryTrackingController.completeDelivery(data);
         break;
+      case 'Order-Earnings':
+        response = await deliveryTrackingController.orderEarnings(data);
+        break;
       case 'Add-Ride-Payment-Rule':
         response = await deliveryBoyController.addRidePaymentRule(data);
         break;

@@ -13,4 +13,5 @@ export interface IDeliveryTrackingController {
     assignOrder(data: AssignOrderDTO): Promise<AssignOrderResponseDTO>;
     updateDeliveryBoyLocation(data: UpdateLocationDto): Promise<UpdateLocationResponseDto>
     completeDelivery(data: completeDeliveryDTO): Promise<completeDeliveryResponseDTO>;
+    orderEarnings(data: { paymentMethod: string, deliveryBoyId: string, finalTotalDistance: number ,orderAmount:number}): Promise<any>
 }
