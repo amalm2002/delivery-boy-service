@@ -262,54 +262,47 @@ export class DeliveryBoyRepository extends BaseRepository<IDeliveryBoy> implemen
     return count;
   }
 
-  // async updateEarningsAndCash(
-  //   id: string,
-  //   earnings: { today: number; week: number },
-  //   inHandCash: number
-  // ): Promise<{ success: boolean; data?: IDeliveryBoy; message?: string }> {
-  //   try {
-  //     if (!mongoose.Types.ObjectId.isValid(id)) {
-  //       return { success: false, message: 'Invalid deliveryBoyId' };
-  //     }
-
-  //     const updateData = {
-  //       'earnings.today': Math.round(earnings.today),
-  //       'earnings.week': Math.round(earnings.week),
-  //       inHandCash: Math.round(inHandCash),
-  //     };
-
-  //     const response = await this.model
-  //       .findByIdAndUpdate(id, { $set: updateData }, { new: true })
-  //       .populate('zone.id', 'name coordinates')
-  //       .exec();
-
-  //     if (!response) {
-  //       return { success: false, message: 'DeliveryBoy not found or update failed' };
-  //     }
-
-  //     return { success: true, data: response };
-  //   } catch (error) {
-  //     return { success: false, message: (error as Error).message };
-  //   }
-  // }
-
   async updateEarningsAndCash(
     id: string,
     earnings: { today: number; week: number; history: { date: Date; amount: number; paid: boolean }[] },
-    inHandCash: number
+    inHandCash: number,
+    monthlyAmount?: number,
+    lastPaidAt?: Date,
+    nextPaidAt?: Date,
+    completeAmount?: number,
+    amountToPayDeliveryBoy?: number 
   ): Promise<{ success: boolean; data?: IDeliveryBoy; message?: string }> {
     try {
       if (!mongoose.Types.ObjectId.isValid(id)) {
         return { success: false, message: 'Invalid deliveryBoyId' };
       }
 
-      const updateData = {
+      const updateData: any = {
         'earnings.today': Math.round(earnings.today),
         'earnings.week': Math.round(earnings.week),
         'earnings.history': earnings.history,
         inHandCash: Math.round(inHandCash),
       };
 
+      if (monthlyAmount !== undefined) {
+        updateData.monthlyAmount = monthlyAmount;
+      }
+
+      if (lastPaidAt) {
+        updateData.lastPaidAt = lastPaidAt;
+      }
+
+      if (nextPaidAt) {
+        updateData.nextPaidAt = nextPaidAt;
+      }
+
+      if (completeAmount !== undefined) {
+        updateData.completeAmount = completeAmount;
+      }
+
+      if (amountToPayDeliveryBoy !== undefined) {
+        updateData.amountToPayDeliveryBoy = amountToPayDeliveryBoy;
+      }
 
       const response = await this.model
         .findByIdAndUpdate(id, { $set: updateData }, { new: true })
@@ -325,6 +318,7 @@ export class DeliveryBoyRepository extends BaseRepository<IDeliveryBoy> implemen
       return { success: false, message: (error as Error).message };
     }
   }
+
 
   async setOffLineOnPartner(deliveryBoyId: string, isOnline: boolean): Promise<{ success: boolean; message?: string }> {
     try {

@@ -1,4 +1,3 @@
-import { IDeliveryBoy } from '../../models/delivery-boy.model';
 import { UpdateOnlineStatusDTO, UpdateOnlineStatusResponseDto } from '../../dto/delivery-boy/update.online.status.dto';
 import { DeliveryBoyDetailsDTO, GetDeliveryBoyDetailsResponseDto } from '../../dto/delivery-boy/delivery-boy.details.dto';
 import { UpdateLocationDto, UpdateLocationResponseDto } from '../../dto/delivery-boy/update.location.dto';

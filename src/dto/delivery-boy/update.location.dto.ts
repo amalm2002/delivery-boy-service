@@ -52,15 +52,15 @@ export interface DeliveryBoyDto {
     history: {
       date: Date;
       amount: number;
-      paid:boolean;
+      paid: boolean;
     }[];
   };
-  // earnings?: {
-  //   today: number;
-  //   week: number;
-  // };
-  lastPaidAt?:Date
+  lastPaidAt?: Date;
+  nextPaidAt?: Date;
+  completeAmount?: number;
   loginHours?: string;
   ordersCompleted?: number;
+  monthlyAmount?: number;
   pendingOrders?: number;
+  amountToPayDeliveryBoy?: number;
 }

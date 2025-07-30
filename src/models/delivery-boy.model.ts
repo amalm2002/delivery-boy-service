@@ -35,10 +35,6 @@ export interface IDeliveryBoy extends ISchema {
     name: string;
   };
   rating?: number;
-  // earnings?: {
-  //   today: number;
-  //   week: number;
-  // };
   earnings?: {
     today: number;
     week: number;
@@ -48,11 +44,15 @@ export interface IDeliveryBoy extends ISchema {
       paid: boolean;
     }[];
   };
-  lastPaidAt?: Date
+  lastPaidAt?: Date;
+  nextPaidAt?: Date;
+  completeAmount?: number;
   loginHours?: string;
+  monthlyAmount?: number;
   ordersCompleted?: number;
   pendingOrders?: number;
   inHandCash?: number;
+  amountToPayDeliveryBoy?:number;
 }
 
 const deliveryBoySchema = new Schema<IDeliveryBoy>(
@@ -100,10 +100,6 @@ const deliveryBoySchema = new Schema<IDeliveryBoy>(
       name: { type: String },
     },
     rating: { type: Number, default: 0 },
-    // earnings: {
-    //   today: { type: Number, default: 0 },
-    //   week: { type: Number, default: 0 },
-    // },
     earnings: {
       today: { type: Number, default: 0 },
       week: { type: Number, default: 0 },
@@ -116,8 +112,12 @@ const deliveryBoySchema = new Schema<IDeliveryBoy>(
       ],
     },
     lastPaidAt: { type: Date, default: null },
+    nextPaidAt: { type: Date, default: null },
     loginHours: { type: String, default: "0:00" },
+    completeAmount: { type: Number, default: 0 },
     ordersCompleted: { type: Number, default: 0 },
+    amountToPayDeliveryBoy: { type: Number, default: 0 },
+    monthlyAmount: { type: Number, default: 0 },
     pendingOrders: { type: Number, default: 0 },
     inHandCash: { type: Number, default: 0 },
     createdAt: { type: Date, default: Date.now },
