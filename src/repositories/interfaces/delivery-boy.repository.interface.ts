@@ -24,9 +24,16 @@ export interface IDeliveryBoyRepository {
     message?: string;
   }>;
   countPendingOrdersByVehicleType(vehicleType: string): Promise<number>;
+  // updateEarningsAndCash(
+  //   id: string,
+  //   earnings: { today: number; week: number },
+  //   inHandCash: number
+  // ): Promise<{ success: boolean; data?: IDeliveryBoy; message?: string }>;
   updateEarningsAndCash(
     id: string,
-    earnings: { today: number; week: number },
+    earnings: { today: number; week: number; history: { date: Date; amount: number,paid:boolean }[] },
     inHandCash: number
   ): Promise<{ success: boolean; data?: IDeliveryBoy; message?: string }>;
+  setOffLineOnPartner(deliveryBoyId: string, isOnline: boolean): Promise<{ success: boolean; message?: string; }>
+  findOne(id: string): Promise<IDeliveryBoy | null>
 }

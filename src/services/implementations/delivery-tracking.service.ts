@@ -258,6 +258,67 @@ export class DeliveryBoyTrackingService implements IDeliveryBoyTrackingService {
     }
   }
 
+  // async orderEarnings(data: { paymentMethod: string; deliveryBoyId: string; finalTotalDistance: number; orderAmount: number }): Promise<any> {
+  //   try {
+  //     const { paymentMethod, deliveryBoyId, finalTotalDistance, orderAmount } = data;
+
+  //     const deliveryBoy = await this.repository.findById(deliveryBoyId);
+
+  //     if (!deliveryBoy) {
+  //       throw new Error('Delivery boy not found');
+  //     }
+  //     const vehicleType = deliveryBoy.vehicle;
+
+  //     const rateModel = await this.rideRateRepository.findOne({ vehicleType });
+
+  //     if (!rateModel) {
+  //       throw new Error('No active rate model found for vehicle type');
+  //     }
+
+  //     const distanceInKm = Math.round(finalTotalDistance) / 1000;
+
+  //     const calculatedEarnings = Math.round(distanceInKm * rateModel.ratePerKm);
+
+  //     const existingEarnings = deliveryBoy.earnings;
+
+  //     const updatedEarnings = {
+  //       today: calculatedEarnings,
+  //       week: existingEarnings.week + calculatedEarnings,
+  //     };
+
+  //     let updatedInHandCash = deliveryBoy.inHandCash || 0;
+
+  //     if (paymentMethod.toLowerCase() === 'cash') {
+  //       updatedInHandCash += Math.round(orderAmount);
+  //     }
+
+  //     const updateResult = await this.repository.updateEarningsAndCash(
+  //       deliveryBoyId,
+  //       {
+  //         today: updatedEarnings.today,
+  //         week: updatedEarnings.week,
+  //       },
+  //       updatedInHandCash
+  //     );
+
+  //     if (!updateResult.success) {
+  //       throw new Error(updateResult.message || 'Failed to update earnings and cash');
+  //     }
+
+  //     return {
+  //       success: true,
+  //       message: 'Earnings updated successfully',
+  //       data: {
+  //         earnings: updatedEarnings,
+  //         inHandCash: updatedInHandCash,
+  //       },
+  //     };
+  //   } catch (error) {
+  //     console.error('Error in orderEarnings:', error);
+  //     return { success: false, message: `Failed to update order earnings: ${(error as Error).message}` };
+  //   }
+  // }
+
   async orderEarnings(data: { paymentMethod: string; deliveryBoyId: string; finalTotalDistance: number; orderAmount: number }): Promise<any> {
     try {
       const { paymentMethod, deliveryBoyId, finalTotalDistance, orderAmount } = data;
@@ -267,6 +328,7 @@ export class DeliveryBoyTrackingService implements IDeliveryBoyTrackingService {
       if (!deliveryBoy) {
         throw new Error('Delivery boy not found');
       }
+
       const vehicleType = deliveryBoy.vehicle;
 
       const rateModel = await this.rideRateRepository.findOne({ vehicleType });
@@ -278,12 +340,30 @@ export class DeliveryBoyTrackingService implements IDeliveryBoyTrackingService {
       const distanceInKm = Math.round(finalTotalDistance) / 1000;
 
       const calculatedEarnings = Math.round(distanceInKm * rateModel.ratePerKm);
+      console.log('calculated earnings :', calculatedEarnings);
 
-      const existingEarnings = deliveryBoy.earnings;
+      const todayDateString = new Date().toISOString().slice(0, 10); 
+      const now = new Date();
+
+      const existingHistory = deliveryBoy.earnings?.history || [];
+
+      const updatedHistory = [...existingHistory, { date: now, amount: calculatedEarnings, paid: false }];
+
+      const todayTotal = updatedHistory
+        .filter(entry => new Date(entry.date).toISOString().slice(0, 10) === todayDateString)
+        .reduce((sum, entry) => sum + entry.amount, 0);
+
+      const oneWeekAgo = new Date();
+      oneWeekAgo.setDate(oneWeekAgo.getDate() - 6);
+
+      const weekTotal = updatedHistory
+        .filter(entry => new Date(entry.date) >= oneWeekAgo)
+        .reduce((sum, entry) => sum + entry.amount, 0);
 
       const updatedEarnings = {
-        today: calculatedEarnings,
-        week: existingEarnings.week + calculatedEarnings,
+        today: todayTotal,
+        week: weekTotal,
+        history: updatedHistory,
       };
 
       let updatedInHandCash = deliveryBoy.inHandCash || 0;
@@ -294,10 +374,7 @@ export class DeliveryBoyTrackingService implements IDeliveryBoyTrackingService {
 
       const updateResult = await this.repository.updateEarningsAndCash(
         deliveryBoyId,
-        {
-          today: updatedEarnings.today,
-          week: updatedEarnings.week,
-        },
+        updatedEarnings,
         updatedInHandCash
       );
 
@@ -305,11 +382,15 @@ export class DeliveryBoyTrackingService implements IDeliveryBoyTrackingService {
         throw new Error(updateResult.message || 'Failed to update earnings and cash');
       }
 
+      console.log('updated earnings :', updatedEarnings);
+
+
       return {
         success: true,
         message: 'Earnings updated successfully',
         data: {
-          earnings: updatedEarnings,
+          earnings: calculatedEarnings,
+          totalEarnings: updatedEarnings,
           inHandCash: updatedInHandCash,
         },
       };
@@ -318,4 +399,5 @@ export class DeliveryBoyTrackingService implements IDeliveryBoyTrackingService {
       return { success: false, message: `Failed to update order earnings: ${(error as Error).message}` };
     }
   }
+
 }

@@ -49,7 +49,17 @@ export interface DeliveryBoyDto {
   earnings?: {
     today: number;
     week: number;
+    history: {
+      date: Date;
+      amount: number;
+      paid:boolean;
+    }[];
   };
+  // earnings?: {
+  //   today: number;
+  //   week: number;
+  // };
+  lastPaidAt?:Date
   loginHours?: string;
   ordersCompleted?: number;
   pendingOrders?: number;

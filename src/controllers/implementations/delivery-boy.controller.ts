@@ -148,7 +148,6 @@ export class DeliveryBoyController implements IDeliveryBoyController {
 
   async blockRidePaymentRule(data: { id: string; vehicleType: string }): Promise<any> {
     try {
-      console.log('Blocking rule for id:', data.id, 'vehicleType:', data.vehicleType);
       const response = await this.deliveryBoyService.blockRidePaymentRule(data);
       return response;
     } catch (error) {
@@ -158,11 +157,19 @@ export class DeliveryBoyController implements IDeliveryBoyController {
 
   async unblockRidePaymentRule(data: { id: string }): Promise<any> {
     try {
-      console.log('Unblocking rule for id:', data.id);
       const response = await this.deliveryBoyService.unblockRidePaymentRule(data);
       return response;
     } catch (error) {
       throw new Error(`Error unblocking ride rate payment rule: ${(error as Error).message}`);
+    }
+  }
+
+  async checkTheInHandCashLimit(data: { deliveryBoyId: string }): Promise<any> {
+    try {
+      const response = await this.deliveryBoyService.checkTheInHandCashLimit(data)
+      return response
+    } catch (error) {
+      throw new Error(`Error on check the InHandCashLimit : ${(error as Error).message}`);
     }
   }
 }

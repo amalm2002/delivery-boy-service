@@ -262,9 +262,40 @@ export class DeliveryBoyRepository extends BaseRepository<IDeliveryBoy> implemen
     return count;
   }
 
+  // async updateEarningsAndCash(
+  //   id: string,
+  //   earnings: { today: number; week: number },
+  //   inHandCash: number
+  // ): Promise<{ success: boolean; data?: IDeliveryBoy; message?: string }> {
+  //   try {
+  //     if (!mongoose.Types.ObjectId.isValid(id)) {
+  //       return { success: false, message: 'Invalid deliveryBoyId' };
+  //     }
+
+  //     const updateData = {
+  //       'earnings.today': Math.round(earnings.today),
+  //       'earnings.week': Math.round(earnings.week),
+  //       inHandCash: Math.round(inHandCash),
+  //     };
+
+  //     const response = await this.model
+  //       .findByIdAndUpdate(id, { $set: updateData }, { new: true })
+  //       .populate('zone.id', 'name coordinates')
+  //       .exec();
+
+  //     if (!response) {
+  //       return { success: false, message: 'DeliveryBoy not found or update failed' };
+  //     }
+
+  //     return { success: true, data: response };
+  //   } catch (error) {
+  //     return { success: false, message: (error as Error).message };
+  //   }
+  // }
+
   async updateEarningsAndCash(
     id: string,
-    earnings: { today: number; week: number },
+    earnings: { today: number; week: number; history: { date: Date; amount: number; paid: boolean }[] },
     inHandCash: number
   ): Promise<{ success: boolean; data?: IDeliveryBoy; message?: string }> {
     try {
@@ -275,8 +306,10 @@ export class DeliveryBoyRepository extends BaseRepository<IDeliveryBoy> implemen
       const updateData = {
         'earnings.today': Math.round(earnings.today),
         'earnings.week': Math.round(earnings.week),
+        'earnings.history': earnings.history,
         inHandCash: Math.round(inHandCash),
       };
+
 
       const response = await this.model
         .findByIdAndUpdate(id, { $set: updateData }, { new: true })
@@ -291,5 +324,18 @@ export class DeliveryBoyRepository extends BaseRepository<IDeliveryBoy> implemen
     } catch (error) {
       return { success: false, message: (error as Error).message };
     }
+  }
+
+  async setOffLineOnPartner(deliveryBoyId: string, isOnline: boolean): Promise<{ success: boolean; message?: string }> {
+    try {
+      const response = await this.model.findByIdAndUpdate(deliveryBoyId, { isOnline: isOnline })
+      return { success: true };
+    } catch (error) {
+      return { success: false, message: (error as Error).message };
+    }
+  }
+
+  async findOne(id: string): Promise<IDeliveryBoy | null> {
+    return await this.model.findOne({ _id: id, pendingOrders: 0 })
   }
 }

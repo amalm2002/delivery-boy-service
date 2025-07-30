@@ -35,10 +35,20 @@ export interface IDeliveryBoy extends ISchema {
     name: string;
   };
   rating?: number;
+  // earnings?: {
+  //   today: number;
+  //   week: number;
+  // };
   earnings?: {
     today: number;
     week: number;
+    history: {
+      date: Date;
+      amount: number;
+      paid: boolean;
+    }[];
   };
+  lastPaidAt?: Date
   loginHours?: string;
   ordersCompleted?: number;
   pendingOrders?: number;
@@ -90,10 +100,22 @@ const deliveryBoySchema = new Schema<IDeliveryBoy>(
       name: { type: String },
     },
     rating: { type: Number, default: 0 },
+    // earnings: {
+    //   today: { type: Number, default: 0 },
+    //   week: { type: Number, default: 0 },
+    // },
     earnings: {
       today: { type: Number, default: 0 },
       week: { type: Number, default: 0 },
+      history: [
+        {
+          date: { type: Date },
+          amount: { type: Number },
+          paid: { type: Boolean, default: false },
+        },
+      ],
     },
+    lastPaidAt: { type: Date, default: null },
     loginHours: { type: String, default: "0:00" },
     ordersCompleted: { type: Number, default: 0 },
     pendingOrders: { type: Number, default: 0 },

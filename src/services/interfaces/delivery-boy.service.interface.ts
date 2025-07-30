@@ -5,8 +5,6 @@ import { UpdateVehicleDto, UpdateVehicleResponseDTO } from '../../dto/delivery-b
 import { UpdateZoneDto, UpdateZoneResponseDTO } from '../../dto/delivery-boy/update.zone.dto';
 import { VerifyDocumentsDto } from '../../dto/delivery-boy/verify.documents.dto';
 import { GetRejectedDocumentDTO, GetRejectedDocumentServiceResponseDTO, RejectDocumentsDto } from '../../dto/delivery-boy/reject.documents.dto';
-import { IDeliveryBoy } from '../../models/delivery-boy.model';
-import { UpdateOnlineStatusDTO } from '../../dto/delivery-boy/update.online.status.dto';
 import { FetchDeliveryBoyDTO } from '../../dto/delivery-boy/fetch-delivery-boy.dto';
 import { AddRidePaymentRuleDTO, AddRidePaymentRuleResponseDTO } from '../../dto/delivery-boy/ride-payment-rule.dto';
 
@@ -24,8 +22,10 @@ export interface IDeliveryBoyService {
   rejectDocuments(dto: RejectDocumentsDto): Promise<DeliveryBoyDto | { message: string }>;
   getRejectedDocuments(data: GetRejectedDocumentDTO): Promise<GetRejectedDocumentServiceResponseDTO>;
   addRidePaymentRule(data: AddRidePaymentRuleDTO): Promise<AddRidePaymentRuleResponseDTO>
+
   getRideratePaymentRule(data: void): Promise<any>
   updateRidePaymentRule(data: { id: string; KM: number; ratePerKm: number; vehicleType: string; isActive: boolean }): Promise<any>;
   blockRidePaymentRule(data: { id: string; vehicleType: string }): Promise<any>;
   unblockRidePaymentRule(data: { id: string }): Promise<any>;
+  checkTheInHandCashLimit(data: { deliveryBoyId: string }): Promise<any>
 }

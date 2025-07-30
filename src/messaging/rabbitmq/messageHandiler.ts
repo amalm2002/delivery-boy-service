@@ -106,6 +106,9 @@ export class MessageHandler {
       case 'Unblock-Ride-Payment-Rule':
         response = await deliveryBoyController.unblockRidePaymentRule(data);
         break;
+      case 'Check-In-Hand-Cash-Limit':
+        response = await deliveryBoyController.checkTheInHandCashLimit(data);
+        break;
       default:
         response = { error: 'Unknown operation' };
     }

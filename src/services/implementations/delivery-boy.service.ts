@@ -1,4 +1,3 @@
-import mongoose from 'mongoose';
 import { IDeliveryBoyRepository } from '../../repositories/interfaces/delivery-boy.repository.interface';
 import { IZoneRepository } from '../../repositories/interfaces/zone.repository.interface';
 import { IDeliveryBoyService } from '../interfaces/delivery-boy.service.interface';
@@ -11,7 +10,6 @@ import { VerifyDocumentsDto } from '../../dto/delivery-boy/verify.documents.dto'
 import { GetRejectedDocumentDTO, GetRejectedDocumentServiceResponseDTO, RejectDocumentsDto } from '../../dto/delivery-boy/reject.documents.dto';
 import { IDeliveryBoy } from '../../models/delivery-boy.model';
 import { IAuthService } from '../interfaces/auth.service.interface';
-import { UpdateOnlineStatusDTO } from '../../dto/delivery-boy/update.online.status.dto';
 import { FetchDeliveryBoyDTO } from '../../dto/delivery-boy/fetch-delivery-boy.dto';
 import { AddRidePaymentRuleDTO, AddRidePaymentRuleResponseDTO } from '../../dto/delivery-boy/ride-payment-rule.dto';
 import { IDeliveryRateModelRepository } from '../../repositories/interfaces/delivery-rate-model.repository.interfaces';
@@ -356,8 +354,7 @@ export class DeliveryBoyService implements IDeliveryBoyService {
 
   async blockRidePaymentRule(data: { id: string; vehicleType: string }): Promise<any> {
     try {
-      console.log('Service blocking rule with id:', data.id, 'vehicleType:', data.vehicleType);
-      // Check for pending orders
+
       const pendingOrders = await this.deliveryBoyRepository.countPendingOrdersByVehicleType(data.vehicleType);
       if (pendingOrders > 0) {
         throw new Error(`Cannot block rule for "${data.vehicleType}" because ${pendingOrders} delivery boy(s) have pending orders`);
@@ -387,7 +384,6 @@ export class DeliveryBoyService implements IDeliveryBoyService {
 
   async unblockRidePaymentRule(data: { id: string }): Promise<any> {
     try {
-      console.log('Service unblocking rule with id:', data.id);
       const existingRule = await this.deliveryRateRepository.findOne({ _id: data.id });
       if (!existingRule) {
         throw new Error(`Rule with ID "${data.id}" not found`);
@@ -405,6 +401,25 @@ export class DeliveryBoyService implements IDeliveryBoyService {
         message: 'Ride payment rule unblocked successfully',
         data: response,
       };
+    } catch (error) {
+      return { success: false, message: (error as Error).message };
+    }
+  }
+
+  async checkTheInHandCashLimit(data: { deliveryBoyId: string; }): Promise<any> {
+    try {
+      const { deliveryBoyId } = data
+      const deliveryBoy = await this.deliveryBoyRepository.findOne(deliveryBoyId)
+      if (!deliveryBoy) {
+        return { success: false, message: 'No deliveryBoy Found!' }
+      }
+
+      if (deliveryBoy.inHandCash > 2000) {
+        const isOnline = false
+        await this.deliveryBoyRepository.setOffLineOnPartner(deliveryBoyId, isOnline)
+        return { success: false, message: 'Your In-Hand cash limit is exceed please pay the cash after get your order' }
+      }
+      return { success: true, message: 'No Cash limit is exceed' }
     } catch (error) {
       return { success: false, message: (error as Error).message };
     }
