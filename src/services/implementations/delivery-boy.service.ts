@@ -13,6 +13,8 @@ import { IAuthService } from '../interfaces/auth.service.interface';
 import { FetchDeliveryBoyDTO } from '../../dto/delivery-boy/fetch-delivery-boy.dto';
 import { AddRidePaymentRuleDTO, AddRidePaymentRuleResponseDTO } from '../../dto/delivery-boy/ride-payment-rule.dto';
 import { IDeliveryRateModelRepository } from '../../repositories/interfaces/delivery-rate-model.repository.interfaces';
+import { BlockRidePaymentRuleDTO, GetRideratePaymentRuleDTO, UnblockRidePaymentRuleDTO, UpdateRidePaymentRuleDTO, UpdateRidePaymentRuleResponseDTO } from '../../dto/delivery-boy/ride-payment.dto';
+import { CheckTheInHandCashLimitDTO, CheckTheInHandCashLimitResponseDTO, UpdatedeliveryBoyEarningsDTO, UpdatedeliveryBoyEarningsResponseDTO } from '../../dto/delivery-boy/earnings-section.dto';
 
 
 export class DeliveryBoyService implements IDeliveryBoyService {
@@ -314,7 +316,7 @@ export class DeliveryBoyService implements IDeliveryBoyService {
     }
   }
 
-  async getRideratePaymentRule(data: void): Promise<any> {
+  async getRideratePaymentRule(data: void): Promise<GetRideratePaymentRuleDTO> {
     try {
       const response = await this.deliveryRateRepository.getRideRatePaymentRules(data)
       return {
@@ -327,7 +329,7 @@ export class DeliveryBoyService implements IDeliveryBoyService {
     }
   }
 
-  async updateRidePaymentRule(data: { id: string; KM: number; ratePerKm: number; vehicleType: string; isActive: boolean }): Promise<any> {
+  async updateRidePaymentRule(data: UpdateRidePaymentRuleDTO): Promise<UpdateRidePaymentRuleResponseDTO> {
     try {
       const existingRule = await this.deliveryRateRepository.findOne({ _id: data.id });
       if (!existingRule) {
@@ -352,7 +354,7 @@ export class DeliveryBoyService implements IDeliveryBoyService {
     }
   }
 
-  async blockRidePaymentRule(data: { id: string; vehicleType: string }): Promise<any> {
+  async blockRidePaymentRule(data: BlockRidePaymentRuleDTO): Promise<UpdateRidePaymentRuleResponseDTO> {
     try {
 
       const pendingOrders = await this.deliveryBoyRepository.countPendingOrdersByVehicleType(data.vehicleType);
@@ -382,7 +384,7 @@ export class DeliveryBoyService implements IDeliveryBoyService {
     }
   }
 
-  async unblockRidePaymentRule(data: { id: string }): Promise<any> {
+  async unblockRidePaymentRule(data: UnblockRidePaymentRuleDTO): Promise<UpdateRidePaymentRuleResponseDTO> {
     try {
       const existingRule = await this.deliveryRateRepository.findOne({ _id: data.id });
       if (!existingRule) {
@@ -406,7 +408,7 @@ export class DeliveryBoyService implements IDeliveryBoyService {
     }
   }
 
-  async checkTheInHandCashLimit(data: { deliveryBoyId: string; }): Promise<any> {
+  async checkTheInHandCashLimit(data: CheckTheInHandCashLimitDTO): Promise<CheckTheInHandCashLimitResponseDTO> {
     try {
       const { deliveryBoyId } = data
       const deliveryBoy = await this.deliveryBoyRepository.findOne(deliveryBoyId)
@@ -425,7 +427,7 @@ export class DeliveryBoyService implements IDeliveryBoyService {
     }
   }
 
-  async updatedeliveryBoyEarnings(data: { deliveryBoyId: string; amount: number; date: Date; paid: boolean; paymentId: string; }): Promise<any> {
+  async updatedeliveryBoyEarnings(data: UpdatedeliveryBoyEarningsDTO): Promise<UpdatedeliveryBoyEarningsResponseDTO> {
     try {
       const deliveryBoy = await this.deliveryBoyRepository.findById(data.deliveryBoyId);
       if (!deliveryBoy) {
@@ -463,8 +465,6 @@ export class DeliveryBoyService implements IDeliveryBoyService {
 
       await deliveryBoy.save();
 
-      console.log('updatedHistory :', updatedHistory);
-
       // const paidEarnings = updatedHistory
       //   .filter((entry: any) => entry.paid === true && new Date(entry.date) <= lastPaidAt)
       //   .map((entry: any) => ({
@@ -489,5 +489,48 @@ export class DeliveryBoyService implements IDeliveryBoyService {
     }
   }
 
+  async clearInHandCashOnDeliveryBoy(data: UpdatedeliveryBoyEarningsDTO): Promise<UpdatedeliveryBoyEarningsResponseDTO> {
+    try {
+      const { deliveryBoyId, amount } = data;
+
+      const deliveryBoy = await this.deliveryBoyRepository.findById(deliveryBoyId);
+      if (!deliveryBoy) {
+        throw new Error('Delivery boy not found');
+      }
+
+      const originalInHandCash = deliveryBoy.inHandCash || 0;
+      const originalAmountToPayDeliveryBoy = deliveryBoy.amountToPayDeliveryBoy || 0;
+
+      if (amount !== originalInHandCash && amount !== originalAmountToPayDeliveryBoy) {
+        throw new Error(`Invalid amount: ${amount}. Must match either inHandCash (${originalInHandCash}) or amountToPayDeliveryBoy (${originalAmountToPayDeliveryBoy}).`);
+      }
+
+      const updateResult = await this.deliveryBoyRepository.updateById(deliveryBoyId, {
+        inHandCash: 0,
+        amountToPayDeliveryBoy: 0,
+        isOnline: true
+      });
+
+      if (!updateResult.success || !updateResult.data) {
+        throw new Error(updateResult.message || 'Failed to update delivery boy');
+      }
+
+      return {
+        success: true,
+        data: {
+          completeAmount: 0,
+          monthlyAmount: 0,
+          inHandCash: originalInHandCash,
+          amountToPayDeliveryBoy: originalAmountToPayDeliveryBoy,
+          earnings: [],
+        },
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: `Error in clearInHandCashOnDeliveryBoy: ${(error as Error).message}`,
+      };
+    }
+  }
 
 }

@@ -112,6 +112,9 @@ export class MessageHandler {
       case 'Update-Delivery-Boy-Earnings':
         response = await deliveryBoyController.updatedeliveryBoyEarnings(data);
         break;
+      case 'Clear-In-Hand-Cash':
+        response = await deliveryBoyController.clearInHandCashOnDeliveryBoy(data);
+        break;
       default:
         response = { error: 'Unknown operation' };
     }

@@ -14,6 +14,8 @@ import { GetAllDeliveryBoysResponseDTO } from '../../dto/delivery-boy/get-all-de
 import { UpdateOnlineStatusDTO, UpdateOnlineStatusResponseDTO } from '../../dto/delivery-boy/update.online.status.dto';
 import { FetchDeliveryBoyDTO } from '../../dto/delivery-boy/fetch-delivery-boy.dto';
 import { AddRidePaymentRuleDTO, AddRidePaymentRuleResponseDTO } from '../../dto/delivery-boy/ride-payment-rule.dto';
+import { BlockRidePaymentRuleDTO, GetRideratePaymentRuleDTO, UnblockRidePaymentRuleDTO, UpdateRidePaymentRuleDTO, UpdateRidePaymentRuleResponseDTO } from '../../dto/delivery-boy/ride-payment.dto';
+import { CheckTheInHandCashLimitDTO, CheckTheInHandCashLimitResponseDTO, UpdatedeliveryBoyEarningsDTO, UpdatedeliveryBoyEarningsResponseDTO } from '../../dto/delivery-boy/earnings-section.dto';
 
 export interface IDeliveryBoyController {
   register(data: CreateDeliveryBoyDto): Promise<CreateDeliveryBoyResponseDTO>;
@@ -29,11 +31,11 @@ export interface IDeliveryBoyController {
   rejectDocuments(data: RejectDocumentsDto): Promise<RejectDocumentsResponseDTO>;
   getRejectedDocuments(data: GetRejectedDocumentDTO): Promise<GetRejectedDocumentControllerResponseDTO>;
   addRidePaymentRule(data: AddRidePaymentRuleDTO): Promise<AddRidePaymentRuleResponseDTO>
-
-  getRidePaymentRules(data: void): Promise<any>;
-  updateRidePaymentRule(data: { id: string; KM: number; ratePerKm: number; vehicleType: string; isActive: boolean }): Promise<any>;
-  blockRidePaymentRule(data: { id: string; vehicleType: string }): Promise<any>;
-  unblockRidePaymentRule(data: { id: string }): Promise<any>;
-  checkTheInHandCashLimit(data: { deliveryBoyId: string }): Promise<any>
-  updatedeliveryBoyEarnings(data: { deliveryBoyId: string, amount: number, date: Date, paid: boolean, paymentId: string }): Promise<any>
+  getRidePaymentRules(data: void): Promise<GetRideratePaymentRuleDTO>;
+  updateRidePaymentRule(data: UpdateRidePaymentRuleDTO): Promise<UpdateRidePaymentRuleResponseDTO>;
+  blockRidePaymentRule(data: BlockRidePaymentRuleDTO): Promise<UpdateRidePaymentRuleResponseDTO>;
+  unblockRidePaymentRule(data: UnblockRidePaymentRuleDTO): Promise<UpdateRidePaymentRuleResponseDTO>;
+  checkTheInHandCashLimit(data: CheckTheInHandCashLimitDTO): Promise<CheckTheInHandCashLimitResponseDTO>
+  updatedeliveryBoyEarnings(data: UpdatedeliveryBoyEarningsDTO): Promise<UpdatedeliveryBoyEarningsResponseDTO>
+  clearInHandCashOnDeliveryBoy(data: UpdatedeliveryBoyEarningsDTO): Promise<UpdatedeliveryBoyEarningsResponseDTO>
 }

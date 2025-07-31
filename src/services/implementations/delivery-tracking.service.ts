@@ -61,6 +61,8 @@ export class DeliveryBoyTrackingService implements IDeliveryBoyTrackingService {
         ordersCompleted: deliveryBoy.ordersCompleted || 0,
         pendingOrders: deliveryBoy.pendingOrders || 0,
         location: deliveryBoy.location,
+        amountToPayDeliveryBoy: deliveryBoy.amountToPayDeliveryBoy,
+        inHandCash: deliveryBoy.inHandCash,
         zone: deliveryBoy.zone?.id
           ? {
             id: deliveryBoy.zone.id,
@@ -352,7 +354,7 @@ export class DeliveryBoyTrackingService implements IDeliveryBoyTrackingService {
         lastPaidAtToUpdate,
         nextPaidAtToUpdate,
         completeAmount,
-        deliveryBoy.amountToPayDeliveryBoy || 0 + carryOver 
+        deliveryBoy.amountToPayDeliveryBoy || 0 + carryOver
       );
 
       if (!updateResult.success) {
@@ -373,5 +375,5 @@ export class DeliveryBoyTrackingService implements IDeliveryBoyTrackingService {
       return { success: false, message: `Failed to update order earnings: ${(error as Error).message}` };
     }
   }
-  
+
 }

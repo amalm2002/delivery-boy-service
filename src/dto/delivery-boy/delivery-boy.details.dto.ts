@@ -12,6 +12,8 @@ export interface DeliveryBoyDetailsDTO {
     loginHours?: string;
     ordersCompleted?: number;
     pendingOrders?: number;
+    amountToPayDeliveryBoy?: number;
+    inHandCash?: number;
     location?: {
         latitude: number;
         longitude: number;
@@ -21,6 +23,7 @@ export interface DeliveryBoyDetailsDTO {
         name: string;
     }
 }
+
 
 export interface GetDeliveryBoyDetailsResponseDto {
     success?: boolean;

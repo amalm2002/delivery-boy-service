@@ -12,6 +12,8 @@ import { GetAllDeliveryBoysResponseDTO } from '../../dto/delivery-boy/get-all-de
 import { UpdateOnlineStatusDTO, UpdateOnlineStatusResponseDTO } from '../../dto/delivery-boy/update.online.status.dto';
 import { FetchDeliveryBoyDTO } from '../../dto/delivery-boy/fetch-delivery-boy.dto';
 import { AddRidePaymentRuleDTO, AddRidePaymentRuleResponseDTO } from '../../dto/delivery-boy/ride-payment-rule.dto';
+import { BlockRidePaymentRuleDTO, GetRideratePaymentRuleDTO, UnblockRidePaymentRuleDTO, UpdateRidePaymentRuleDTO, UpdateRidePaymentRuleResponseDTO } from '../../dto/delivery-boy/ride-payment.dto';
+import { CheckTheInHandCashLimitDTO, CheckTheInHandCashLimitResponseDTO, UpdatedeliveryBoyEarningsDTO, UpdatedeliveryBoyEarningsResponseDTO } from '../../dto/delivery-boy/earnings-section.dto';
 
 export class DeliveryBoyController implements IDeliveryBoyController {
   constructor(private deliveryBoyService: IDeliveryBoyService) { }
@@ -128,7 +130,7 @@ export class DeliveryBoyController implements IDeliveryBoyController {
     }
   }
 
-  async getRidePaymentRules(data: void): Promise<any> {
+  async getRidePaymentRules(data: void): Promise<GetRideratePaymentRuleDTO> {
     try {
       const response = await this.deliveryBoyService.getRideratePaymentRule(data)
       return response
@@ -137,7 +139,7 @@ export class DeliveryBoyController implements IDeliveryBoyController {
     }
   }
 
-  async updateRidePaymentRule(data: { id: string; KM: number; ratePerKm: number; vehicleType: string; isActive: boolean }): Promise<any> {
+  async updateRidePaymentRule(data: UpdateRidePaymentRuleDTO): Promise<UpdateRidePaymentRuleResponseDTO> {
     try {
       const response = await this.deliveryBoyService.updateRidePaymentRule(data);
       return response;
@@ -146,7 +148,7 @@ export class DeliveryBoyController implements IDeliveryBoyController {
     }
   }
 
-  async blockRidePaymentRule(data: { id: string; vehicleType: string }): Promise<any> {
+  async blockRidePaymentRule(data: BlockRidePaymentRuleDTO): Promise<UpdateRidePaymentRuleResponseDTO> {
     try {
       const response = await this.deliveryBoyService.blockRidePaymentRule(data);
       return response;
@@ -155,7 +157,7 @@ export class DeliveryBoyController implements IDeliveryBoyController {
     }
   }
 
-  async unblockRidePaymentRule(data: { id: string }): Promise<any> {
+  async unblockRidePaymentRule(data: UnblockRidePaymentRuleDTO): Promise<UpdateRidePaymentRuleResponseDTO> {
     try {
       const response = await this.deliveryBoyService.unblockRidePaymentRule(data);
       return response;
@@ -164,7 +166,7 @@ export class DeliveryBoyController implements IDeliveryBoyController {
     }
   }
 
-  async checkTheInHandCashLimit(data: { deliveryBoyId: string }): Promise<any> {
+  async checkTheInHandCashLimit(data: CheckTheInHandCashLimitDTO): Promise<CheckTheInHandCashLimitResponseDTO> {
     try {
       const response = await this.deliveryBoyService.checkTheInHandCashLimit(data)
       return response
@@ -173,8 +175,8 @@ export class DeliveryBoyController implements IDeliveryBoyController {
     }
   }
 
-  async updatedeliveryBoyEarnings(data: { deliveryBoyId: string, amount: number, date: Date, paid: boolean, paymentId: string }): Promise<any> {
-    console.log('hello :', data);
+  async updatedeliveryBoyEarnings(data: UpdatedeliveryBoyEarningsDTO): Promise<UpdatedeliveryBoyEarningsResponseDTO> {
+    // console.log('hello :', data);
     try {
       const response = await this.deliveryBoyService.updatedeliveryBoyEarnings(data)
       return response
@@ -182,4 +184,15 @@ export class DeliveryBoyController implements IDeliveryBoyController {
       throw new Error(`Error on update delivery-boy earings payment : ${(error as Error).message}`);
     }
   }
+
+  async clearInHandCashOnDeliveryBoy(data: UpdatedeliveryBoyEarningsDTO): Promise<UpdatedeliveryBoyEarningsResponseDTO> {
+    // console.log('data ivide ethiy da kutta :', data);
+    try {
+      const response = await this.deliveryBoyService.clearInHandCashOnDeliveryBoy(data)
+      return response
+    } catch (error) {
+      throw new Error(`Error on update delivery-boy earings payment : ${(error as Error).message}`);
+    }
+  }
+
 }
