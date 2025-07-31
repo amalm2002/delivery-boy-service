@@ -172,4 +172,14 @@ export class DeliveryBoyController implements IDeliveryBoyController {
       throw new Error(`Error on check the InHandCashLimit : ${(error as Error).message}`);
     }
   }
+
+  async updatedeliveryBoyEarnings(data: { deliveryBoyId: string, amount: number, date: Date, paid: boolean, paymentId: string }): Promise<any> {
+    console.log('hello :', data);
+    try {
+      const response = await this.deliveryBoyService.updatedeliveryBoyEarnings(data)
+      return response
+    } catch (error) {
+      throw new Error(`Error on update delivery-boy earings payment : ${(error as Error).message}`);
+    }
+  }
 }

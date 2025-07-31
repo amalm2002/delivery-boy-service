@@ -424,4 +424,70 @@ export class DeliveryBoyService implements IDeliveryBoyService {
       return { success: false, message: (error as Error).message };
     }
   }
+
+  async updatedeliveryBoyEarnings(data: { deliveryBoyId: string; amount: number; date: Date; paid: boolean; paymentId: string; }): Promise<any> {
+    try {
+      const deliveryBoy = await this.deliveryBoyRepository.findById(data.deliveryBoyId);
+      if (!deliveryBoy) {
+        throw new Error('Delivery boy not found');
+      }
+
+      const now = new Date();
+
+      const originalCompleteAmount = deliveryBoy.completeAmount || 0;
+      const originalMonthlyAmount = deliveryBoy.monthlyAmount || 0;
+      const originalInHandCash = deliveryBoy.inHandCash || 0;
+
+      const lastPaidAt = new Date(now);
+      lastPaidAt.setDate(now.getDate() - 1);
+
+      const nextPaidAt = deliveryBoy.nextPaidAt || new Date(now.getFullYear(), now.getMonth() + 1, 1);
+      const updatedHistory = deliveryBoy.earnings.history.map((entry: any) => {
+        const entryDate = new Date(entry.date);
+        if (entryDate < now && entry.paid === false) {
+          return { ...entry, paid: true };
+        }
+        return entry;
+      });
+
+
+      deliveryBoy.earnings.today = 0;
+      deliveryBoy.earnings.week = 0;
+      deliveryBoy.earnings.history = updatedHistory;
+      deliveryBoy.lastPaidAt = lastPaidAt;
+      deliveryBoy.nextPaidAt = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+      deliveryBoy.inHandCash = 0;
+      deliveryBoy.amountToPayDeliveryBoy = 0;
+      deliveryBoy.completeAmount = 0;
+      deliveryBoy.monthlyAmount = 0;
+
+      await deliveryBoy.save();
+
+      console.log('updatedHistory :', updatedHistory);
+
+      // const paidEarnings = updatedHistory
+      //   .filter((entry: any) => entry.paid === true && new Date(entry.date) <= lastPaidAt)
+      //   .map((entry: any) => ({
+      //     date: entry.date,
+      //     amount: entry.amount,
+      //     paymentId: entry._id.toString(),
+      //   }));
+
+      return {
+        success: true,
+        message: 'Earnings updated after payment',
+        data: {
+          completeAmount: originalCompleteAmount,
+          monthlyAmount: originalMonthlyAmount,
+          inHandCash: originalInHandCash,
+          // earnings: paidEarnings
+        }
+      };
+
+    } catch (error) {
+      throw new Error(`Error in updatedeliveryBoyEarnings: ${(error as Error).message}`);
+    }
+  }
+
+
 }

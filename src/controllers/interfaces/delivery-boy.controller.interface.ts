@@ -29,10 +29,11 @@ export interface IDeliveryBoyController {
   rejectDocuments(data: RejectDocumentsDto): Promise<RejectDocumentsResponseDTO>;
   getRejectedDocuments(data: GetRejectedDocumentDTO): Promise<GetRejectedDocumentControllerResponseDTO>;
   addRidePaymentRule(data: AddRidePaymentRuleDTO): Promise<AddRidePaymentRuleResponseDTO>
-  
+
   getRidePaymentRules(data: void): Promise<any>;
   updateRidePaymentRule(data: { id: string; KM: number; ratePerKm: number; vehicleType: string; isActive: boolean }): Promise<any>;
   blockRidePaymentRule(data: { id: string; vehicleType: string }): Promise<any>;
   unblockRidePaymentRule(data: { id: string }): Promise<any>;
-  checkTheInHandCashLimit(data: { deliveryBoyId: string }): Promise<any> 
+  checkTheInHandCashLimit(data: { deliveryBoyId: string }): Promise<any>
+  updatedeliveryBoyEarnings(data: { deliveryBoyId: string, amount: number, date: Date, paid: boolean, paymentId: string }): Promise<any>
 }
