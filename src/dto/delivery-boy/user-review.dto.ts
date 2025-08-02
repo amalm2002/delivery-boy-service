@@ -6,6 +6,7 @@ export interface UserReviewDTO {
     userId: string;
     createdAt?: Date;
     isEdit: boolean
+    userName?: string;
 }
 
 export interface ReviewDTO {

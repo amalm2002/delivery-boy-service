@@ -38,6 +38,7 @@ export interface IDeliveryBoy extends ISchema {
   reviews?: {
     userId: string;
     orderId: string;
+    userName: string;
     rating: number;
     comment?: string;
     createdAt?: Date;
@@ -111,6 +112,7 @@ const deliveryBoySchema = new Schema<IDeliveryBoy>(
     reviews: [
       {
         userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+        userName: { type: String },
         orderId: { type: Schema.Types.ObjectId, ref: 'Order', required: true },
         rating: { type: Number, required: true, min: 1, max: 5 },
         comment: { type: String, trim: true },
