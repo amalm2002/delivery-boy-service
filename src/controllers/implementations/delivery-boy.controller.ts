@@ -14,6 +14,7 @@ import { FetchDeliveryBoyDTO } from '../../dto/delivery-boy/fetch-delivery-boy.d
 import { AddRidePaymentRuleDTO, AddRidePaymentRuleResponseDTO } from '../../dto/delivery-boy/ride-payment-rule.dto';
 import { BlockRidePaymentRuleDTO, GetRideratePaymentRuleDTO, UnblockRidePaymentRuleDTO, UpdateRidePaymentRuleDTO, UpdateRidePaymentRuleResponseDTO } from '../../dto/delivery-boy/ride-payment.dto';
 import { CheckTheInHandCashLimitDTO, CheckTheInHandCashLimitResponseDTO, UpdatedeliveryBoyEarningsDTO, UpdatedeliveryBoyEarningsResponseDTO } from '../../dto/delivery-boy/earnings-section.dto';
+import { DeliveryBoyReviewResponseDTO, UserReviewDTO } from '../../dto/delivery-boy/user-review.dto';
 
 export class DeliveryBoyController implements IDeliveryBoyController {
   constructor(private deliveryBoyService: IDeliveryBoyService) { }
@@ -192,6 +193,33 @@ export class DeliveryBoyController implements IDeliveryBoyController {
       return response
     } catch (error) {
       throw new Error(`Error on update delivery-boy earings payment : ${(error as Error).message}`);
+    }
+  }
+
+  async userReviewFordeliveryBoy(data: UserReviewDTO): Promise<DeliveryBoyReviewResponseDTO> {
+    try {
+      const response = await this.deliveryBoyService.userReviewForDeliveryBoy(data)
+      return response
+    } catch (error) {
+      throw new Error(`Error on user review on delivery-boy  : ${(error as Error).message}`);
+    }
+  }
+
+  async getDeliveryBoyReview(data: UserReviewDTO): Promise<DeliveryBoyReviewResponseDTO> {
+    try {
+      const response = await this.deliveryBoyService.getDeliveryBoyReview(data)
+      return response
+    } catch (error) {
+      throw new Error(`Error on get the review on delivery-boy  : ${(error as Error).message}`);
+    }
+  }
+
+  async deleteDeliveryBoyReview(data: UserReviewDTO): Promise<DeliveryBoyReviewResponseDTO> {
+    try {
+      const response = await this.deliveryBoyService.deleteDeliveryBoyReview(data)
+      return response
+    } catch (error) {
+      throw new Error(`Error on get the review on delivery-boy  : ${(error as Error).message}`);
     }
   }
 

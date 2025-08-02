@@ -35,6 +35,13 @@ export interface IDeliveryBoy extends ISchema {
     name: string;
   };
   rating?: number;
+  reviews?: {
+    userId: string;
+    orderId: string;
+    rating: number;
+    comment?: string;
+    createdAt?: Date;
+  }[];
   earnings?: {
     today: number;
     week: number;
@@ -42,6 +49,7 @@ export interface IDeliveryBoy extends ISchema {
       date: Date;
       amount: number;
       paid: boolean;
+      orderId: string
     }[];
   };
   lastPaidAt?: Date;
@@ -52,7 +60,7 @@ export interface IDeliveryBoy extends ISchema {
   ordersCompleted?: number;
   pendingOrders?: number;
   inHandCash?: number;
-  amountToPayDeliveryBoy?:number;
+  amountToPayDeliveryBoy?: number;
 }
 
 const deliveryBoySchema = new Schema<IDeliveryBoy>(
@@ -100,6 +108,15 @@ const deliveryBoySchema = new Schema<IDeliveryBoy>(
       name: { type: String },
     },
     rating: { type: Number, default: 0 },
+    reviews: [
+      {
+        userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+        orderId: { type: Schema.Types.ObjectId, ref: 'Order', required: true },
+        rating: { type: Number, required: true, min: 1, max: 5 },
+        comment: { type: String, trim: true },
+        createdAt: { type: Date, default: Date.now },
+      }
+    ],
     earnings: {
       today: { type: Number, default: 0 },
       week: { type: Number, default: 0 },
@@ -108,6 +125,7 @@ const deliveryBoySchema = new Schema<IDeliveryBoy>(
           date: { type: Date },
           amount: { type: Number },
           paid: { type: Boolean, default: false },
+          orderId: { type: Schema.Types.ObjectId, ref: 'Order' }
         },
       ],
     },

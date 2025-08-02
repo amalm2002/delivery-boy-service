@@ -1,3 +1,4 @@
+import { UserReviewDTO } from '../../dto/delivery-boy/user-review.dto';
 import { IDeliveryBoy } from '../../models/delivery-boy.model';
 import { UpdateQuery } from 'mongoose';
 
@@ -26,7 +27,7 @@ export interface IDeliveryBoyRepository {
   countPendingOrdersByVehicleType(vehicleType: string): Promise<number>;
   updateEarningsAndCash(
     id: string,
-    earnings: { today: number; week: number; history: { date: Date; amount: number, paid: boolean }[] },
+    earnings: { today: number; week: number; history: { date: Date; amount: number, paid: boolean, orderId: string }[] },
     inHandCash: number,
     monthlyAmount?: number,
     lastPaidAt?: Date,
@@ -36,4 +37,7 @@ export interface IDeliveryBoyRepository {
   ): Promise<{ success: boolean; data?: IDeliveryBoy; message?: string }>;
   setOffLineOnPartner(deliveryBoyId: string, isOnline: boolean): Promise<{ success: boolean; message?: string; }>
   findOne(id: string): Promise<IDeliveryBoy | null>
+  addReview(deliveryBoyId: string, review: UserReviewDTO): Promise<IDeliveryBoy>
+  findReviewByUserOrderAndDeliveryBoy(deliveryBoyId: string, userId: string, orderId: string): Promise<any>
+  updateOne(filter: any, update: any): Promise<IDeliveryBoy | null>
 }

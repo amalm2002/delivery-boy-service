@@ -260,9 +260,9 @@ export class DeliveryBoyTrackingService implements IDeliveryBoyTrackingService {
     }
   }
 
-  async orderEarnings(data: { paymentMethod: string; deliveryBoyId: string; finalTotalDistance: number; orderAmount: number }): Promise<any> {
+  async orderEarnings(data: { paymentMethod: string; deliveryBoyId: string; finalTotalDistance: number; orderAmount: number,order_id:string }): Promise<any> {
     try {
-      const { paymentMethod, deliveryBoyId, finalTotalDistance, orderAmount } = data;
+      const { paymentMethod, deliveryBoyId, finalTotalDistance, orderAmount ,order_id} = data;
 
       const deliveryBoy = await this.repository.findById(deliveryBoyId);
       if (!deliveryBoy) {
@@ -283,7 +283,7 @@ export class DeliveryBoyTrackingService implements IDeliveryBoyTrackingService {
       const now = new Date();
 
       const existingHistory = deliveryBoy.earnings?.history || [];
-      const updatedHistory = [...existingHistory, { date: now, amount: calculatedEarnings, paid: false }];
+      const updatedHistory = [...existingHistory, { date: now, amount: calculatedEarnings, paid: false ,orderId:order_id}];
 
       const todayTotal = updatedHistory
         .filter(entry => new Date(entry.date).toISOString().slice(0, 10) === todayDateString)
@@ -293,7 +293,8 @@ export class DeliveryBoyTrackingService implements IDeliveryBoyTrackingService {
       oneWeekAgo.setDate(oneWeekAgo.getDate() - 6);
 
       const weekTotal = updatedHistory
-        .filter(entry => new Date(entry.date) >= oneWeekAgo)
+        // .filter(entry => new Date(entry.date) >= oneWeekAgo)
+        .filter(entry => !entry.paid && new Date(entry.date) >= oneWeekAgo)
         .reduce((sum, entry) => sum + entry.amount, 0);
 
       let monthlyAmount = 0;

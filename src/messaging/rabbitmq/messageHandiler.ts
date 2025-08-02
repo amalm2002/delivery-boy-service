@@ -115,6 +115,15 @@ export class MessageHandler {
       case 'Clear-In-Hand-Cash':
         response = await deliveryBoyController.clearInHandCashOnDeliveryBoy(data);
         break;
+      case 'User-Review-For-Delivery-Boy':
+        response = await deliveryBoyController.userReviewFordeliveryBoy(data);
+        break;
+      case 'Get-The-DeliveryBoy-Review':
+        response = await deliveryBoyController.getDeliveryBoyReview(data);
+        break;
+      case 'Delete-DeliveryBoy-Review':
+        response = await deliveryBoyController.deleteDeliveryBoyReview(data);
+        break;
       default:
         response = { error: 'Unknown operation' };
     }

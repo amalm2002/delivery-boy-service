@@ -53,6 +53,7 @@ export interface DeliveryBoyDto {
       date: Date;
       amount: number;
       paid: boolean;
+      orderId:string;
     }[];
   };
   lastPaidAt?: Date;

@@ -135,7 +135,7 @@ export class DeliveryTrackingController implements IDeliveryTrackingController {
     return await this.deliveryBoyService.completeDelivery(data);
   }
 
-  async orderEarnings(data: { paymentMethod: string; deliveryBoyId: string; finalTotalDistance: number; orderAmount: number }): Promise<any> {
+  async orderEarnings(data: { paymentMethod: string; deliveryBoyId: string; finalTotalDistance: number; orderAmount: number,order_id:string }): Promise<any> {
     return await this.deliveryBoyService.orderEarnings(data)
   }
 

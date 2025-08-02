@@ -2,6 +2,7 @@ import mongoose, { UpdateQuery } from 'mongoose';
 import { DeliveryBoy, IDeliveryBoy } from '../../models/delivery-boy.model';
 import { IDeliveryBoyRepository } from '../interfaces/delivery-boy.repository.interface';
 import { BaseRepository } from './base.repository';
+import { UserReviewDTO } from '../../dto/delivery-boy/user-review.dto';
 
 export class DeliveryBoyRepository extends BaseRepository<IDeliveryBoy> implements IDeliveryBoyRepository {
   constructor() {
@@ -264,13 +265,13 @@ export class DeliveryBoyRepository extends BaseRepository<IDeliveryBoy> implemen
 
   async updateEarningsAndCash(
     id: string,
-    earnings: { today: number; week: number; history: { date: Date; amount: number; paid: boolean }[] },
+    earnings: { today: number; week: number; history: { date: Date; amount: number; paid: boolean, orderId: string }[] },
     inHandCash: number,
     monthlyAmount?: number,
     lastPaidAt?: Date,
     nextPaidAt?: Date,
     completeAmount?: number,
-    amountToPayDeliveryBoy?: number 
+    amountToPayDeliveryBoy?: number
   ): Promise<{ success: boolean; data?: IDeliveryBoy; message?: string }> {
     try {
       if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -332,4 +333,61 @@ export class DeliveryBoyRepository extends BaseRepository<IDeliveryBoy> implemen
   async findOne(id: string): Promise<IDeliveryBoy | null> {
     return await this.model.findOne({ _id: id, pendingOrders: 0 })
   }
+
+  async addReview(deliveryBoyId: string, review: UserReviewDTO): Promise<IDeliveryBoy> {
+    const { userId, orderId, isEdit, ...reviewFields } = review;
+
+    if (isEdit) {
+      return await DeliveryBoy.findOneAndUpdate(
+        {
+          _id: deliveryBoyId,
+          'reviews.userId': userId,
+          'reviews.orderId': orderId
+        },
+        {
+          $set: {
+            'reviews.$.rating': review.rating,
+            'reviews.$.comment': review.comment,
+            'reviews.$.createdAt': new Date()
+          }
+        },
+        { new: true }
+      );
+    } else {
+      return await DeliveryBoy.findByIdAndUpdate(
+        deliveryBoyId,
+        { $push: { reviews: { ...reviewFields, userId, orderId, createdAt: new Date() } } },
+        { new: true }
+      );
+    }
+  }
+
+
+  async findReviewByUserOrderAndDeliveryBoy(deliveryBoyId: string, userId: string, orderId: string): Promise<any> {
+    return await DeliveryBoy.findOne(
+      {
+        _id: deliveryBoyId,
+        reviews: {
+          $elemMatch: {
+            userId: userId,
+            orderId: orderId
+          }
+        }
+      },
+      {
+        reviews: {
+          $elemMatch: {
+            userId: userId,
+            orderId: orderId
+          }
+        }
+      }
+    );
+  }
+
+  async updateOne(filter: any, update: any): Promise<IDeliveryBoy | null> {
+    return await DeliveryBoy.findOneAndUpdate(filter, update, { new: true });
+  }
+
+
 }

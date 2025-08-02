@@ -15,6 +15,7 @@ import { AddRidePaymentRuleDTO, AddRidePaymentRuleResponseDTO } from '../../dto/
 import { IDeliveryRateModelRepository } from '../../repositories/interfaces/delivery-rate-model.repository.interfaces';
 import { BlockRidePaymentRuleDTO, GetRideratePaymentRuleDTO, UnblockRidePaymentRuleDTO, UpdateRidePaymentRuleDTO, UpdateRidePaymentRuleResponseDTO } from '../../dto/delivery-boy/ride-payment.dto';
 import { CheckTheInHandCashLimitDTO, CheckTheInHandCashLimitResponseDTO, UpdatedeliveryBoyEarningsDTO, UpdatedeliveryBoyEarningsResponseDTO } from '../../dto/delivery-boy/earnings-section.dto';
+import { DeliveryBoyReviewResponseDTO, UserReviewDTO } from '../../dto/delivery-boy/user-review.dto';
 
 
 export class DeliveryBoyService implements IDeliveryBoyService {
@@ -416,7 +417,7 @@ export class DeliveryBoyService implements IDeliveryBoyService {
         return { success: false, message: 'No deliveryBoy Found!' }
       }
 
-      if (deliveryBoy.inHandCash > 2000) {
+      if (deliveryBoy.inHandCash > 1000) {
         const isOnline = false
         await this.deliveryBoyRepository.setOffLineOnPartner(deliveryBoyId, isOnline)
         return { success: false, message: 'Your In-Hand cash limit is exceed please pay the cash after get your order' }
@@ -529,6 +530,119 @@ export class DeliveryBoyService implements IDeliveryBoyService {
       return {
         success: false,
         message: `Error in clearInHandCashOnDeliveryBoy: ${(error as Error).message}`,
+      };
+    }
+  }
+
+  async userReviewForDeliveryBoy(data: UserReviewDTO): Promise<DeliveryBoyReviewResponseDTO> {
+    try {
+      const deliveryBoy = await this.deliveryBoyRepository.findById(data.deliveryBoyId);
+
+      if (!deliveryBoy) {
+        return { success: false, message: "Delivery boy not found" };
+      }
+
+      const updated = await this.deliveryBoyRepository.addReview(data.deliveryBoyId, {
+        ...data,
+        createdAt: new Date()
+      });
+
+      const latestReview = updated.reviews[updated.reviews.length - 1];
+
+      const response: DeliveryBoyReviewResponseDTO = {
+        success: true,
+        message: "Review added",
+        data: {
+          deliveryBoyId: updated._id.toString(),
+          review: {
+            userId: latestReview.userId.toString(),
+            orderId: latestReview.orderId.toString(),
+            rating: latestReview.rating,
+            comment: latestReview.comment,
+            createdAt: latestReview.createdAt,
+          }
+        }
+      };
+
+      return response;
+    } catch (error) {
+      return {
+        success: false,
+        message: `Error in user review on delivery-boy side: ${(error as Error).message}`,
+      }
+    }
+  }
+
+  async getDeliveryBoyReview(data: UserReviewDTO): Promise<DeliveryBoyReviewResponseDTO> {
+    try {
+      const { deliveryBoyId, userId, orderId } = data
+
+      const deliveryBoy = await this.deliveryBoyRepository.findById(data.deliveryBoyId);
+
+      if (!deliveryBoy) {
+        return { success: false, message: "Delivery boy not found" };
+      }
+
+      const reviewData = await this.deliveryBoyRepository.findReviewByUserOrderAndDeliveryBoy(deliveryBoyId, userId, orderId);
+
+      if (!reviewData || !reviewData.reviews?.length) {
+        return { success: false, message: "Review not found" };
+      }
+
+      const review = reviewData.reviews[0];
+      const { rating, comment, createdAt } = review;
+
+      return {
+        success: true,
+        message: "Fetched successfully",
+        data: {
+          deliveryBoyId,
+          review: {
+            userId,
+            orderId,
+            rating,
+            comment,
+            createdAt,
+          },
+        },
+      };
+
+    } catch (error) {
+      return {
+        success: false,
+        message: `Error in get user review on delivery-boy side: ${(error as Error).message}`,
+      }
+    }
+  }
+
+  async deleteDeliveryBoyReview(data: UserReviewDTO): Promise<DeliveryBoyReviewResponseDTO> {
+    try {
+      const { deliveryBoyId, userId, orderId } = data;
+
+      const deliveryBoy = await this.deliveryBoyRepository.findById(deliveryBoyId);
+      if (!deliveryBoy) {
+        return { success: false, message: "Delivery boy not found" };
+      }
+
+      await this.deliveryBoyRepository.updateOne({ _id: deliveryBoyId },
+        {
+          $pull: {
+            reviews: {
+              userId: userId,
+              orderId: orderId
+            }
+          }
+        }
+      );
+
+      return {
+        success: true,
+        message: "Review deleted successfully",
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: `Error deleting review: ${(error as Error).message}`,
       };
     }
   }
