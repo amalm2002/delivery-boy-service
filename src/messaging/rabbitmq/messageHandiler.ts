@@ -1,5 +1,7 @@
+import ChatController from '../../controllers/implementations/chat.controller';
 import { DeliveryBoyController } from '../../controllers/implementations/delivery-boy.controller';
 import { DeliveryTrackingController } from '../../controllers/implementations/delivery-tarcking.controller';
+import HelpOptionController from '../../controllers/implementations/help-option.controller';
 import { ZoneController } from '../../controllers/implementations/zone.controller';
 import RabbitMQClient from './client';
 
@@ -13,9 +15,16 @@ export class MessageHandler {
       deliveryBoyController: DeliveryBoyController;
       zoneController: ZoneController;
       deliveryTrackingController: DeliveryTrackingController;
+      helpOptionController: HelpOptionController;
+      chatController: ChatController;
     }
   ) {
-    const { deliveryBoyController, zoneController, deliveryTrackingController } = controllers;
+    const { deliveryBoyController,
+      zoneController,
+      deliveryTrackingController,
+      helpOptionController,
+      chatController
+    } = controllers;
     let response;
 
     console.log('Operation:', operation, 'Data:', data);
@@ -123,6 +132,27 @@ export class MessageHandler {
         break;
       case 'Delete-DeliveryBoy-Review':
         response = await deliveryBoyController.deleteDeliveryBoyReview(data);
+        break;
+      case 'Add-DeliveryBoy-Help-Options':
+        response = await helpOptionController.addDeliveryBoyHelpOption(data);
+        break;
+      case 'Update-DeliveryBoy-Help-Options':
+        response = await helpOptionController.updateDeliveryBoyHelpOption(data.id, data);
+        break;
+      case 'Delete-DeliveryBoy-Help-Options':
+        response = await helpOptionController.deleteDeliveryBoyHelpOption(data.id);
+        break;
+      case 'Get-All-DeliveryBoy-Help-Options':
+        response = await helpOptionController.getAllDeliveryBoyHelpOptions();
+        break;
+      case 'Get-Chat-State':
+        response = await chatController.getChatState(data);
+        break;
+      case 'Save-Chat-State':
+        response = await chatController.saveChatState(data);
+        break;
+      case 'Clear-Chat-State':
+        response = await chatController.clearChatState(data);
         break;
       default:
         response = { error: 'Unknown operation' };

@@ -10,6 +10,12 @@ import { AuthService } from '../../services/implementations/auth.service';
 import { DeliveryTrackingController } from '../../controllers/implementations/delivery-tarcking.controller';
 import { DeliveryBoyTrackingService } from '../../services/implementations/delivery-tracking.service';
 import { DeliveryRateModelRepository } from '../../repositories/implementations/delivery-rate-model.repository';
+import HelpOptionController from '../../controllers/implementations/help-option.controller';
+import HelpOptionRepository from '../../repositories/implementations/help-option.repository';
+import HelpOptionService from '../../services/implementations/help-option.services';
+import ChatController from '../../controllers/implementations/chat.controller';
+import ChatRepository from '../../repositories/implementations/chat.repository';
+import ChatService from '../../services/implementations/chat.service';
 
 export default class Consumer {
   private channel: Channel;
@@ -18,6 +24,8 @@ export default class Consumer {
     deliveryBoyController: DeliveryBoyController;
     zoneController: ZoneController;
     deliveryTrackingController: DeliveryTrackingController;
+    helpOptionController: HelpOptionController;
+    chatController: ChatController;
   };
 
   constructor(channel: Channel, rpcQueue: string) {
@@ -27,15 +35,23 @@ export default class Consumer {
     const authService = new AuthService();
     const deliveryBoyRepository = new DeliveryBoyRepository();
     const zoneRepository = new ZoneRepository();
-    const deliveryRateModelRepository=new DeliveryRateModelRepository()
-    const deliveryBoyService = new DeliveryBoyService(deliveryBoyRepository, zoneRepository, authService,deliveryRateModelRepository);
+    const deliveryRateModelRepository = new DeliveryRateModelRepository()
+    const helpOptionRepository = new HelpOptionRepository()
+    const chatRepository = new ChatRepository()
+
+
+    const deliveryBoyService = new DeliveryBoyService(deliveryBoyRepository, zoneRepository, authService, deliveryRateModelRepository);
     const zoneService = new ZoneService(zoneRepository);
-    const deliveryTrackingService = new DeliveryBoyTrackingService(deliveryBoyRepository,deliveryRateModelRepository);
+    const deliveryTrackingService = new DeliveryBoyTrackingService(deliveryBoyRepository, deliveryRateModelRepository);
+    const helpOptionService = new HelpOptionService(helpOptionRepository)
+    const chatService = new ChatService(chatRepository)
 
     this.controllers = {
       deliveryBoyController: new DeliveryBoyController(deliveryBoyService),
       zoneController: new ZoneController(zoneService),
       deliveryTrackingController: new DeliveryTrackingController(deliveryTrackingService),
+      helpOptionController: new HelpOptionController(helpOptionService),
+      chatController: new ChatController(chatService)
     };
   }
 
