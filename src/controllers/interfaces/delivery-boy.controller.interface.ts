@@ -31,6 +31,7 @@ export interface IDeliveryBoyController {
   verifyDocuments(data: VerifyDocumentsDto): Promise<VerifyDocumentsResponseDTO>;
   rejectDocuments(data: RejectDocumentsDto): Promise<RejectDocumentsResponseDTO>;
   getRejectedDocuments(data: GetRejectedDocumentDTO): Promise<GetRejectedDocumentControllerResponseDTO>;
+  
   addRidePaymentRule(data: AddRidePaymentRuleDTO): Promise<AddRidePaymentRuleResponseDTO>
   getRidePaymentRules(data: void): Promise<GetRideratePaymentRuleDTO>;
   updateRidePaymentRule(data: UpdateRidePaymentRuleDTO): Promise<UpdateRidePaymentRuleResponseDTO>;

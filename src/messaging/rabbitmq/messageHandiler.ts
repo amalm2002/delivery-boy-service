@@ -154,6 +154,12 @@ export class MessageHandler {
       case 'Clear-Chat-State':
         response = await chatController.clearChatState(data);
         break;
+      case 'Submit-Concern':
+        response = await chatController.submitConcern(data);
+        break;
+      case 'Submit-Zone-Change':
+        response = await chatController.submitZoneChangeRequest(data);
+        break;
       default:
         response = { error: 'Unknown operation' };
     }

@@ -1,59 +1,63 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
-export interface Message extends Document {
-    id: string;
-    text: string;
-    isBot: boolean;
-    timestamp: string;
-    options?: string[];
-    showForm?: boolean;
-    showZoneSelection?: boolean;
-}
-
 export interface ChatState extends Document {
     deliveryBoyId: string;
-    messages: Message[];
+    messages: {
+        id: string;
+        text: string;
+        isBot: boolean;
+        timestamp: string;
+        options?: string[];
+        showForm?: boolean;
+        showZoneSelection?: boolean;
+    }[];
     currentStep: 'welcome' | 'menu' | 'concern' | 'zones' | 'completed';
     selectedOption: {
-        _id: string;
+        _id?: string;
         title: string;
-        description: string;
-        category: string;
-        isActive: boolean;
-        responseMessage: string;
+        description?: string;
+        category?: string;
+        isActive?: boolean;
+        responseMessage?: string;
     } | null;
     concernForm: {
         reason: string;
         description: string;
+        isActive: boolean;
     };
     selectedZone: string;
+    concernId?: string; 
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 const ChatStateSchema = new mongoose.Schema({
-    deliveryBoyId: { type: String, required: true, unique: true },
+    deliveryBoyId: { type: mongoose.Types.ObjectId, required: true },
     messages: [{
-        id: String,
-        text: String,
-        isBot: Boolean,
-        timestamp: String,
-        options: [String],
-        showForm: Boolean,
-        showZoneSelection: Boolean,
+        id: { type: String, required: true },
+        text: { type: String, required: true },
+        isBot: { type: Boolean, required: true },
+        timestamp: { type: String, required: true },
+        options: [{ type: String }],
+        showForm: { type: Boolean },
+        showZoneSelection: { type: Boolean },
     }],
     currentStep: { type: String, enum: ['welcome', 'menu', 'concern', 'zones', 'completed'], default: 'welcome' },
     selectedOption: {
-        _id: String,
-        title: String,
-        description: String,
-        category: String,
-        isActive: Boolean,
-        responseMessage: String,
+        _id: { type: String },
+        title: { type: String, required: true },
+        description: { type: String },
+        category: { type: String },
+        isActive: { type: Boolean },
+        responseMessage: { type: String },
     },
     concernForm: {
-        reason: String,
-        description: String,
+        reason: { type: String, required: true },
+        description: { type: String, required: true },
+        isActive: { type: Boolean, required: true },
     },
-    selectedZone: String,
+    selectedZone: { type: String, default: '' },
+    concernId: { type: mongoose.Types.ObjectId }, 
 }, { timestamps: true });
 
 export const ChatStateModel = mongoose.model<ChatState>('ChatState', ChatStateSchema);
