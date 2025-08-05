@@ -1,3 +1,4 @@
+import { log } from 'console';
 import { ChatState, ChatStateModel } from '../../models/chat.model';
 import { Concern, ConcernModel } from '../../models/concern.model';
 import { IChatRepository } from '../interfaces/chat.repository.interfaces';
@@ -69,6 +70,28 @@ export default class ChatRepository extends BaseRepository<ChatState> implements
             return concern;
         } catch (error) {
             throw new Error(`Failed to update concern zone: ${(error as Error).message}`);
+        }
+    }
+
+    async getAllConcerns(data: void): Promise<any> {
+        try {
+            const concern = await ConcernModel.find().populate('deliveryBoyId')
+            return concern
+        } catch (error) {
+            throw new Error(`Failed to fetch concerns: ${(error as Error).message}`);
+        }
+    }
+
+    async updateConcernStatus(concernId: string, updateData: { status: 'approved' | 'rejected'; rejectionReason?: string; updatedAt: Date }): Promise<Concern | null> {
+        try {
+            const concern = await ConcernModel.findByIdAndUpdate(
+                concernId,
+                { $set: updateData },
+                { new: true }
+            ).exec();
+            return concern;
+        } catch (error) {
+            throw new Error(`Failed to update concern status: ${(error as Error).message}`);
         }
     }
 }

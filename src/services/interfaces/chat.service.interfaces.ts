@@ -13,4 +13,6 @@ export interface IChatService {
     }): Promise<any>;
     submitZoneChangeRequest(data: { deliveryBoyId: string; concernId: string; zoneId: string; zoneName: string; reason: string; description: string }): Promise<any>;
     updateConcernZone(concernId: string, zoneId: string, zoneName: string): Promise<Concern>;
+    getAllConcerns(data: void): Promise<any>
+    verifyTheConcern(data: any): Promise<any>
 }

@@ -44,7 +44,7 @@ export default class Consumer {
     const zoneService = new ZoneService(zoneRepository);
     const deliveryTrackingService = new DeliveryBoyTrackingService(deliveryBoyRepository, deliveryRateModelRepository);
     const helpOptionService = new HelpOptionService(helpOptionRepository)
-    const chatService = new ChatService(chatRepository)
+    const chatService = new ChatService(chatRepository,deliveryBoyRepository)
 
     this.controllers = {
       deliveryBoyController: new DeliveryBoyController(deliveryBoyService),

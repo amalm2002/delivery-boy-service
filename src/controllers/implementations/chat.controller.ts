@@ -32,4 +32,12 @@ export default class ChatController implements IChatController {
     async submitZoneChangeRequest(data: { deliveryBoyId: string; concernId: string; zoneId: string; zoneName: string; reason: string; description: string }): Promise<any> {
         return await this.chatService.submitZoneChangeRequest(data);
     }
+
+    async getAllConcerns(data: void): Promise<any> {
+        return await this.chatService.getAllConcerns(data)
+    }
+
+    async verifyTheConcern(data: any): Promise<any> {
+        return await this.chatService.verifyTheConcern(data)
+    }
 }

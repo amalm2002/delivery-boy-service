@@ -16,4 +16,6 @@ export interface IChatRepository {
         createdAt: Date;
     }): Promise<Concern>;
     updateConcernZone(concernId: string, zoneId: string, zoneName: string): Promise<Concern>;
+    getAllConcerns(data: void): Promise<any>
+    updateConcernStatus(concernId: string, updateData: { status: 'approved' | 'rejected'; rejectionReason?: string; updatedAt: Date }): Promise<Concern | null>
 }

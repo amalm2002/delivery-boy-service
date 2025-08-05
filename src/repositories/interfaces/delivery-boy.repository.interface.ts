@@ -40,4 +40,5 @@ export interface IDeliveryBoyRepository {
   addReview(deliveryBoyId: string, review: UserReviewDTO): Promise<IDeliveryBoy>
   findReviewByUserOrderAndDeliveryBoy(deliveryBoyId: string, userId: string, orderId: string): Promise<any>
   updateOne(filter: any, update: any): Promise<IDeliveryBoy | null>
+  updateZone(deliveryBoyId: string, zoneId: string, zoneName: string): Promise<IDeliveryBoy | null>
 }

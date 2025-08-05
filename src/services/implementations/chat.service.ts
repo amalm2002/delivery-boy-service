@@ -2,12 +2,18 @@ import { IChatRepository } from '../../repositories/interfaces/chat.repository.i
 import { IChatService } from '../interfaces/chat.service.interfaces';
 import { ChatState } from '../../models/chat.model';
 import { Concern } from '../../models/concern.model';
+import { IDeliveryBoyRepository } from '../../repositories/interfaces/delivery-boy.repository.interface';
 
 export default class ChatService implements IChatService {
     private chatRepository: IChatRepository;
+    private deliveryBoyrepository: IDeliveryBoyRepository;
 
-    constructor(chatRepository: IChatRepository) {
+    constructor(
+        chatRepository: IChatRepository,
+        deliveryBoyrepository: IDeliveryBoyRepository
+    ) {
         this.chatRepository = chatRepository;
+        this.deliveryBoyrepository = deliveryBoyrepository;
     }
 
     async getChatState(data: { deliveryBoyId: string }): Promise<{ success: boolean; data?: ChatState | null; message?: string }> {
@@ -74,7 +80,7 @@ export default class ChatService implements IChatService {
                     selectedOption: selectedOption || null,
                     concernForm: { reason, description, isActive: true },
                     selectedZone: '',
-                    concernId: concern._id.toString(), 
+                    concernId: concern._id.toString(),
                 });
             } else {
                 chatState = await this.chatRepository.saveChatState(deliveryBoyId, {
@@ -143,6 +149,45 @@ export default class ChatService implements IChatService {
             return concern;
         } catch (error) {
             throw new Error(`Failed to update concern zone: ${(error as Error).message}`);
+        }
+    }
+
+    async getAllConcerns(data: void): Promise<any> {
+        try {
+            const response = await this.chatRepository.getAllConcerns(data)
+            if (!response) {
+                return { success: false, message: 'No concerns found' }
+            }
+            return { success: true, message: 'Success fully fetch', data: response }
+        } catch (error) {
+            throw new Error(`Failed to get all concern : ${(error as Error).message}`);
+        }
+    }
+
+    async verifyTheConcern(data: { id: string; newStatus: 'approved' | 'rejected'; rejectionReason?: string; zoneId?: string; zoneName?: string; deliveryBoyId?: string }): Promise<any> {
+        try {
+            const { id, newStatus, rejectionReason, zoneId, zoneName, deliveryBoyId } = data;
+            console.log('rejected reason :', rejectionReason);
+
+            const updateData: any = { status: newStatus, updatedAt: new Date() };
+            console.log('updated data:', updateData);
+
+            if (newStatus === 'rejected' && rejectionReason) {
+                updateData.rejectionReason = rejectionReason;
+            }
+            const concern = await this.chatRepository.updateConcernStatus(id, updateData);
+            if (!concern) {
+                throw new Error('Concern not found');
+            }
+
+            if (newStatus === 'approved' && zoneId && zoneName && deliveryBoyId) {
+                await this.deliveryBoyrepository.updateZone(deliveryBoyId, zoneId, zoneName);
+            }
+
+            return { success: true, message: `Concern ${newStatus} successfully`, data: concern };
+        } catch (error) {
+            console.error('Error in verifyTheConcern service:', error);
+            throw new Error(`Failed to verify concern: ${(error as Error).message}`);
         }
     }
 }

@@ -8,12 +8,13 @@ export interface Concern extends Document {
     zoneId?: string;
     zoneName?: string;
     status: 'pending' | 'approved' | 'rejected';
+    rejectionReason?: string;
     createdAt: Date;
     updatedAt: Date;
 }
 
 const ConcernSchema = new mongoose.Schema({
-    deliveryBoyId: { type: mongoose.Types.ObjectId, required: true },
+    deliveryBoyId: { type: mongoose.Types.ObjectId, ref: 'DeliveryBoy', required: true },
     selectedOption: {
         _id: { type: String },
         title: { type: String },
@@ -24,9 +25,10 @@ const ConcernSchema = new mongoose.Schema({
     },
     reason: { type: String, required: true },
     description: { type: String, required: true },
-    zoneId: { type: mongoose.Types.ObjectId },
+    zoneId: { type: mongoose.Types.ObjectId, ref: 'Zone' },
     zoneName: { type: String },
     status: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' },
+    rejectionReason: { type: String },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
 }, { timestamps: true });

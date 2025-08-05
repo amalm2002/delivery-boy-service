@@ -389,5 +389,20 @@ export class DeliveryBoyRepository extends BaseRepository<IDeliveryBoy> implemen
     return await DeliveryBoy.findOneAndUpdate(filter, update, { new: true });
   }
 
+  async updateZone(deliveryBoyId: string, zoneId: string, zoneName: string): Promise<IDeliveryBoy | null> {
+    try {
+      const deliveryBoy = await DeliveryBoy.findByIdAndUpdate(
+        deliveryBoyId,
+        { $set: { 'zone.id': zoneId, 'zone.name': zoneName, updatedAt: new Date() } },
+        { new: true }
+      ).exec();
+      if (!deliveryBoy) {
+        throw new Error('Delivery boy not found');
+      }
+      return deliveryBoy;
+    } catch (error) {
+      throw new Error(`Failed to update delivery boy zone: ${(error as Error).message}`);
+    }
+  }
 
 }
