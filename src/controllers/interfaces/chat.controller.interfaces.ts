@@ -10,5 +10,6 @@ export interface IChatController {
     }): Promise<any>;
     submitZoneChangeRequest(data: { deliveryBoyId: string; concernId: string; zoneId: string; zoneName: string; reason: string; description: string }): Promise<any>;
     getAllConcerns(data: void): Promise<any>
-    verifyTheConcern(data:any):Promise<any>
+    verifyTheConcern(data: any): Promise<any>
+    getDeliveryBoyConcerns(data: { deliveryBoyId: string }): Promise<any>
 }

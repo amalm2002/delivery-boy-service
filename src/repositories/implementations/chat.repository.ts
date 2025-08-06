@@ -94,4 +94,14 @@ export default class ChatRepository extends BaseRepository<ChatState> implements
             throw new Error(`Failed to update concern status: ${(error as Error).message}`);
         }
     }
+
+    async getConcernByDeliveryBoyId(deliveryBoyId: string): Promise<Concern[] | null> {
+        try {
+            const concerns = await ConcernModel.find({ deliveryBoyId: deliveryBoyId });
+            console.log('concerns:', concerns);
+            return concerns;
+        } catch (error) {
+            throw new Error(`Failed to fetch delivery-boy concerns: ${(error as Error).message}`);
+        }
+    }
 }

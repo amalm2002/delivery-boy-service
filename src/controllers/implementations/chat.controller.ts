@@ -40,4 +40,8 @@ export default class ChatController implements IChatController {
     async verifyTheConcern(data: any): Promise<any> {
         return await this.chatService.verifyTheConcern(data)
     }
+
+    async getDeliveryBoyConcerns(data: {deliveryBoyId:string}): Promise<any> {
+        return await this.chatService.getDeliveryBoyConcerns(data)
+    }
 }

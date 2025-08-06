@@ -167,10 +167,8 @@ export default class ChatService implements IChatService {
     async verifyTheConcern(data: { id: string; newStatus: 'approved' | 'rejected'; rejectionReason?: string; zoneId?: string; zoneName?: string; deliveryBoyId?: string }): Promise<any> {
         try {
             const { id, newStatus, rejectionReason, zoneId, zoneName, deliveryBoyId } = data;
-            console.log('rejected reason :', rejectionReason);
 
             const updateData: any = { status: newStatus, updatedAt: new Date() };
-            console.log('updated data:', updateData);
 
             if (newStatus === 'rejected' && rejectionReason) {
                 updateData.rejectionReason = rejectionReason;
@@ -188,6 +186,21 @@ export default class ChatService implements IChatService {
         } catch (error) {
             console.error('Error in verifyTheConcern service:', error);
             throw new Error(`Failed to verify concern: ${(error as Error).message}`);
+        }
+    }
+
+    async getDeliveryBoyConcerns(data: { deliveryBoyId: string }): Promise<any> {
+        try {
+            const { deliveryBoyId } = data
+            const concern = await this.chatRepository.getConcernByDeliveryBoyId(deliveryBoyId)
+            if (!concern) {
+                return { success: false, message: 'No concern found' }
+            }
+            return { success: true, message: 'Concern fetch successfully', data: concern }
+        } catch (error) {
+            console.error('Error in get delivery-boy concerns service:', error);
+            throw new Error(`Failed to fetch delivery-boy concern: ${(error as Error).message}`);
+
         }
     }
 }

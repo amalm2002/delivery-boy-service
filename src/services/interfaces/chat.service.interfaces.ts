@@ -15,4 +15,5 @@ export interface IChatService {
     updateConcernZone(concernId: string, zoneId: string, zoneName: string): Promise<Concern>;
     getAllConcerns(data: void): Promise<any>
     verifyTheConcern(data: any): Promise<any>
+    getDeliveryBoyConcerns(data: {deliveryBoyId:string}): Promise<any>
 }

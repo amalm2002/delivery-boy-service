@@ -166,6 +166,9 @@ export class MessageHandler {
       case 'Verify-Concern':
         response = await chatController.verifyTheConcern(data);
         break;
+      case 'Get-The-Delivery-Boy-Concern-Result':
+        response = await chatController.getDeliveryBoyConcerns(data);
+        break;
       default:
         response = { error: 'Unknown operation' };
     }
