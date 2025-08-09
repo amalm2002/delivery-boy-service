@@ -405,4 +405,46 @@ export class DeliveryBoyRepository extends BaseRepository<IDeliveryBoy> implemen
     }
   }
 
+  async getDeliveryBoyChartData(query: any): Promise<{ _id: string; name: string; completedDeliveries: number; totalEarnings: number }[]> {
+    try {
+      const matchStage: any = {};
+      if (query.createdAt) {
+        matchStage['earnings.history.date'] = query.createdAt; 
+      }
+
+      const deliveries = await DeliveryBoy.aggregate([
+        { $unwind: { path: '$earnings.history', preserveNullAndEmptyArrays: true } },
+        { $match: matchStage },
+        {
+          $group: {
+            _id: '$_id',
+            name: { $first: '$name' },
+            completedDeliveries: {
+              $sum: {
+                $cond: [
+                  { $eq: ['$earnings.history.paid', true] }, 
+                  1,
+                  0,
+                ],
+              },
+            },
+            totalEarnings: { $sum: '$earnings.history.amount' },
+          },
+        },
+        {
+          $project: {
+            _id: 1,
+            name: 1,
+            completedDeliveries: 1,
+            totalEarnings: 1,
+          },
+        },
+      ]);
+
+      return deliveries;
+    } catch (error) {
+      throw new Error(`Failed to fetch delivery boy chart data: ${(error as Error).message}`);
+    }
+  }
+
 }

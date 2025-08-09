@@ -17,6 +17,7 @@ import { AddRidePaymentRuleDTO, AddRidePaymentRuleResponseDTO } from '../../dto/
 import { BlockRidePaymentRuleDTO, GetRideratePaymentRuleDTO, UnblockRidePaymentRuleDTO, UpdateRidePaymentRuleDTO, UpdateRidePaymentRuleResponseDTO } from '../../dto/delivery-boy/ride-payment.dto';
 import { CheckTheInHandCashLimitDTO, CheckTheInHandCashLimitResponseDTO, UpdatedeliveryBoyEarningsDTO, UpdatedeliveryBoyEarningsResponseDTO } from '../../dto/delivery-boy/earnings-section.dto';
 import { DeliveryBoyReviewResponseDTO, UserReviewDTO } from '../../dto/delivery-boy/user-review.dto';
+import { GetDeliveryBoyChartDataDTO } from '../../dto/delivery-boy/get-delivery-boy-chart.dto';
 
 export interface IDeliveryBoyController {
   register(data: CreateDeliveryBoyDto): Promise<CreateDeliveryBoyResponseDTO>;
@@ -31,7 +32,6 @@ export interface IDeliveryBoyController {
   verifyDocuments(data: VerifyDocumentsDto): Promise<VerifyDocumentsResponseDTO>;
   rejectDocuments(data: RejectDocumentsDto): Promise<RejectDocumentsResponseDTO>;
   getRejectedDocuments(data: GetRejectedDocumentDTO): Promise<GetRejectedDocumentControllerResponseDTO>;
-  
   addRidePaymentRule(data: AddRidePaymentRuleDTO): Promise<AddRidePaymentRuleResponseDTO>
   getRidePaymentRules(data: void): Promise<GetRideratePaymentRuleDTO>;
   updateRidePaymentRule(data: UpdateRidePaymentRuleDTO): Promise<UpdateRidePaymentRuleResponseDTO>;
@@ -41,6 +41,8 @@ export interface IDeliveryBoyController {
   updatedeliveryBoyEarnings(data: UpdatedeliveryBoyEarningsDTO): Promise<UpdatedeliveryBoyEarningsResponseDTO>
   clearInHandCashOnDeliveryBoy(data: UpdatedeliveryBoyEarningsDTO): Promise<UpdatedeliveryBoyEarningsResponseDTO>
   userReviewFordeliveryBoy(data: UserReviewDTO): Promise<DeliveryBoyReviewResponseDTO>
-  getDeliveryBoyReview(data: UserReviewDTO): Promise<DeliveryBoyReviewResponseDTO> 
-  deleteDeliveryBoyReview(data: UserReviewDTO): Promise<DeliveryBoyReviewResponseDTO> 
+  getDeliveryBoyReview(data: UserReviewDTO): Promise<DeliveryBoyReviewResponseDTO>
+  deleteDeliveryBoyReview(data: UserReviewDTO): Promise<DeliveryBoyReviewResponseDTO>
+
+  getDeliveryBoyChartData(data: { startDate?: string; endDate?: string }): Promise<GetDeliveryBoyChartDataDTO>;
 }
