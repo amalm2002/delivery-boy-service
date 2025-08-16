@@ -88,9 +88,6 @@ export class MessageHandler {
       case 'Delivery-Boy-Location-Update':
         response = await deliveryTrackingController.updateLocation(data);
         break;
-      case 'Assign-Delivery-Boy':
-        response = await deliveryTrackingController.assignOrder(data);
-        break;
       case 'Update-Delivery-Boy-Location':
         response = await deliveryTrackingController.updateDeliveryBoyLocation(data);
         break;

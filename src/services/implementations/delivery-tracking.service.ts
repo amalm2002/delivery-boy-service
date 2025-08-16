@@ -293,7 +293,6 @@ export class DeliveryBoyTrackingService implements IDeliveryBoyTrackingService {
       oneWeekAgo.setDate(oneWeekAgo.getDate() - 6);
 
       const weekTotal = updatedHistory
-        // .filter(entry => new Date(entry.date) >= oneWeekAgo)
         .filter(entry => !entry.paid && new Date(entry.date) >= oneWeekAgo)
         .reduce((sum, entry) => sum + entry.amount, 0);
 

@@ -5,6 +5,7 @@ import express from 'express'
 import http from "http";
 import 'dotenv/config'
 import RabbitMQClient from './messaging/rabbitmq/client'
+import { grpcServer } from './grpc-connection/grpc.server';
 
 const PORT=process.env.PORT
 
@@ -20,6 +21,7 @@ class App {
         })
 
         RabbitMQClient.initialize()
+        grpcServer()
         connectDB()
     }
 }

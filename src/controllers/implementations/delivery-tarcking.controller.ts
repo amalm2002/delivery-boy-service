@@ -6,6 +6,7 @@ import { GetDeliveryBoyDetailsResponseDto } from '../../dto/delivery-boy/deliver
 import { FindNearestDeliveryPartnersRequestDto, FindNearestDeliveryPartnersResponseDto } from '../../dto/delivery-boy/find-nearest-delivery-partners.dto';
 import { AssignOrderDTO, AssignOrderResponseDTO } from '../../dto/delivery-boy/assign-order.dto';
 import { completeDeliveryDTO, completeDeliveryResponseDTO } from '../../dto/delivery-boy/complete-delivery.dto';
+import { sendUnaryData, ServerUnaryCall } from '@grpc/grpc-js';
 
 export class DeliveryTrackingController implements IDeliveryTrackingController {
   constructor(private deliveryBoyService: IDeliveryBoyTrackingService) { }
@@ -99,25 +100,30 @@ export class DeliveryTrackingController implements IDeliveryTrackingController {
     }
   }
 
-  async assignOrder(data: AssignOrderDTO): Promise<AssignOrderResponseDTO> {
+  async assignOrder(call: ServerUnaryCall<AssignOrderDTO, AssignOrderResponseDTO>,
+    callback: sendUnaryData<AssignOrderResponseDTO>
+  ): Promise<void> {
     try {
+      const data = call.request;
       const result = await this.deliveryBoyService.assignOrder(data);
+
       if (!result.success) {
-        return {
+        return callback(null, {
           status: 'error',
           message: result.message || 'Failed to assign order',
-        };
+        });
       }
-      return {
+
+      return callback(null, {
         status: 'success',
         message: 'Order assigned successfully',
         data: result.data,
-      };
+      });
     } catch (error) {
-      return {
+      return callback(null, {
         status: 'error',
         message: (error as Error).message,
-      };
+      });
     }
   }
 
@@ -135,7 +141,7 @@ export class DeliveryTrackingController implements IDeliveryTrackingController {
     return await this.deliveryBoyService.completeDelivery(data);
   }
 
-  async orderEarnings(data: { paymentMethod: string; deliveryBoyId: string; finalTotalDistance: number; orderAmount: number,order_id:string }): Promise<any> {
+  async orderEarnings(data: { paymentMethod: string; deliveryBoyId: string; finalTotalDistance: number; orderAmount: number, order_id: string }): Promise<any> {
     return await this.deliveryBoyService.orderEarnings(data)
   }
 

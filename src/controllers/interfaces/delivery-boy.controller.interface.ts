@@ -18,6 +18,7 @@ import { BlockRidePaymentRuleDTO, GetRideratePaymentRuleDTO, UnblockRidePaymentR
 import { CheckTheInHandCashLimitDTO, CheckTheInHandCashLimitResponseDTO, UpdatedeliveryBoyEarningsDTO, UpdatedeliveryBoyEarningsResponseDTO } from '../../dto/delivery-boy/earnings-section.dto';
 import { DeliveryBoyReviewResponseDTO, UserReviewDTO } from '../../dto/delivery-boy/user-review.dto';
 import { GetDeliveryBoyChartDataDTO } from '../../dto/delivery-boy/get-delivery-boy-chart.dto';
+import { sendUnaryData, ServerUnaryCall } from '@grpc/grpc-js';
 
 export interface IDeliveryBoyController {
   register(data: CreateDeliveryBoyDto): Promise<CreateDeliveryBoyResponseDTO>;
@@ -28,6 +29,7 @@ export interface IDeliveryBoyController {
   getAllDeliveryBoys(data: void): Promise<GetAllDeliveryBoysResponseDTO>;
   getAllDeliveryBoy(data: void): Promise<GetAllDeliveryBoysResponseDTO>;
   updateDeliveryBoyStatus(data: FetchDeliveryBoyDTO): Promise<UpdateOnlineStatusResponseDTO>;
+  fetchDeliveryBoyDetailsGrpc(call: ServerUnaryCall<FetchDeliveryBoyDTO,UpdateOnlineStatusResponseDTO>, callback: sendUnaryData<UpdateOnlineStatusResponseDTO>): Promise<void> 
   fetchDeliveryBoyDetails(data: FetchDeliveryBoyDTO): Promise<UpdateOnlineStatusResponseDTO>;
   verifyDocuments(data: VerifyDocumentsDto): Promise<VerifyDocumentsResponseDTO>;
   rejectDocuments(data: RejectDocumentsDto): Promise<RejectDocumentsResponseDTO>;
@@ -43,6 +45,5 @@ export interface IDeliveryBoyController {
   userReviewFordeliveryBoy(data: UserReviewDTO): Promise<DeliveryBoyReviewResponseDTO>
   getDeliveryBoyReview(data: UserReviewDTO): Promise<DeliveryBoyReviewResponseDTO>
   deleteDeliveryBoyReview(data: UserReviewDTO): Promise<DeliveryBoyReviewResponseDTO>
-
   getDeliveryBoyChartData(data: { startDate?: string; endDate?: string }): Promise<GetDeliveryBoyChartDataDTO>;
 }

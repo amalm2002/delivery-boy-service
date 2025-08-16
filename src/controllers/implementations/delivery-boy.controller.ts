@@ -16,6 +16,7 @@ import { BlockRidePaymentRuleDTO, GetRideratePaymentRuleDTO, UnblockRidePaymentR
 import { CheckTheInHandCashLimitDTO, CheckTheInHandCashLimitResponseDTO, UpdatedeliveryBoyEarningsDTO, UpdatedeliveryBoyEarningsResponseDTO } from '../../dto/delivery-boy/earnings-section.dto';
 import { DeliveryBoyReviewResponseDTO, UserReviewDTO } from '../../dto/delivery-boy/user-review.dto';
 import { GetDeliveryBoyChartDataDTO } from '../../dto/delivery-boy/get-delivery-boy-chart.dto';
+import { sendUnaryData, ServerUnaryCall } from '@grpc/grpc-js';
 
 export class DeliveryBoyController implements IDeliveryBoyController {
   constructor(private deliveryBoyService: IDeliveryBoyService) { }
@@ -84,6 +85,17 @@ export class DeliveryBoyController implements IDeliveryBoyController {
       return { message: 'success', response };
     } catch (error) {
       throw new Error(`Error updating delivery boy status: ${(error as Error).message}`);
+    }
+  }
+
+  async fetchDeliveryBoyDetailsGrpc(call: ServerUnaryCall<FetchDeliveryBoyDTO, UpdateOnlineStatusResponseDTO>, callback: sendUnaryData<UpdateOnlineStatusResponseDTO>): Promise<void> {
+    try {
+      const data = call.request
+      const response = await this.deliveryBoyService.fetchDeliveryBoyDetails(data);
+      const returnResponse = { message: 'success', response }
+      return callback(null, returnResponse)
+    } catch (error) {
+      callback(null, { message: (error as Error).message })
     }
   }
 

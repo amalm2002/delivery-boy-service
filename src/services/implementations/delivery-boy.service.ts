@@ -270,10 +270,8 @@ export class DeliveryBoyService implements IDeliveryBoyService {
 
   async fetchDeliveryBoyDetails(data: FetchDeliveryBoyDTO): Promise<DeliveryBoyDto | null> {
     try {
-      const { id } = data
-      const deliveryBoyId = id
+      const deliveryBoyId = data.id ? data.id : data.deliveryBoyId
       const response = await this.deliveryBoyRepository.findById(deliveryBoyId);
-      console.log('response on the sevice side :', response);
       return response
     } catch (error) {
       throw new Error(`Error fetching delivery boy details: ${(error as Error).message}`);
