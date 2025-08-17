@@ -75,7 +75,7 @@ export default class ChatRepository extends BaseRepository<ChatState> implements
 
     async getAllConcerns(data: void): Promise<any> {
         try {
-            const concern = await ConcernModel.find().populate('deliveryBoyId')
+            const concern = await ConcernModel.find().populate('deliveryBoyId').sort({ createdAt: -1 })
             return concern
         } catch (error) {
             throw new Error(`Failed to fetch concerns: ${(error as Error).message}`);
@@ -97,8 +97,7 @@ export default class ChatRepository extends BaseRepository<ChatState> implements
 
     async getConcernByDeliveryBoyId(deliveryBoyId: string): Promise<Concern[] | null> {
         try {
-            const concerns = await ConcernModel.find({ deliveryBoyId: deliveryBoyId });
-            console.log('concerns:', concerns);
+            const concerns = await ConcernModel.find({ deliveryBoyId: deliveryBoyId }).sort({ createdAt: -1 });
             return concerns;
         } catch (error) {
             throw new Error(`Failed to fetch delivery-boy concerns: ${(error as Error).message}`);
