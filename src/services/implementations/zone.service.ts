@@ -3,8 +3,8 @@ import { IZoneRepository } from '../../repositories/interfaces/zone.repository.i
 import { IZoneService } from '../interfaces/zone.service.interface';
 import { CreateZoneDto, CreateZoneResponseDto } from '../../dto/zone/create.zone.dto';
 import { DeleteZoneDto } from '../../dto/zone/delete.zone.dto';
-import { IZone } from '../../models/zone.model';
 import { ZoneDetailsDTO } from '../../dto/zone/zone-details.dto';
+import { Zone } from '../../dto/zone/fetch.zone.dto';
 
 export class ZoneService implements IZoneService {
   constructor(private zoneRepository: IZoneRepository) { }
@@ -39,7 +39,7 @@ export class ZoneService implements IZoneService {
     }));
   }
 
-  async deleteZone(dto: DeleteZoneDto): Promise<IZone | null> {
+  async deleteZone(dto: DeleteZoneDto): Promise<Zone | null> {
     return await this.zoneRepository.deleteZone(dto.id);
   }
 }

@@ -2,13 +2,13 @@ import { IDeliveryBoyRepository } from '../../repositories/interfaces/delivery-b
 import { IDeliveryBoyTrackingService } from '../interfaces/delivery-tracking.service.interfaces';
 import { UpdateOnlineStatusDTO, UpdateOnlineStatusResponseDto } from '../../dto/delivery-boy/update.online.status.dto';
 import { DeliveryBoyDetailsDTO, GetDeliveryBoyDetailsResponseDto } from '../../dto/delivery-boy/delivery-boy.details.dto';
-import { IDeliveryBoy } from '../../models/delivery-boy.model';
 import redisClient from '../../config/redis.config';
 import { UpdateLocationDto, UpdateLocationResponseDto } from '../../dto/delivery-boy/update.location.dto';
 import { FindNearestDeliveryPartnersRequestDto, FindNearestDeliveryPartnersResponseDto } from '../../dto/delivery-boy/find-nearest-delivery-partners.dto';
 import { AssignOrderDTO, AssignOrderResponseDTO } from '../../dto/delivery-boy/assign-order.dto';
 import { completeDeliveryDTO, completeDeliveryResponseDTO } from '../../dto/delivery-boy/complete-delivery.dto';
 import { IDeliveryRateModelRepository } from '../../repositories/interfaces/delivery-rate-model.repository.interfaces';
+import { OrderEarningsDTO, OrderEarningsResponseDTO } from '../../dto/delivery-boy/order-earings.dto';
 
 
 export class DeliveryBoyTrackingService implements IDeliveryBoyTrackingService {
@@ -28,9 +28,6 @@ export class DeliveryBoyTrackingService implements IDeliveryBoyTrackingService {
 
       const newOnlineStatus = isOnline !== undefined ? isOnline : !deliveryBoy.isOnline;
 
-      // const updatedDeliveryBoy = await this.repository.updateById(deliveryBoyId, {
-      //   isOnline: newOnlineStatus,
-      // });
       const updatedDeliveryBoy = await this.repository.updateDeliveryBoyById(deliveryBoyId, {
         isOnline: newOnlineStatus,
       });
@@ -99,7 +96,6 @@ export class DeliveryBoyTrackingService implements IDeliveryBoyTrackingService {
         let liveLocation = db.location;
         if (redisData) {
           try {
-            // liveLocation = JSON.parse(redisData);
             liveLocation = JSON.parse(redisData.toString());
           } catch (error) {
             console.error(`Error parsing Redis location for ${db._id}:`, error);
@@ -184,7 +180,6 @@ export class DeliveryBoyTrackingService implements IDeliveryBoyTrackingService {
       const { deliveryBoyId } = data;
 
       const deliveryBoy = await this.repository.findById(deliveryBoyId);
-      console.log('delivery boy :', deliveryBoy);
 
       if (!deliveryBoy) {
         return { success: false, message: 'Delivery boy not found' };
@@ -260,9 +255,9 @@ export class DeliveryBoyTrackingService implements IDeliveryBoyTrackingService {
     }
   }
 
-  async orderEarnings(data: { paymentMethod: string; deliveryBoyId: string; finalTotalDistance: number; orderAmount: number,order_id:string }): Promise<any> {
+  async orderEarnings(data: OrderEarningsDTO): Promise<OrderEarningsResponseDTO> {
     try {
-      const { paymentMethod, deliveryBoyId, finalTotalDistance, orderAmount ,order_id} = data;
+      const { paymentMethod, deliveryBoyId, finalTotalDistance, orderAmount, order_id } = data;
 
       const deliveryBoy = await this.repository.findById(deliveryBoyId);
       if (!deliveryBoy) {
@@ -283,7 +278,7 @@ export class DeliveryBoyTrackingService implements IDeliveryBoyTrackingService {
       const now = new Date();
 
       const existingHistory = deliveryBoy.earnings?.history || [];
-      const updatedHistory = [...existingHistory, { date: now, amount: calculatedEarnings, paid: false ,orderId:order_id}];
+      const updatedHistory = [...existingHistory, { date: now, amount: calculatedEarnings, paid: false, orderId: order_id }];
 
       const todayTotal = updatedHistory
         .filter(entry => new Date(entry.date).toISOString().slice(0, 10) === todayDateString)

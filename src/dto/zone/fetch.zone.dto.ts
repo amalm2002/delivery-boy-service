@@ -5,3 +5,9 @@ export interface FetchZonesResponseDTO {
     fetchZones: ZoneDetailsDTO[];
     error?: boolean;
 }
+
+
+export interface Zone {
+  name: string;
+  coordinates: { latitude: number; longitude: number }[];
+}

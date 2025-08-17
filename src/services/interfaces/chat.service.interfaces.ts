@@ -1,19 +1,19 @@
-import { ChatState } from '../../models/chat.model';
+import { GetChatDTO, GetChatResponseDTO } from '../../dto/chat/get-chat.dto';
+import { GetConcernResponseDTO } from '../../dto/chat/get-concern.dto';
+import { SaveChatDTO } from '../../dto/chat/save-chat.dto';
+import { SubmitConcernDTO, SubmitConcernResponseDTO } from '../../dto/chat/submit-concern-chat.dto';
+import { SubmitZoneChangeRequestDTO, SubmitZoneChangeRequestResponseDTO } from '../../dto/chat/submit-zone-request-chat.dto';
+import { VerifyConcernDTO, VerifyConcernResponseDTO } from '../../dto/chat/verify-concern.dto';
 import { Concern } from '../../models/concern.model';
 
 export interface IChatService {
-    getChatState(data: { deliveryBoyId: string }): Promise<{ success: boolean; data?: ChatState | null; message?: string }>;
-    saveChatState(data: { deliveryBoyId: string; state: Partial<ChatState> }): Promise<{ success: boolean; data?: ChatState; message?: string }>;
-    clearChatState(data: { deliveryBoyId: string }): Promise<{ success: boolean; message?: string }>;
-    submitConcern(data: {
-        deliveryBoyId: string;
-        selectedOption: { _id?: string; title: string; description?: string; category?: string; isActive?: boolean; responseMessage?: string } | null;
-        reason: string;
-        description: string;
-    }): Promise<any>;
-    submitZoneChangeRequest(data: { deliveryBoyId: string; concernId: string; zoneId: string; zoneName: string; reason: string; description: string }): Promise<any>;
+    getChatState(data: GetChatDTO): Promise<GetChatResponseDTO>;
+    saveChatState(data: SaveChatDTO): Promise<GetChatResponseDTO>;
+    clearChatState(data: GetChatDTO): Promise<GetChatResponseDTO>;
+    submitConcern(data:SubmitConcernDTO): Promise<SubmitConcernResponseDTO>;
+    submitZoneChangeRequest(data: SubmitZoneChangeRequestDTO): Promise<SubmitZoneChangeRequestResponseDTO>;
     updateConcernZone(concernId: string, zoneId: string, zoneName: string): Promise<Concern>;
-    getAllConcerns(data: void): Promise<any>
-    verifyTheConcern(data: any): Promise<any>
-    getDeliveryBoyConcerns(data: {deliveryBoyId:string}): Promise<any>
+    getAllConcerns(data: void): Promise<GetConcernResponseDTO>
+    verifyTheConcern(data: VerifyConcernDTO): Promise<VerifyConcernResponseDTO>
+    getDeliveryBoyConcerns(data: GetChatDTO): Promise<GetConcernResponseDTO>
 }

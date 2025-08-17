@@ -1,6 +1,9 @@
-import { AddHelpOptionDTO } from "../../dto/help-option/add-help-options.dto";
+import { AddHelpOptionControllerResponseDTO, AddHelpOptionDTO } from "../../dto/help-option/add-help-options.dto";
 import { IHelpOptionController } from "../interfaces/help-option.controller.interfacaes";
 import { IHelpOptionService } from "../../services/interfaces/help-option.service.interfaces";
+import { UpdateHelpOptionResponseDTO } from "../../dto/help-option/update-help-option.dto";
+import { DeleteHelpOptionResponseDTO } from "../../dto/help-option/delete-help-option.dto";
+import { GetHelpOptionResponseDTO } from "../../dto/help-option/get-help-option.dto";
 
 export default class HelpOptionController implements IHelpOptionController {
     private helpOptionService: IHelpOptionService;
@@ -9,7 +12,7 @@ export default class HelpOptionController implements IHelpOptionController {
         this.helpOptionService = helpOptionService;
     }
 
-    async addDeliveryBoyHelpOption(data: AddHelpOptionDTO): Promise<any> {
+    async addDeliveryBoyHelpOption(data: AddHelpOptionDTO): Promise<AddHelpOptionControllerResponseDTO> {
         try {
             const helpOption = await this.helpOptionService.addDeliveryBoyHelpOptions(data);
             return {
@@ -22,7 +25,7 @@ export default class HelpOptionController implements IHelpOptionController {
         }
     }
 
-    async updateDeliveryBoyHelpOption(id: string, data: AddHelpOptionDTO): Promise<any> {
+    async updateDeliveryBoyHelpOption(id: string, data: AddHelpOptionDTO): Promise<UpdateHelpOptionResponseDTO> {
         try {
             const helpOption = await this.helpOptionService.updateDeliveryBoyHelpOption(id, data);
             if (!helpOption) {
@@ -41,7 +44,7 @@ export default class HelpOptionController implements IHelpOptionController {
         }
     }
 
-    async deleteDeliveryBoyHelpOption(id: string): Promise<any> {
+    async deleteDeliveryBoyHelpOption(id: string): Promise<DeleteHelpOptionResponseDTO> {
         try {
             const result = await this.helpOptionService.deleteDeliveryBoyHelpOption(id);
             if (!result) {
@@ -59,7 +62,7 @@ export default class HelpOptionController implements IHelpOptionController {
         }
     }
 
-    async getAllDeliveryBoyHelpOptions(): Promise<any> {
+    async getAllDeliveryBoyHelpOptions(): Promise<GetHelpOptionResponseDTO> {
         try {
             const result = await this.helpOptionService.getAllDeliveryBoyHelpOptions();
             if (!result) {

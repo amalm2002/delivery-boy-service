@@ -1,5 +1,5 @@
-import { IDeliveryBoyTrackingService } from '../../services/interfaces/delivery-tracking.service.interfaces';
 import { IDeliveryTrackingController } from '../interfaces/delivery-tarcking.controller.interfaces';
+import { IDeliveryBoyTrackingService } from '../../services/interfaces/delivery-tracking.service.interfaces';
 import { UpdateOnlineStatusDTO, UpdateOnlineStatusResponseDto } from '../../dto/delivery-boy/update.online.status.dto';
 import { UpdateLocationDto, UpdateLocationResponseDto } from '../../dto/delivery-boy/update.location.dto';
 import { GetDeliveryBoyDetailsResponseDto } from '../../dto/delivery-boy/delivery-boy.details.dto';
@@ -7,6 +7,7 @@ import { FindNearestDeliveryPartnersRequestDto, FindNearestDeliveryPartnersRespo
 import { AssignOrderDTO, AssignOrderResponseDTO } from '../../dto/delivery-boy/assign-order.dto';
 import { completeDeliveryDTO, completeDeliveryResponseDTO } from '../../dto/delivery-boy/complete-delivery.dto';
 import { sendUnaryData, ServerUnaryCall } from '@grpc/grpc-js';
+import { OrderEarningsDTO, OrderEarningsResponseDTO } from '../../dto/delivery-boy/order-earings.dto';
 
 export class DeliveryTrackingController implements IDeliveryTrackingController {
   constructor(private deliveryBoyService: IDeliveryBoyTrackingService) { }
@@ -141,7 +142,7 @@ export class DeliveryTrackingController implements IDeliveryTrackingController {
     return await this.deliveryBoyService.completeDelivery(data);
   }
 
-  async orderEarnings(data: { paymentMethod: string; deliveryBoyId: string; finalTotalDistance: number; orderAmount: number, order_id: string }): Promise<any> {
+  async orderEarnings(data: OrderEarningsDTO): Promise<OrderEarningsResponseDTO> {
     return await this.deliveryBoyService.orderEarnings(data)
   }
 

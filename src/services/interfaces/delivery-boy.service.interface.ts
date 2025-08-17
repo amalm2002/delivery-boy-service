@@ -10,7 +10,7 @@ import { AddRidePaymentRuleDTO, AddRidePaymentRuleResponseDTO } from '../../dto/
 import { BlockRidePaymentRuleDTO, GetRideratePaymentRuleDTO, UnblockRidePaymentRuleDTO, UpdateRidePaymentRuleDTO, UpdateRidePaymentRuleResponseDTO } from '../../dto/delivery-boy/ride-payment.dto';
 import { CheckTheInHandCashLimitDTO, CheckTheInHandCashLimitResponseDTO, UpdatedeliveryBoyEarningsDTO, UpdatedeliveryBoyEarningsResponseDTO } from '../../dto/delivery-boy/earnings-section.dto';
 import { DeliveryBoyReviewResponseDTO, UserReviewDTO } from '../../dto/delivery-boy/user-review.dto';
-import { GetDeliveryBoyChartDataDTO } from '../../dto/delivery-boy/get-delivery-boy-chart.dto';
+import { GetDeliveryBoyChartDataDTO, GetDeliveryBoyChartDataRequestDTO } from '../../dto/delivery-boy/get-delivery-boy-chart.dto';
 
 export interface IDeliveryBoyService {
   registerDeliveryBoy(dto: CreateDeliveryBoyDto): Promise<CreateDeliveryBoyResponseDTO>;
@@ -36,5 +36,5 @@ export interface IDeliveryBoyService {
   userReviewForDeliveryBoy(data: UserReviewDTO): Promise<DeliveryBoyReviewResponseDTO>
   getDeliveryBoyReview(data: UserReviewDTO): Promise<DeliveryBoyReviewResponseDTO>
   deleteDeliveryBoyReview(data: UserReviewDTO): Promise<DeliveryBoyReviewResponseDTO>
-  getDeliveryBoyChartData(data: { startDate?: string; endDate?: string }): Promise<GetDeliveryBoyChartDataDTO>;
+  getDeliveryBoyChartData(data: GetDeliveryBoyChartDataRequestDTO): Promise<GetDeliveryBoyChartDataDTO>;
 }

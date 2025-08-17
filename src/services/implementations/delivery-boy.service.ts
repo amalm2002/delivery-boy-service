@@ -16,7 +16,7 @@ import { IDeliveryRateModelRepository } from '../../repositories/interfaces/deli
 import { BlockRidePaymentRuleDTO, GetRideratePaymentRuleDTO, UnblockRidePaymentRuleDTO, UpdateRidePaymentRuleDTO, UpdateRidePaymentRuleResponseDTO } from '../../dto/delivery-boy/ride-payment.dto';
 import { CheckTheInHandCashLimitDTO, CheckTheInHandCashLimitResponseDTO, UpdatedeliveryBoyEarningsDTO, UpdatedeliveryBoyEarningsResponseDTO } from '../../dto/delivery-boy/earnings-section.dto';
 import { DeliveryBoyReviewResponseDTO, UserReviewDTO } from '../../dto/delivery-boy/user-review.dto';
-import { GetDeliveryBoyChartDataDTO } from '../../dto/delivery-boy/get-delivery-boy-chart.dto';
+import { GetDeliveryBoyChartDataDTO, GetDeliveryBoyChartDataRequestDTO } from '../../dto/delivery-boy/get-delivery-boy-chart.dto';
 
 
 export class DeliveryBoyService implements IDeliveryBoyService {
@@ -646,7 +646,7 @@ export class DeliveryBoyService implements IDeliveryBoyService {
     }
   }
 
-  async getDeliveryBoyChartData(data: { startDate?: string; endDate?: string }): Promise<GetDeliveryBoyChartDataDTO> {
+  async getDeliveryBoyChartData(data: GetDeliveryBoyChartDataRequestDTO): Promise<GetDeliveryBoyChartDataDTO> {
     try {
       const query: any = {};
       if (data.startDate && data.endDate) {

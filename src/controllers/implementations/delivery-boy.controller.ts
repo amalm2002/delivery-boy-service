@@ -15,7 +15,7 @@ import { AddRidePaymentRuleDTO, AddRidePaymentRuleResponseDTO } from '../../dto/
 import { BlockRidePaymentRuleDTO, GetRideratePaymentRuleDTO, UnblockRidePaymentRuleDTO, UpdateRidePaymentRuleDTO, UpdateRidePaymentRuleResponseDTO } from '../../dto/delivery-boy/ride-payment.dto';
 import { CheckTheInHandCashLimitDTO, CheckTheInHandCashLimitResponseDTO, UpdatedeliveryBoyEarningsDTO, UpdatedeliveryBoyEarningsResponseDTO } from '../../dto/delivery-boy/earnings-section.dto';
 import { DeliveryBoyReviewResponseDTO, UserReviewDTO } from '../../dto/delivery-boy/user-review.dto';
-import { GetDeliveryBoyChartDataDTO } from '../../dto/delivery-boy/get-delivery-boy-chart.dto';
+import { GetDeliveryBoyChartDataDTO, GetDeliveryBoyChartDataRequestDTO } from '../../dto/delivery-boy/get-delivery-boy-chart.dto';
 import { sendUnaryData, ServerUnaryCall } from '@grpc/grpc-js';
 
 export class DeliveryBoyController implements IDeliveryBoyController {
@@ -236,7 +236,7 @@ export class DeliveryBoyController implements IDeliveryBoyController {
     }
   }
 
-  async getDeliveryBoyChartData(data: { startDate?: string; endDate?: string }): Promise<GetDeliveryBoyChartDataDTO> {
+  async getDeliveryBoyChartData(data: GetDeliveryBoyChartDataRequestDTO): Promise<GetDeliveryBoyChartDataDTO> {
     try {
       const response = await this.deliveryBoyService.getDeliveryBoyChartData(data);
       return response;

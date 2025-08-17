@@ -4,6 +4,7 @@ import { UpdateLocationDto, UpdateLocationResponseDto } from '../../dto/delivery
 import { FindNearestDeliveryPartnersRequestDto, FindNearestDeliveryPartnersResponseDto } from '../../dto/delivery-boy/find-nearest-delivery-partners.dto';
 import { AssignOrderDTO, AssignOrderResponseDTO } from '../../dto/delivery-boy/assign-order.dto';
 import { completeDeliveryDTO, completeDeliveryResponseDTO } from '../../dto/delivery-boy/complete-delivery.dto';
+import { OrderEarningsDTO, OrderEarningsResponseDTO } from '../../dto/delivery-boy/order-earings.dto';
 
 
 export interface IDeliveryBoyTrackingService {
@@ -14,5 +15,5 @@ export interface IDeliveryBoyTrackingService {
     assignOrder(data: AssignOrderDTO): Promise<AssignOrderResponseDTO>;
     updateDeliveryBoyLocation(data: UpdateLocationDto): Promise<UpdateLocationResponseDto>;
     completeDelivery(data: completeDeliveryDTO): Promise<completeDeliveryResponseDTO>;
-    orderEarnings(data: { paymentMethod: string, deliveryBoyId: string, finalTotalDistance: number;orderAmount:number,order_id:string }): Promise<any>
+    orderEarnings(data: OrderEarningsDTO): Promise<OrderEarningsResponseDTO>
 }

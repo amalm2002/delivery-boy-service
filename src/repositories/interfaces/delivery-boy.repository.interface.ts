@@ -16,14 +16,7 @@ export interface IDeliveryBoyRepository {
   getRejectedDocuments(deliveryBoyId: string): Promise<{ success: boolean; data?: Partial<IDeliveryBoy>; message?: string }>;
   updateDeliveryBoyById(id: string, update: Partial<IDeliveryBoy> | UpdateQuery<IDeliveryBoy>): Promise<{ success: boolean; data?: IDeliveryBoy; message?: string }>;
   updateDeliveryBoyWithOperators(id: string, update: UpdateQuery<IDeliveryBoy>): Promise<{ success: boolean; data?: IDeliveryBoy; message?: string }>;
-  deliveryBoyLocationUpdateRedis(locationData: {
-    latitude: number;
-    longitude: number;
-    deliveryBoyId: string;
-  }): Promise<{
-    success: boolean;
-    message?: string;
-  }>;
+  deliveryBoyLocationUpdateRedis(locationData: { latitude: number; longitude: number; deliveryBoyId: string; }): Promise<{ success: boolean; message?: string; }>;
   countPendingOrdersByVehicleType(vehicleType: string): Promise<number>;
   updateEarningsAndCash(
     id: string,
@@ -41,6 +34,5 @@ export interface IDeliveryBoyRepository {
   findReviewByUserOrderAndDeliveryBoy(deliveryBoyId: string, userId: string, orderId: string): Promise<any>
   updateOne(filter: any, update: any): Promise<IDeliveryBoy | null>
   updateZone(deliveryBoyId: string, zoneId: string, zoneName: string): Promise<IDeliveryBoy | null>
-
   getDeliveryBoyChartData(query: any): Promise<{ _id: string; name: string; completedDeliveries: number; totalEarnings: number }[]>;
 }

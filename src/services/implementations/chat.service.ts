@@ -1,8 +1,13 @@
 import { IChatRepository } from '../../repositories/interfaces/chat.repository.interfaces';
 import { IChatService } from '../interfaces/chat.service.interfaces';
-import { ChatState } from '../../models/chat.model';
 import { Concern } from '../../models/concern.model';
 import { IDeliveryBoyRepository } from '../../repositories/interfaces/delivery-boy.repository.interface';
+import { GetChatDTO, GetChatResponseDTO } from '../../dto/chat/get-chat.dto';
+import { SaveChatDTO } from '../../dto/chat/save-chat.dto';
+import { SubmitConcernDTO, SubmitConcernResponseDTO } from '../../dto/chat/submit-concern-chat.dto';
+import { SubmitZoneChangeRequestDTO, SubmitZoneChangeRequestResponseDTO } from '../../dto/chat/submit-zone-request-chat.dto';
+import { GetConcernResponseDTO } from '../../dto/chat/get-concern.dto';
+import { VerifyConcernDTO, VerifyConcernResponseDTO } from '../../dto/chat/verify-concern.dto';
 
 export default class ChatService implements IChatService {
     private chatRepository: IChatRepository;
@@ -16,7 +21,7 @@ export default class ChatService implements IChatService {
         this.deliveryBoyrepository = deliveryBoyrepository;
     }
 
-    async getChatState(data: { deliveryBoyId: string }): Promise<{ success: boolean; data?: ChatState | null; message?: string }> {
+    async getChatState(data: GetChatDTO): Promise<GetChatResponseDTO> {
         try {
             const chatState = await this.chatRepository.getChatState(data.deliveryBoyId);
             return { success: true, data: chatState };
@@ -25,7 +30,7 @@ export default class ChatService implements IChatService {
         }
     }
 
-    async saveChatState(data: { deliveryBoyId: string; state: Partial<ChatState> }): Promise<{ success: boolean; data?: ChatState; message?: string }> {
+    async saveChatState(data: SaveChatDTO): Promise<GetChatResponseDTO> {
         try {
             const chatState = await this.chatRepository.saveChatState(data.deliveryBoyId, data.state);
             return { success: true, data: chatState };
@@ -34,7 +39,7 @@ export default class ChatService implements IChatService {
         }
     }
 
-    async clearChatState(data: { deliveryBoyId: string }): Promise<{ success: boolean; message?: string }> {
+    async clearChatState(data: GetChatDTO): Promise<GetChatResponseDTO> {
         try {
             await this.chatRepository.clearChatState(data.deliveryBoyId);
             return { success: true, message: 'Chat state cleared' };
@@ -43,12 +48,7 @@ export default class ChatService implements IChatService {
         }
     }
 
-    async submitConcern(data: {
-        deliveryBoyId: string;
-        selectedOption: { _id?: string; title: string; description?: string; category?: string; isActive?: boolean; responseMessage?: string } | null;
-        reason: string;
-        description: string;
-    }): Promise<any> {
+    async submitConcern(data: SubmitConcernDTO): Promise<SubmitConcernResponseDTO> {
         try {
             const { deliveryBoyId, selectedOption, reason, description } = data;
 
@@ -99,14 +99,7 @@ export default class ChatService implements IChatService {
         }
     }
 
-    async submitZoneChangeRequest(data: {
-        deliveryBoyId: string;
-        concernId: string;
-        zoneId: string;
-        zoneName: string;
-        reason: string;
-        description: string;
-    }): Promise<any> {
+    async submitZoneChangeRequest(data:SubmitZoneChangeRequestDTO): Promise<SubmitZoneChangeRequestResponseDTO> {
         try {
             const { deliveryBoyId, concernId, zoneId, zoneName } = data;
 
@@ -152,7 +145,7 @@ export default class ChatService implements IChatService {
         }
     }
 
-    async getAllConcerns(data: void): Promise<any> {
+    async getAllConcerns(data: void): Promise<GetConcernResponseDTO> {
         try {
             const response = await this.chatRepository.getAllConcerns(data)
             if (!response) {
@@ -164,7 +157,7 @@ export default class ChatService implements IChatService {
         }
     }
 
-    async verifyTheConcern(data: { id: string; newStatus: 'approved' | 'rejected'; rejectionReason?: string; zoneId?: string; zoneName?: string; deliveryBoyId?: string }): Promise<any> {
+    async verifyTheConcern(data: VerifyConcernDTO): Promise<VerifyConcernResponseDTO> {
         try {
             const { id, newStatus, rejectionReason, zoneId, zoneName, deliveryBoyId } = data;
 
@@ -189,7 +182,7 @@ export default class ChatService implements IChatService {
         }
     }
 
-    async getDeliveryBoyConcerns(data: { deliveryBoyId: string }): Promise<any> {
+    async getDeliveryBoyConcerns(data: GetChatDTO): Promise<GetConcernResponseDTO> {
         try {
             const { deliveryBoyId } = data
             const concern = await this.chatRepository.getConcernByDeliveryBoyId(deliveryBoyId)

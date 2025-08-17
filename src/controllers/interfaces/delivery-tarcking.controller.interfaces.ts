@@ -5,6 +5,7 @@ import { GetDeliveryBoyDetailsResponseDto } from '../../dto/delivery-boy/deliver
 import { FindNearestDeliveryPartnersRequestDto, FindNearestDeliveryPartnersResponseDto } from '../../dto/delivery-boy/find-nearest-delivery-partners.dto';
 import { UpdateLocationDto, UpdateLocationResponseDto } from '../../dto/delivery-boy/update.location.dto';
 import { UpdateOnlineStatusDTO, UpdateOnlineStatusResponseDto } from '../../dto/delivery-boy/update.online.status.dto';
+import { OrderEarningsDTO, OrderEarningsResponseDTO } from '../../dto/delivery-boy/order-earings.dto';
 
 export interface IDeliveryTrackingController {
     updateOnlineStatus(data: UpdateOnlineStatusDTO): Promise<UpdateOnlineStatusResponseDto>;
@@ -14,5 +15,5 @@ export interface IDeliveryTrackingController {
     assignOrder(call: ServerUnaryCall<AssignOrderDTO, AssignOrderResponseDTO>, callback: sendUnaryData<AssignOrderResponseDTO>): Promise<void>
     updateDeliveryBoyLocation(data: UpdateLocationDto): Promise<UpdateLocationResponseDto>
     completeDelivery(data: completeDeliveryDTO): Promise<completeDeliveryResponseDTO>;
-    orderEarnings(data: { paymentMethod: string, deliveryBoyId: string, finalTotalDistance: number, orderAmount: number, order_id: string }): Promise<any>
+    orderEarnings(data: OrderEarningsDTO): Promise<OrderEarningsResponseDTO>
 }
