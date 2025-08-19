@@ -10,20 +10,15 @@ import { GetConcernResponseDTO } from '../../dto/chat/get-concern.dto';
 import { VerifyConcernDTO, VerifyConcernResponseDTO } from '../../dto/chat/verify-concern.dto';
 
 export default class ChatService implements IChatService {
-    private chatRepository: IChatRepository;
-    private deliveryBoyrepository: IDeliveryBoyRepository;
 
     constructor(
-        chatRepository: IChatRepository,
-        deliveryBoyrepository: IDeliveryBoyRepository
-    ) {
-        this.chatRepository = chatRepository;
-        this.deliveryBoyrepository = deliveryBoyrepository;
-    }
+        private readonly _chatRepository: IChatRepository,
+        private readonly _deliveryBoyrepository: IDeliveryBoyRepository
+    ) { }
 
     async getChatState(data: GetChatDTO): Promise<GetChatResponseDTO> {
         try {
-            const chatState = await this.chatRepository.getChatState(data.deliveryBoyId);
+            const chatState = await this._chatRepository.getChatState(data.deliveryBoyId);
             return { success: true, data: chatState };
         } catch (error) {
             return { success: false, message: (error as Error).message };
@@ -32,7 +27,7 @@ export default class ChatService implements IChatService {
 
     async saveChatState(data: SaveChatDTO): Promise<GetChatResponseDTO> {
         try {
-            const chatState = await this.chatRepository.saveChatState(data.deliveryBoyId, data.state);
+            const chatState = await this._chatRepository.saveChatState(data.deliveryBoyId, data.state);
             return { success: true, data: chatState };
         } catch (error) {
             return { success: false, message: (error as Error).message };
@@ -41,7 +36,7 @@ export default class ChatService implements IChatService {
 
     async clearChatState(data: GetChatDTO): Promise<GetChatResponseDTO> {
         try {
-            await this.chatRepository.clearChatState(data.deliveryBoyId);
+            await this._chatRepository.clearChatState(data.deliveryBoyId);
             return { success: true, message: 'Chat state cleared' };
         } catch (error) {
             return { success: false, message: (error as Error).message };
@@ -52,7 +47,7 @@ export default class ChatService implements IChatService {
         try {
             const { deliveryBoyId, selectedOption, reason, description } = data;
 
-            let chatState = await this.chatRepository.getChatState(deliveryBoyId);
+            let chatState = await this._chatRepository.getChatState(deliveryBoyId);
 
             const concernData: {
                 deliveryBoyId: string;
@@ -70,10 +65,10 @@ export default class ChatService implements IChatService {
                 createdAt: new Date(),
             };
 
-            const concern = await this.chatRepository.saveConcern(concernData);
+            const concern = await this._chatRepository.saveConcern(concernData);
 
             if (!chatState) {
-                chatState = await this.chatRepository.saveChatState(deliveryBoyId, {
+                chatState = await this._chatRepository.saveChatState(deliveryBoyId, {
                     deliveryBoyId,
                     messages: [],
                     currentStep: selectedOption?.title === 'Zone Change Request' ? 'zones' : 'completed',
@@ -83,7 +78,7 @@ export default class ChatService implements IChatService {
                     concernId: concern._id.toString(),
                 });
             } else {
-                chatState = await this.chatRepository.saveChatState(deliveryBoyId, {
+                chatState = await this._chatRepository.saveChatState(deliveryBoyId, {
                     ...chatState,
                     currentStep: selectedOption?.title === 'Zone Change Request' ? 'zones' : 'completed',
                     selectedOption: selectedOption || chatState.selectedOption,
@@ -99,16 +94,16 @@ export default class ChatService implements IChatService {
         }
     }
 
-    async submitZoneChangeRequest(data:SubmitZoneChangeRequestDTO): Promise<SubmitZoneChangeRequestResponseDTO> {
+    async submitZoneChangeRequest(data: SubmitZoneChangeRequestDTO): Promise<SubmitZoneChangeRequestResponseDTO> {
         try {
             const { deliveryBoyId, concernId, zoneId, zoneName } = data;
 
-            let chatState = await this.chatRepository.getChatState(deliveryBoyId);
+            let chatState = await this._chatRepository.getChatState(deliveryBoyId);
 
-            await this.chatRepository.updateConcernZone(concernId, zoneId, zoneName);
+            await this._chatRepository.updateConcernZone(concernId, zoneId, zoneName);
 
             if (!chatState) {
-                chatState = await this.chatRepository.saveChatState(deliveryBoyId, {
+                chatState = await this._chatRepository.saveChatState(deliveryBoyId, {
                     deliveryBoyId,
                     messages: [],
                     currentStep: 'completed',
@@ -118,7 +113,7 @@ export default class ChatService implements IChatService {
                     concernId,
                 });
             } else {
-                chatState = await this.chatRepository.saveChatState(deliveryBoyId, {
+                chatState = await this._chatRepository.saveChatState(deliveryBoyId, {
                     ...chatState,
                     selectedZone: zoneName,
                     currentStep: 'completed',
@@ -138,7 +133,7 @@ export default class ChatService implements IChatService {
 
     async updateConcernZone(concernId: string, zoneId: string, zoneName: string): Promise<Concern> {
         try {
-            const concern = await this.chatRepository.updateConcernZone(concernId, zoneId, zoneName);
+            const concern = await this._chatRepository.updateConcernZone(concernId, zoneId, zoneName);
             return concern;
         } catch (error) {
             throw new Error(`Failed to update concern zone: ${(error as Error).message}`);
@@ -147,7 +142,7 @@ export default class ChatService implements IChatService {
 
     async getAllConcerns(data: void): Promise<GetConcernResponseDTO> {
         try {
-            const response = await this.chatRepository.getAllConcerns(data)
+            const response = await this._chatRepository.getAllConcerns(data)
             if (!response) {
                 return { success: false, message: 'No concerns found' }
             }
@@ -166,13 +161,13 @@ export default class ChatService implements IChatService {
             if (newStatus === 'rejected' && rejectionReason) {
                 updateData.rejectionReason = rejectionReason;
             }
-            const concern = await this.chatRepository.updateConcernStatus(id, updateData);
+            const concern = await this._chatRepository.updateConcernStatus(id, updateData);
             if (!concern) {
                 throw new Error('Concern not found');
             }
 
             if (newStatus === 'approved' && zoneId && zoneName && deliveryBoyId) {
-                await this.deliveryBoyrepository.updateZone(deliveryBoyId, zoneId, zoneName);
+                await this._deliveryBoyrepository.updateZone(deliveryBoyId, zoneId, zoneName);
             }
 
             return { success: true, message: `Concern ${newStatus} successfully`, data: concern };
@@ -185,7 +180,7 @@ export default class ChatService implements IChatService {
     async getDeliveryBoyConcerns(data: GetChatDTO): Promise<GetConcernResponseDTO> {
         try {
             const { deliveryBoyId } = data
-            const concern = await this.chatRepository.getConcernByDeliveryBoyId(deliveryBoyId)
+            const concern = await this._chatRepository.getConcernByDeliveryBoyId(deliveryBoyId)
             if (!concern) {
                 return { success: false, message: 'No concern found' }
             }

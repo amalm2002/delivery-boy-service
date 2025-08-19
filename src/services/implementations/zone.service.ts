@@ -7,10 +7,12 @@ import { ZoneDetailsDTO } from '../../dto/zone/zone-details.dto';
 import { Zone } from '../../dto/zone/fetch.zone.dto';
 
 export class ZoneService implements IZoneService {
-  constructor(private zoneRepository: IZoneRepository) { }
+  constructor(
+    private readonly _zoneRepository: IZoneRepository
+  ) { }
 
   async createZone(dto: CreateZoneDto): Promise<CreateZoneResponseDto> {
-    const existingZone = await this.zoneRepository.findByName(dto.name);
+    const existingZone = await this._zoneRepository.findByName(dto.name);
     if (existingZone) {
       throw new Error('Zone with the same name already exists');
     }
@@ -20,14 +22,14 @@ export class ZoneService implements IZoneService {
       longitude: coord[1],
     }));
 
-    return await this.zoneRepository.createZone({
+    return await this._zoneRepository.createZone({
       name: dto.name,
       coordinates: formattedCoordinates,
     });
   }
 
   async fetchZones(): Promise<ZoneDetailsDTO[]> {
-    const zones = await this.zoneRepository.getAllZones();
+    const zones = await this._zoneRepository.getAllZones();
 
     return zones.map(zone => ({
       _id: zone._id.toString(),
@@ -40,6 +42,6 @@ export class ZoneService implements IZoneService {
   }
 
   async deleteZone(dto: DeleteZoneDto): Promise<Zone | null> {
-    return await this.zoneRepository.deleteZone(dto.id);
+    return await this._zoneRepository.deleteZone(dto.id);
   }
 }

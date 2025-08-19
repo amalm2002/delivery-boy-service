@@ -21,16 +21,16 @@ import { GetDeliveryBoyChartDataDTO, GetDeliveryBoyChartDataRequestDTO } from '.
 
 export class DeliveryBoyService implements IDeliveryBoyService {
   constructor(
-    private deliveryBoyRepository: IDeliveryBoyRepository,
-    private zoneRepository: IZoneRepository,
-    private authService: IAuthService,
-    private deliveryRateRepository: IDeliveryRateModelRepository,
+    private readonly _deliveryBoyRepository: IDeliveryBoyRepository,
+    private readonly _zoneRepository: IZoneRepository,
+    private readonly _authService: IAuthService,
+    private readonly _deliveryRateRepository: IDeliveryRateModelRepository,
   ) { }
 
   private async handleLogin(deliveryBoy: IDeliveryBoy): Promise<CreateDeliveryBoyResponseDTO> {
     const role = 'DeliveryBoy';
-    const token = await this.authService.createToken(deliveryBoy._id.toString(), '15m', role);
-    const refreshToken = await this.authService.createToken(deliveryBoy._id.toString(), '7d', role);
+    const token = await this._authService.createToken(deliveryBoy._id.toString(), '15m', role);
+    const refreshToken = await this._authService.createToken(deliveryBoy._id.toString(), '7d', role);
 
     return {
       message: 'Success',
@@ -55,7 +55,7 @@ export class DeliveryBoyService implements IDeliveryBoyService {
       return { message: 'Mobile number is required', success: false };
     }
 
-    let deliveryBoy = await this.deliveryBoyRepository.findByMobile(mobile);
+    let deliveryBoy = await this._deliveryBoyRepository.findByMobile(mobile);
 
     if (!deliveryBoy) {
       const deliveryBoyData: Partial<DeliveryBoyDto> = {
@@ -64,7 +64,7 @@ export class DeliveryBoyService implements IDeliveryBoyService {
         isVerified: false,
         status: 'pending',
       };
-      deliveryBoy = await this.deliveryBoyRepository.create(deliveryBoyData);
+      deliveryBoy = await this._deliveryBoyRepository.create(deliveryBoyData);
     }
 
     let missingMessages = '';
@@ -107,7 +107,7 @@ export class DeliveryBoyService implements IDeliveryBoyService {
 
   async updateLocation(dto: UpdateLocationDto): Promise<UpdateLocationResponseDto> {
     try {
-      const result = await this.deliveryBoyRepository.deliveryBoyLocationUpdate(dto);
+      const result = await this._deliveryBoyRepository.deliveryBoyLocationUpdate(dto);
 
       if (!result.success) {
         return {
@@ -152,7 +152,7 @@ export class DeliveryBoyService implements IDeliveryBoyService {
       }
       if (updateFields.profileImage) updateData.profileImage = updateFields.profileImage;
 
-      const result = await this.deliveryBoyRepository.updateById(deliveryBoyId, updateData);
+      const result = await this._deliveryBoyRepository.updateById(deliveryBoyId, updateData);
 
       if (!result.success) {
         return {
@@ -179,7 +179,7 @@ export class DeliveryBoyService implements IDeliveryBoyService {
       const { deliveryBoyId, vehicle } = dto;
       const updateData: Partial<IDeliveryBoy> = { vehicle };
 
-      const result = await this.deliveryBoyRepository.updateById(deliveryBoyId, updateData);
+      const result = await this._deliveryBoyRepository.updateById(deliveryBoyId, updateData);
 
       if (!result.success) {
         return {
@@ -205,7 +205,7 @@ export class DeliveryBoyService implements IDeliveryBoyService {
     try {
       const { deliveryBoyId, zone } = dto;
 
-      const zoneDoc = await this.zoneRepository.findById(zone);
+      const zoneDoc = await this._zoneRepository.findById(zone);
       if (!zoneDoc) {
         return {
           success: false,
@@ -220,7 +220,7 @@ export class DeliveryBoyService implements IDeliveryBoyService {
         },
       };
 
-      const result = await this.deliveryBoyRepository.updateById(deliveryBoyId, updateData);
+      const result = await this._deliveryBoyRepository.updateById(deliveryBoyId, updateData);
 
       if (!result.success) {
         return {
@@ -244,7 +244,7 @@ export class DeliveryBoyService implements IDeliveryBoyService {
 
   async getAllDeliveryBoys(): Promise<Partial<DeliveryBoyDto>[]> {
     try {
-      return await this.deliveryBoyRepository.getAllDeliveryBoys();
+      return await this._deliveryBoyRepository.getAllDeliveryBoys();
     } catch (error) {
       throw new Error(`Error fetching delivery boys: ${(error as Error).message}`);
     }
@@ -252,7 +252,7 @@ export class DeliveryBoyService implements IDeliveryBoyService {
 
   async getAllDeliveryBoy(): Promise<Partial<DeliveryBoyDto>[]> {
     try {
-      return await this.deliveryBoyRepository.getAllDeliveryBoy();
+      return await this._deliveryBoyRepository.getAllDeliveryBoy();
     } catch (error) {
       throw new Error(`Error fetching delivery boys: ${(error as Error).message}`);
     }
@@ -262,7 +262,7 @@ export class DeliveryBoyService implements IDeliveryBoyService {
     try {
       const { id } = data
       const deliveryBoyId = id
-      return await this.deliveryBoyRepository.updateTheDeliveryBoyStatus(deliveryBoyId);
+      return await this._deliveryBoyRepository.updateTheDeliveryBoyStatus(deliveryBoyId);
     } catch (error) {
       throw new Error(`Error updating delivery boy status: ${(error as Error).message}`);
     }
@@ -271,7 +271,7 @@ export class DeliveryBoyService implements IDeliveryBoyService {
   async fetchDeliveryBoyDetails(data: FetchDeliveryBoyDTO): Promise<DeliveryBoyDto | null> {
     try {
       const deliveryBoyId = data.id ? data.id : data.deliveryBoyId
-      const response = await this.deliveryBoyRepository.findById(deliveryBoyId);
+      const response = await this._deliveryBoyRepository.findById(deliveryBoyId);
       return response
     } catch (error) {
       throw new Error(`Error fetching delivery boy details: ${(error as Error).message}`);
@@ -280,7 +280,7 @@ export class DeliveryBoyService implements IDeliveryBoyService {
 
   async verifyDocuments(dto: VerifyDocumentsDto): Promise<DeliveryBoyDto | { message: string }> {
     try {
-      return await this.deliveryBoyRepository.verifyDeliveryBoyDocuments(dto.deliveryBoyId);
+      return await this._deliveryBoyRepository.verifyDeliveryBoyDocuments(dto.deliveryBoyId);
     } catch (error) {
       return { message: (error as Error).message };
     }
@@ -288,7 +288,7 @@ export class DeliveryBoyService implements IDeliveryBoyService {
 
   async rejectDocuments(dto: RejectDocumentsDto): Promise<DeliveryBoyDto | { message: string }> {
     try {
-      return await this.deliveryBoyRepository.rejectDeliveryBoyDocuments(dto.deliveryBoyId, dto.rejectionReason);
+      return await this._deliveryBoyRepository.rejectDeliveryBoyDocuments(dto.deliveryBoyId, dto.rejectionReason);
     } catch (error) {
       return { message: (error as Error).message };
     }
@@ -296,7 +296,7 @@ export class DeliveryBoyService implements IDeliveryBoyService {
 
   async getRejectedDocuments(data: GetRejectedDocumentDTO): Promise<GetRejectedDocumentServiceResponseDTO> {
     try {
-      const response = await this.deliveryBoyRepository.getRejectedDocuments(data.id);
+      const response = await this._deliveryBoyRepository.getRejectedDocuments(data.id);
       return response
     } catch (error) {
       return { success: false, message: (error as Error).message };
@@ -305,7 +305,7 @@ export class DeliveryBoyService implements IDeliveryBoyService {
 
   async addRidePaymentRule(data: AddRidePaymentRuleDTO): Promise<AddRidePaymentRuleResponseDTO> {
     try {
-      const response = await this.deliveryRateRepository.createRidePaymentRule(data)
+      const response = await this._deliveryRateRepository.createRidePaymentRule(data)
       return {
         success: true,
         message: 'Ride payment rule created successfully',
@@ -318,7 +318,7 @@ export class DeliveryBoyService implements IDeliveryBoyService {
 
   async getRideratePaymentRule(data: void): Promise<GetRideratePaymentRuleDTO> {
     try {
-      const response = await this.deliveryRateRepository.getRideRatePaymentRules(data)
+      const response = await this._deliveryRateRepository.getRideRatePaymentRules(data)
       return {
         success: true,
         message: 'Fetch the all ride rate payments successfully',
@@ -331,11 +331,11 @@ export class DeliveryBoyService implements IDeliveryBoyService {
 
   async updateRidePaymentRule(data: UpdateRidePaymentRuleDTO): Promise<UpdateRidePaymentRuleResponseDTO> {
     try {
-      const existingRule = await this.deliveryRateRepository.findOne({ _id: data.id });
+      const existingRule = await this._deliveryRateRepository.findOne({ _id: data.id });
       if (!existingRule) {
         throw new Error(`Rule with ID "${data.id}" not found`);
       }
-      const response = await this.deliveryRateRepository.updateOne(
+      const response = await this._deliveryRateRepository.updateOne(
         { _id: data.id },
         {
           minKm: data.KM,
@@ -357,12 +357,12 @@ export class DeliveryBoyService implements IDeliveryBoyService {
   async blockRidePaymentRule(data: BlockRidePaymentRuleDTO): Promise<UpdateRidePaymentRuleResponseDTO> {
     try {
 
-      const pendingOrders = await this.deliveryBoyRepository.countPendingOrdersByVehicleType(data.vehicleType);
+      const pendingOrders = await this._deliveryBoyRepository.countPendingOrdersByVehicleType(data.vehicleType);
       if (pendingOrders > 0) {
         throw new Error(`Cannot block rule for "${data.vehicleType}" because ${pendingOrders} delivery boy(s) have pending orders`);
       }
 
-      const existingRule = await this.deliveryRateRepository.findOne({ _id: data.id });
+      const existingRule = await this._deliveryRateRepository.findOne({ _id: data.id });
       if (!existingRule) {
         throw new Error(`Rule with ID "${data.id}" not found`);
       }
@@ -370,7 +370,7 @@ export class DeliveryBoyService implements IDeliveryBoyService {
         throw new Error(`Rule with ID "${data.id}" is already blocked`);
       }
 
-      const response = await this.deliveryRateRepository.updateOne(
+      const response = await this._deliveryRateRepository.updateOne(
         { _id: data.id },
         { isActive: false, updatedAt: new Date() }
       );
@@ -386,7 +386,7 @@ export class DeliveryBoyService implements IDeliveryBoyService {
 
   async unblockRidePaymentRule(data: UnblockRidePaymentRuleDTO): Promise<UpdateRidePaymentRuleResponseDTO> {
     try {
-      const existingRule = await this.deliveryRateRepository.findOne({ _id: data.id });
+      const existingRule = await this._deliveryRateRepository.findOne({ _id: data.id });
       if (!existingRule) {
         throw new Error(`Rule with ID "${data.id}" not found`);
       }
@@ -394,7 +394,7 @@ export class DeliveryBoyService implements IDeliveryBoyService {
         throw new Error(`Rule with ID "${data.id}" is already active`);
       }
 
-      const response = await this.deliveryRateRepository.updateOne(
+      const response = await this._deliveryRateRepository.updateOne(
         { _id: data.id },
         { isActive: true, updatedAt: new Date() }
       );
@@ -411,14 +411,14 @@ export class DeliveryBoyService implements IDeliveryBoyService {
   async checkTheInHandCashLimit(data: CheckTheInHandCashLimitDTO): Promise<CheckTheInHandCashLimitResponseDTO> {
     try {
       const { deliveryBoyId } = data
-      const deliveryBoy = await this.deliveryBoyRepository.findOne(deliveryBoyId)
+      const deliveryBoy = await this._deliveryBoyRepository.findOne(deliveryBoyId)
       if (!deliveryBoy) {
         return { success: false, message: 'No deliveryBoy Found!' }
       }
 
       if (deliveryBoy.inHandCash > 1000) {
         const isOnline = false
-        await this.deliveryBoyRepository.setOffLineOnPartner(deliveryBoyId, isOnline)
+        await this._deliveryBoyRepository.setOffLineOnPartner(deliveryBoyId, isOnline)
         return { success: false, message: 'Your In-Hand cash limit is exceed please pay the cash after get your order' }
       }
       return { success: true, message: 'No Cash limit is exceed' }
@@ -429,7 +429,7 @@ export class DeliveryBoyService implements IDeliveryBoyService {
 
   async updatedeliveryBoyEarnings(data: UpdatedeliveryBoyEarningsDTO): Promise<UpdatedeliveryBoyEarningsResponseDTO> {
     try {
-      const deliveryBoy = await this.deliveryBoyRepository.findById(data.deliveryBoyId);
+      const deliveryBoy = await this._deliveryBoyRepository.findById(data.deliveryBoyId);
       if (!deliveryBoy) {
         throw new Error('Delivery boy not found');
       }
@@ -493,7 +493,7 @@ export class DeliveryBoyService implements IDeliveryBoyService {
     try {
       const { deliveryBoyId, amount } = data;
 
-      const deliveryBoy = await this.deliveryBoyRepository.findById(deliveryBoyId);
+      const deliveryBoy = await this._deliveryBoyRepository.findById(deliveryBoyId);
       if (!deliveryBoy) {
         throw new Error('Delivery boy not found');
       }
@@ -505,7 +505,7 @@ export class DeliveryBoyService implements IDeliveryBoyService {
         throw new Error(`Invalid amount: ${amount}. Must match either inHandCash (${originalInHandCash}) or amountToPayDeliveryBoy (${originalAmountToPayDeliveryBoy}).`);
       }
 
-      const updateResult = await this.deliveryBoyRepository.updateById(deliveryBoyId, {
+      const updateResult = await this._deliveryBoyRepository.updateById(deliveryBoyId, {
         inHandCash: 0,
         amountToPayDeliveryBoy: 0,
         isOnline: true
@@ -535,13 +535,13 @@ export class DeliveryBoyService implements IDeliveryBoyService {
 
   async userReviewForDeliveryBoy(data: UserReviewDTO): Promise<DeliveryBoyReviewResponseDTO> {
     try {
-      const deliveryBoy = await this.deliveryBoyRepository.findById(data.deliveryBoyId);
+      const deliveryBoy = await this._deliveryBoyRepository.findById(data.deliveryBoyId);
 
       if (!deliveryBoy) {
         return { success: false, message: "Delivery boy not found" };
       }
 
-      const updated = await this.deliveryBoyRepository.addReview(data.deliveryBoyId, {
+      const updated = await this._deliveryBoyRepository.addReview(data.deliveryBoyId, {
         ...data,
         createdAt: new Date()
       });
@@ -576,13 +576,13 @@ export class DeliveryBoyService implements IDeliveryBoyService {
     try {
       const { deliveryBoyId, userId, orderId } = data
 
-      const deliveryBoy = await this.deliveryBoyRepository.findById(data.deliveryBoyId);
+      const deliveryBoy = await this._deliveryBoyRepository.findById(data.deliveryBoyId);
 
       if (!deliveryBoy) {
         return { success: false, message: "Delivery boy not found" };
       }
 
-      const reviewData = await this.deliveryBoyRepository.findReviewByUserOrderAndDeliveryBoy(deliveryBoyId, userId, orderId);
+      const reviewData = await this._deliveryBoyRepository.findReviewByUserOrderAndDeliveryBoy(deliveryBoyId, userId, orderId);
 
       if (!reviewData || !reviewData.reviews?.length) {
         return { success: false, message: "Review not found" };
@@ -618,12 +618,12 @@ export class DeliveryBoyService implements IDeliveryBoyService {
     try {
       const { deliveryBoyId, userId, orderId } = data;
 
-      const deliveryBoy = await this.deliveryBoyRepository.findById(deliveryBoyId);
+      const deliveryBoy = await this._deliveryBoyRepository.findById(deliveryBoyId);
       if (!deliveryBoy) {
         return { success: false, message: "Delivery boy not found" };
       }
 
-      await this.deliveryBoyRepository.updateOne({ _id: deliveryBoyId },
+      await this._deliveryBoyRepository.updateOne({ _id: deliveryBoyId },
         {
           $pull: {
             reviews: {
@@ -652,7 +652,7 @@ export class DeliveryBoyService implements IDeliveryBoyService {
       if (data.startDate && data.endDate) {
         query.createdAt = { $gte: new Date(data.startDate), $lte: new Date(data.endDate) };
       }
-      const deliveries = await this.deliveryBoyRepository.getDeliveryBoyChartData(query);
+      const deliveries = await this._deliveryBoyRepository.getDeliveryBoyChartData(query);
       return {
         message: 'success',
         response: deliveries,

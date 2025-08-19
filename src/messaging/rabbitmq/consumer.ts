@@ -18,9 +18,9 @@ import ChatRepository from '../../repositories/implementations/chat.repository';
 import ChatService from '../../services/implementations/chat.service';
 
 export default class Consumer {
-  private channel: Channel;
-  private rpcQueue: string;
-  private controllers: {
+  private readonly _channel: Channel;
+  private readonly _rpcQueue: string;
+  private readonly _controllers: {
     deliveryBoyController: DeliveryBoyController;
     zoneController: ZoneController;
     deliveryTrackingController: DeliveryTrackingController;
@@ -29,8 +29,8 @@ export default class Consumer {
   };
 
   constructor(channel: Channel, rpcQueue: string) {
-    this.channel = channel;
-    this.rpcQueue = rpcQueue;
+    this._channel = channel;
+    this._rpcQueue = rpcQueue;
 
     const authService = new AuthService();
     const deliveryBoyRepository = new DeliveryBoyRepository();
@@ -46,7 +46,7 @@ export default class Consumer {
     const helpOptionService = new HelpOptionService(helpOptionRepository)
     const chatService = new ChatService(chatRepository,deliveryBoyRepository)
 
-    this.controllers = {
+    this._controllers = {
       deliveryBoyController: new DeliveryBoyController(deliveryBoyService),
       zoneController: new ZoneController(zoneService),
       deliveryTrackingController: new DeliveryTrackingController(deliveryTrackingService),
@@ -58,8 +58,8 @@ export default class Consumer {
   async consumeMessage() {
     console.log('Ready to consume messages...');
 
-    this.channel.consume(
-      this.rpcQueue,
+    this._channel.consume(
+      this._rpcQueue,
       async (message: ConsumeMessage | null) => {
         if (!message) return;
 
@@ -68,18 +68,18 @@ export default class Consumer {
 
         if (!correlationId || !replyTo) {
           console.log('Missing correlationId or replyTo.');
-          this.channel.ack(message);
+          this._channel.ack(message);
           return;
         }
 
         try {
           const content = JSON.parse(message.content.toString());
-          await MessageHandler.handle(operation, content, correlationId, replyTo, this.controllers);
-          this.channel.ack(message);
+          await MessageHandler.handle(operation, content, correlationId, replyTo, this._controllers);
+          this._channel.ack(message);
         } catch (err) {
           console.error('Error handling message:', err);
-          // this.channel.nack(message, false, true);
-          this.channel.nack(message, false, false);
+          // this._channel.nack(message, false, true);
+          this._channel.nack(message, false, false);
         }
       },
       { noAck: false }

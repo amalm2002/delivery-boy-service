@@ -13,14 +13,14 @@ import { OrderEarningsDTO, OrderEarningsResponseDTO } from '../../dto/delivery-b
 
 export class DeliveryBoyTrackingService implements IDeliveryBoyTrackingService {
   constructor(
-    private repository: IDeliveryBoyRepository,
-    private rideRateRepository: IDeliveryRateModelRepository
+    private readonly _deliveryBoyRepository: IDeliveryBoyRepository,
+    private readonly _rideRateRepository: IDeliveryRateModelRepository
   ) { }
 
   async updateOnlineStatus(dto: UpdateOnlineStatusDTO): Promise<UpdateOnlineStatusResponseDto> {
     try {
       const { deliveryBoyId, isOnline } = dto;
-      const deliveryBoy = await this.repository.findById(deliveryBoyId);
+      const deliveryBoy = await this._deliveryBoyRepository.findById(deliveryBoyId);
 
       if (!deliveryBoy) {
         return { success: false, message: 'Delivery boy not found' };
@@ -28,7 +28,7 @@ export class DeliveryBoyTrackingService implements IDeliveryBoyTrackingService {
 
       const newOnlineStatus = isOnline !== undefined ? isOnline : !deliveryBoy.isOnline;
 
-      const updatedDeliveryBoy = await this.repository.updateDeliveryBoyById(deliveryBoyId, {
+      const updatedDeliveryBoy = await this._deliveryBoyRepository.updateDeliveryBoyById(deliveryBoyId, {
         isOnline: newOnlineStatus,
       });
 
@@ -41,7 +41,7 @@ export class DeliveryBoyTrackingService implements IDeliveryBoyTrackingService {
   async getDeliveryBoyDetails(dto: UpdateOnlineStatusDTO): Promise<GetDeliveryBoyDetailsResponseDto> {
     try {
       const { deliveryBoyId } = dto;
-      const deliveryBoy = await this.repository.findById(deliveryBoyId);
+      const deliveryBoy = await this._deliveryBoyRepository.findById(deliveryBoyId);
 
       if (!deliveryBoy) {
         return { success: false, message: 'Delivery boy not found' };
@@ -77,7 +77,7 @@ export class DeliveryBoyTrackingService implements IDeliveryBoyTrackingService {
   async findNearestDeliveryPartners(location: FindNearestDeliveryPartnersRequestDto['location']): Promise<FindNearestDeliveryPartnersResponseDto> {
     try {
 
-      const deliveryBoys = await this.repository.getAllDeliveryBoys();
+      const deliveryBoys = await this._deliveryBoyRepository.getAllDeliveryBoys();
 
       const eligibleDeliveryBoys = deliveryBoys.filter(
         (db) => db.isOnline && db.pendingOrders === 0 && db.location?.latitude && db.location?.longitude
@@ -157,7 +157,7 @@ export class DeliveryBoyTrackingService implements IDeliveryBoyTrackingService {
   async updateLocation(data: UpdateLocationDto): Promise<UpdateLocationResponseDto> {
     try {
       const { deliveryBoyId, latitude, longitude } = data;
-      const result = await this.repository.deliveryBoyLocationUpdate({ deliveryBoyId, latitude, longitude });
+      const result = await this._deliveryBoyRepository.deliveryBoyLocationUpdate({ deliveryBoyId, latitude, longitude });
 
       if (result.success && result.data) {
 
@@ -179,7 +179,7 @@ export class DeliveryBoyTrackingService implements IDeliveryBoyTrackingService {
     try {
       const { deliveryBoyId } = data;
 
-      const deliveryBoy = await this.repository.findById(deliveryBoyId);
+      const deliveryBoy = await this._deliveryBoyRepository.findById(deliveryBoyId);
 
       if (!deliveryBoy) {
         return { success: false, message: 'Delivery boy not found' };
@@ -189,7 +189,7 @@ export class DeliveryBoyTrackingService implements IDeliveryBoyTrackingService {
         return { success: false, message: 'Delivery boy is offline' };
       }
 
-      const updatedDeliveryBoy = await this.repository.updateDeliveryBoyWithOperators(deliveryBoyId, {
+      const updatedDeliveryBoy = await this._deliveryBoyRepository.updateDeliveryBoyWithOperators(deliveryBoyId, {
         $inc: { pendingOrders: 1 },
       });
 
@@ -229,7 +229,7 @@ export class DeliveryBoyTrackingService implements IDeliveryBoyTrackingService {
     try {
       const { deliveryBoyId } = data;
 
-      const deliveryBoy = await this.repository.findById(deliveryBoyId);
+      const deliveryBoy = await this._deliveryBoyRepository.findById(deliveryBoyId);
       if (!deliveryBoy) {
         return { success: false, message: 'Delivery boy not found' };
       }
@@ -239,7 +239,7 @@ export class DeliveryBoyTrackingService implements IDeliveryBoyTrackingService {
         $inc: { ordersCompleted: 1 },
       };
 
-      const updatedDeliveryBoy = await this.repository.updateDeliveryBoyWithOperators(deliveryBoyId, update);
+      const updatedDeliveryBoy = await this._deliveryBoyRepository.updateDeliveryBoyWithOperators(deliveryBoyId, update);
 
       if (!updatedDeliveryBoy.success) {
         return { success: false, message: updatedDeliveryBoy.message || 'Failed to update delivery boy' };
@@ -259,13 +259,13 @@ export class DeliveryBoyTrackingService implements IDeliveryBoyTrackingService {
     try {
       const { paymentMethod, deliveryBoyId, finalTotalDistance, orderAmount, order_id } = data;
 
-      const deliveryBoy = await this.repository.findById(deliveryBoyId);
+      const deliveryBoy = await this._deliveryBoyRepository.findById(deliveryBoyId);
       if (!deliveryBoy) {
         throw new Error('Delivery boy not found');
       }
 
       const vehicleType = deliveryBoy.vehicle;
-      const rateModel = await this.rideRateRepository.findOne({ vehicleType });
+      const rateModel = await this._rideRateRepository.findOne({ vehicleType });
 
       if (!rateModel) {
         throw new Error('No active rate model found for vehicle type');
@@ -341,7 +341,7 @@ export class DeliveryBoyTrackingService implements IDeliveryBoyTrackingService {
 
       completeAmount = Math.max(monthlyAmount - updatedInHandCash, 0);
 
-      const updateResult = await this.repository.updateEarningsAndCash(
+      const updateResult = await this._deliveryBoyRepository.updateEarningsAndCash(
         deliveryBoyId,
         updatedEarnings,
         updatedInHandCash,

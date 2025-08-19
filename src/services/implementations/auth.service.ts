@@ -9,22 +9,22 @@ interface CustomJwtPayload extends JwtPayload {
 }
 
 export class AuthService implements IAuthService {
-  private readonly jwtSecretKey: string;
+  private readonly _jwtSecretKey: string;
 
   constructor() {
-    this.jwtSecretKey = process.env.USER_SECRET_KEY || 'Amal';
+    this._jwtSecretKey = process.env.USER_SECRET_KEY || 'Amal';
     if (!process.env.USER_SECRET_KEY) {
       throw new Error('USER_SECRET_KEY is not defined in the ENV file');
     }
   }
 
   async createToken(clientId: ObjectId | string, expire: string, role: string): Promise<string> {
-    return jwt.sign({ clientId, role }, this.jwtSecretKey, { expiresIn: expire as SignOptions['expiresIn'] });
+    return jwt.sign({ clientId, role }, this._jwtSecretKey, { expiresIn: expire as SignOptions['expiresIn'] });
   }
 
   verifyOption(token: string): CustomJwtPayload | { message: string } {
     try {
-      return jwt.verify(token, this.jwtSecretKey) as CustomJwtPayload;
+      return jwt.verify(token, this._jwtSecretKey) as CustomJwtPayload;
     } catch (error: any) {
       console.error('Token verification failed:', error.message);
       return { message: 'Invalid OTP' };

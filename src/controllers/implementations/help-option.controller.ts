@@ -6,15 +6,14 @@ import { DeleteHelpOptionResponseDTO } from "../../dto/help-option/delete-help-o
 import { GetHelpOptionResponseDTO } from "../../dto/help-option/get-help-option.dto";
 
 export default class HelpOptionController implements IHelpOptionController {
-    private helpOptionService: IHelpOptionService;
 
-    constructor(helpOptionService: IHelpOptionService) {
-        this.helpOptionService = helpOptionService;
-    }
+    constructor(
+        private readonly _helpOptionService: IHelpOptionService
+    ) { }
 
     async addDeliveryBoyHelpOption(data: AddHelpOptionDTO): Promise<AddHelpOptionControllerResponseDTO> {
         try {
-            const helpOption = await this.helpOptionService.addDeliveryBoyHelpOptions(data);
+            const helpOption = await this._helpOptionService.addDeliveryBoyHelpOptions(data);
             return {
                 success: true,
                 data: helpOption,
@@ -27,7 +26,7 @@ export default class HelpOptionController implements IHelpOptionController {
 
     async updateDeliveryBoyHelpOption(id: string, data: AddHelpOptionDTO): Promise<UpdateHelpOptionResponseDTO> {
         try {
-            const helpOption = await this.helpOptionService.updateDeliveryBoyHelpOption(id, data);
+            const helpOption = await this._helpOptionService.updateDeliveryBoyHelpOption(id, data);
             if (!helpOption) {
                 return {
                     success: false,
@@ -46,7 +45,7 @@ export default class HelpOptionController implements IHelpOptionController {
 
     async deleteDeliveryBoyHelpOption(id: string): Promise<DeleteHelpOptionResponseDTO> {
         try {
-            const result = await this.helpOptionService.deleteDeliveryBoyHelpOption(id);
+            const result = await this._helpOptionService.deleteDeliveryBoyHelpOption(id);
             if (!result) {
                 return {
                     success: false,
@@ -64,7 +63,7 @@ export default class HelpOptionController implements IHelpOptionController {
 
     async getAllDeliveryBoyHelpOptions(): Promise<GetHelpOptionResponseDTO> {
         try {
-            const result = await this.helpOptionService.getAllDeliveryBoyHelpOptions();
+            const result = await this._helpOptionService.getAllDeliveryBoyHelpOptions();
             if (!result) {
                 return {
                     success: false,

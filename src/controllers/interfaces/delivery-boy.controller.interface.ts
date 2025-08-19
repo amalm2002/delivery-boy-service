@@ -29,7 +29,10 @@ export interface IDeliveryBoyController {
   getAllDeliveryBoys(data: void): Promise<GetAllDeliveryBoysResponseDTO>;
   getAllDeliveryBoy(data: void): Promise<GetAllDeliveryBoysResponseDTO>;
   updateDeliveryBoyStatus(data: FetchDeliveryBoyDTO): Promise<UpdateOnlineStatusResponseDTO>;
-  fetchDeliveryBoyDetailsGrpc(call: ServerUnaryCall<FetchDeliveryBoyDTO, UpdateOnlineStatusResponseDTO>, callback: sendUnaryData<UpdateOnlineStatusResponseDTO>): Promise<void>
+  fetchDeliveryBoyDetailsGrpc(
+    call: ServerUnaryCall<FetchDeliveryBoyDTO, UpdateOnlineStatusResponseDTO>,
+    callback: sendUnaryData<UpdateOnlineStatusResponseDTO>
+  ): Promise<void>
   fetchDeliveryBoyDetails(data: FetchDeliveryBoyDTO): Promise<UpdateOnlineStatusResponseDTO>;
   verifyDocuments(data: VerifyDocumentsDto): Promise<VerifyDocumentsResponseDTO>;
   rejectDocuments(data: RejectDocumentsDto): Promise<RejectDocumentsResponseDTO>;
