@@ -7,4 +7,7 @@ export interface GetDeliveryBoyChartDataDTO {
 export interface GetDeliveryBoyChartDataRequestDTO {
     startDate?: string;
     endDate?: string
+    sortBy?: 'completedDeliveries' | 'totalEarnings';
+    order?: 'asc' | 'desc';
+    limit?: number;
 }

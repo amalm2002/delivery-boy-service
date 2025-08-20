@@ -5,7 +5,7 @@ import { Zone } from '../../dto/zone/fetch.zone.dto';
 import { ZoneDetailsDTO } from '../../dto/zone/zone-details.dto';
 
 export interface IZoneService {
-  createZone(dto: CreateZoneDto): Promise<CreateZoneResponseDto>;
+  createZone(newZone: CreateZoneDto): Promise<CreateZoneResponseDto>;
   fetchZones(): Promise<ZoneDetailsDTO[]>;
-  deleteZone(dto: DeleteZoneDto): Promise<Zone | null>;
+  deleteZone(zoneToDelete: DeleteZoneDto): Promise<Zone | null>;
 }

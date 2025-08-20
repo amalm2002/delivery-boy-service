@@ -12,35 +12,35 @@ export default class ChatController implements IChatController {
         private readonly _chatService: IChatService
     ) {}
 
-    async getChatState(data: GetChatDTO): Promise<GetChatResponseDTO> {
-        return await this._chatService.getChatState(data);
+    async getChatState(chatRequest: GetChatDTO): Promise<GetChatResponseDTO> {
+        return await this._chatService.getChatState(chatRequest);
     }
 
-    async saveChatState(data: SaveChatDTO): Promise<{ success: boolean; data?: any; message?: string }> {
-        return await this._chatService.saveChatState(data);
+    async saveChatState(chatToSave: SaveChatDTO): Promise<{ success: boolean; data?: any; message?: string }> {
+        return await this._chatService.saveChatState(chatToSave);
     }
 
-    async clearChatState(data:GetChatDTO): Promise<GetChatResponseDTO> {
-        return await this._chatService.clearChatState(data);
+    async clearChatState(chatToClear:GetChatDTO): Promise<GetChatResponseDTO> {
+        return await this._chatService.clearChatState(chatToClear);
     }
 
-    async submitConcern(data:SubmitConcernDTO): Promise<SubmitConcernResponseDTO> {
-        return await this._chatService.submitConcern(data);
+    async submitConcern(concern:SubmitConcernDTO): Promise<SubmitConcernResponseDTO> {
+        return await this._chatService.submitConcern(concern);
     }
 
-    async submitZoneChangeRequest(data: SubmitZoneChangeRequestDTO): Promise<SubmitZoneChangeRequestResponseDTO> {
-        return await this._chatService.submitZoneChangeRequest(data);
+    async submitZoneChangeRequest(zoneRequest: SubmitZoneChangeRequestDTO): Promise<SubmitZoneChangeRequestResponseDTO> {
+        return await this._chatService.submitZoneChangeRequest(zoneRequest);
     }
 
     async getAllConcerns(data: void): Promise<GetConcernResponseDTO> {
         return await this._chatService.getAllConcerns(data)
     }
 
-    async verifyTheConcern(data: VerifyConcernDTO): Promise<VerifyConcernResponseDTO> {
-        return await this._chatService.verifyTheConcern(data)
+    async verifyTheConcern(verifyRequest: VerifyConcernDTO): Promise<VerifyConcernResponseDTO> {
+        return await this._chatService.verifyTheConcern(verifyRequest)
     }
 
-    async getDeliveryBoyConcerns(data: GetChatDTO): Promise<GetConcernResponseDTO> {
-        return await this._chatService.getDeliveryBoyConcerns(data)
+    async getDeliveryBoyConcerns(deliveryBoyRequest: GetChatDTO): Promise<GetConcernResponseDTO> {
+        return await this._chatService.getDeliveryBoyConcerns(deliveryBoyRequest)
     }
 }

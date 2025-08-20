@@ -11,19 +11,19 @@ export class ZoneService implements IZoneService {
     private readonly _zoneRepository: IZoneRepository
   ) { }
 
-  async createZone(dto: CreateZoneDto): Promise<CreateZoneResponseDto> {
-    const existingZone = await this._zoneRepository.findByName(dto.name);
+  async createZone(newZone: CreateZoneDto): Promise<CreateZoneResponseDto> {
+    const existingZone = await this._zoneRepository.findByName(newZone.name);
     if (existingZone) {
       throw new Error('Zone with the same name already exists');
     }
 
-    const formattedCoordinates = dto.coordinates.map(coord => ({
+    const formattedCoordinates = newZone.coordinates.map(coord => ({
       latitude: coord[0],
       longitude: coord[1],
     }));
 
     return await this._zoneRepository.createZone({
-      name: dto.name,
+      name: newZone.name,
       coordinates: formattedCoordinates,
     });
   }
@@ -41,7 +41,7 @@ export class ZoneService implements IZoneService {
     }));
   }
 
-  async deleteZone(dto: DeleteZoneDto): Promise<Zone | null> {
-    return await this._zoneRepository.deleteZone(dto.id);
+  async deleteZone(zoneToDelete: DeleteZoneDto): Promise<Zone | null> {
+    return await this._zoneRepository.deleteZone(zoneToDelete.id);
   }
 }

@@ -21,32 +21,32 @@ import { GetDeliveryBoyChartDataDTO, GetDeliveryBoyChartDataRequestDTO } from '.
 import { sendUnaryData, ServerUnaryCall } from '@grpc/grpc-js';
 
 export interface IDeliveryBoyController {
-  register(data: CreateDeliveryBoyDto): Promise<CreateDeliveryBoyResponseDTO>;
-  updateLocation(data: UpdateLocationDto): Promise<UpdateLocationResponseDto>;
-  updateDetails(data: UpdateDetailsDto): Promise<UpdateDetailsResponseDTO>;
-  updateVehicle(data: UpdateVehicleDto): Promise<UpdateVehicleResponseDTO>;
-  updateZone(data: UpdateZoneDto): Promise<UpdateZoneResponseDTO>;
+  register(newDeliveryBoy: CreateDeliveryBoyDto): Promise<CreateDeliveryBoyResponseDTO>;
+  updateLocation(locationUpdate: UpdateLocationDto): Promise<UpdateLocationResponseDto>;
+  updateDetails(detailsUpdate: UpdateDetailsDto): Promise<UpdateDetailsResponseDTO>;
+  updateVehicle(vehicleUpdate: UpdateVehicleDto): Promise<UpdateVehicleResponseDTO>;
+  updateZone(zoneUpdate: UpdateZoneDto): Promise<UpdateZoneResponseDTO>;
   getAllDeliveryBoys(data: void): Promise<GetAllDeliveryBoysResponseDTO>;
   getAllDeliveryBoy(data: void): Promise<GetAllDeliveryBoysResponseDTO>;
-  updateDeliveryBoyStatus(data: FetchDeliveryBoyDTO): Promise<UpdateOnlineStatusResponseDTO>;
+  updateDeliveryBoyStatus(fetchRequest: FetchDeliveryBoyDTO): Promise<UpdateOnlineStatusResponseDTO>;
   fetchDeliveryBoyDetailsGrpc(
     call: ServerUnaryCall<FetchDeliveryBoyDTO, UpdateOnlineStatusResponseDTO>,
     callback: sendUnaryData<UpdateOnlineStatusResponseDTO>
   ): Promise<void>
-  fetchDeliveryBoyDetails(data: FetchDeliveryBoyDTO): Promise<UpdateOnlineStatusResponseDTO>;
-  verifyDocuments(data: VerifyDocumentsDto): Promise<VerifyDocumentsResponseDTO>;
-  rejectDocuments(data: RejectDocumentsDto): Promise<RejectDocumentsResponseDTO>;
-  getRejectedDocuments(data: GetRejectedDocumentDTO): Promise<GetRejectedDocumentControllerResponseDTO>;
-  addRidePaymentRule(data: AddRidePaymentRuleDTO): Promise<AddRidePaymentRuleResponseDTO>
+  fetchDeliveryBoyDetails(fetchRequest: FetchDeliveryBoyDTO): Promise<UpdateOnlineStatusResponseDTO>;
+  verifyDocuments(verification: VerifyDocumentsDto): Promise<VerifyDocumentsResponseDTO>;
+  rejectDocuments(rejection: RejectDocumentsDto): Promise<RejectDocumentsResponseDTO>;
+  getRejectedDocuments(query: GetRejectedDocumentDTO): Promise<GetRejectedDocumentControllerResponseDTO>;
+  addRidePaymentRule(rule: AddRidePaymentRuleDTO): Promise<AddRidePaymentRuleResponseDTO>
   getRidePaymentRules(data: void): Promise<GetRideratePaymentRuleDTO>;
-  updateRidePaymentRule(data: UpdateRidePaymentRuleDTO): Promise<UpdateRidePaymentRuleResponseDTO>;
-  blockRidePaymentRule(data: BlockRidePaymentRuleDTO): Promise<UpdateRidePaymentRuleResponseDTO>;
-  unblockRidePaymentRule(data: UnblockRidePaymentRuleDTO): Promise<UpdateRidePaymentRuleResponseDTO>;
-  checkTheInHandCashLimit(data: CheckTheInHandCashLimitDTO): Promise<CheckTheInHandCashLimitResponseDTO>
-  updatedeliveryBoyEarnings(data: UpdatedeliveryBoyEarningsDTO): Promise<UpdatedeliveryBoyEarningsResponseDTO>
-  clearInHandCashOnDeliveryBoy(data: UpdatedeliveryBoyEarningsDTO): Promise<UpdatedeliveryBoyEarningsResponseDTO>
-  userReviewFordeliveryBoy(data: UserReviewDTO): Promise<DeliveryBoyReviewResponseDTO>
-  getDeliveryBoyReview(data: UserReviewDTO): Promise<DeliveryBoyReviewResponseDTO>
-  deleteDeliveryBoyReview(data: UserReviewDTO): Promise<DeliveryBoyReviewResponseDTO>
-  getDeliveryBoyChartData(data: GetDeliveryBoyChartDataRequestDTO): Promise<GetDeliveryBoyChartDataDTO>;
+  updateRidePaymentRule(ruleUpdate: UpdateRidePaymentRuleDTO): Promise<UpdateRidePaymentRuleResponseDTO>;
+  blockRidePaymentRule(rule: BlockRidePaymentRuleDTO): Promise<UpdateRidePaymentRuleResponseDTO>;
+  unblockRidePaymentRule(rule: UnblockRidePaymentRuleDTO): Promise<UpdateRidePaymentRuleResponseDTO>;
+  checkTheInHandCashLimit(checkRequest: CheckTheInHandCashLimitDTO): Promise<CheckTheInHandCashLimitResponseDTO>
+  updatedeliveryBoyEarnings(earningsUpdate: UpdatedeliveryBoyEarningsDTO): Promise<UpdatedeliveryBoyEarningsResponseDTO>
+  clearInHandCashOnDeliveryBoy(clearRequest: UpdatedeliveryBoyEarningsDTO): Promise<UpdatedeliveryBoyEarningsResponseDTO>
+  userReviewFordeliveryBoy(review: UserReviewDTO): Promise<DeliveryBoyReviewResponseDTO>
+  getDeliveryBoyReview(query: UserReviewDTO): Promise<DeliveryBoyReviewResponseDTO>
+  deleteDeliveryBoyReview(deleteRequest: UserReviewDTO): Promise<DeliveryBoyReviewResponseDTO>
+  getDeliveryBoyChartData(chartRequest: GetDeliveryBoyChartDataRequestDTO): Promise<GetDeliveryBoyChartDataDTO>;
 }

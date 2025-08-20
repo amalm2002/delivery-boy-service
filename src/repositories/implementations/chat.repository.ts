@@ -39,7 +39,7 @@ export default class ChatRepository extends BaseRepository<ChatState> implements
         }
     }
 
-    async saveConcern(data: {
+    async saveConcern(concern: {
         deliveryBoyId: string;
         selectedOption: { _id?: string; title: string; description?: string; category?: string; isActive?: boolean; responseMessage?: string } | null;
         reason: string;
@@ -50,8 +50,8 @@ export default class ChatRepository extends BaseRepository<ChatState> implements
         createdAt: Date;
     }): Promise<Concern> {
         try {
-            const concern = await ConcernModel.create(data);
-            return concern;
+            const concerns = await ConcernModel.create(concern);
+            return concerns;
         } catch (error) {
             throw new Error(`Failed to save concern: ${(error as Error).message}`);
         }

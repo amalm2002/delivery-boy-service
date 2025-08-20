@@ -14,9 +14,9 @@ export class DeliveryTrackingController implements IDeliveryTrackingController {
     private readonly _deliveryBoyService: IDeliveryBoyTrackingService
   ) { }
 
-  async updateOnlineStatus(data: UpdateOnlineStatusDTO): Promise<UpdateOnlineStatusResponseDto> {
+  async updateOnlineStatus(statusUpdate: UpdateOnlineStatusDTO): Promise<UpdateOnlineStatusResponseDto> {
     try {
-      const result = await this._deliveryBoyService.updateOnlineStatus(data);
+      const result = await this._deliveryBoyService.updateOnlineStatus(statusUpdate);
 
       if (!result.success) {
         return {
@@ -38,9 +38,9 @@ export class DeliveryTrackingController implements IDeliveryTrackingController {
     }
   }
 
-  async getDeliveryBoyDetails(data: UpdateOnlineStatusDTO): Promise<GetDeliveryBoyDetailsResponseDto> {
+  async getDeliveryBoyDetails(detailsRequest: UpdateOnlineStatusDTO): Promise<GetDeliveryBoyDetailsResponseDto> {
     try {
-      const result = await this._deliveryBoyService.getDeliveryBoyDetails(data);
+      const result = await this._deliveryBoyService.getDeliveryBoyDetails(detailsRequest);
 
       if (!result.success) {
         return {
@@ -62,9 +62,9 @@ export class DeliveryTrackingController implements IDeliveryTrackingController {
     }
   }
 
-  async findNearestDeliveryPartners(data: FindNearestDeliveryPartnersRequestDto): Promise<FindNearestDeliveryPartnersResponseDto> {
+  async findNearestDeliveryPartners(locationQuery: FindNearestDeliveryPartnersRequestDto): Promise<FindNearestDeliveryPartnersResponseDto> {
     try {
-      const { location } = data;
+      const { location } = locationQuery;
       if (!location || !location.latitude || !location.longitude) {
         return { success: false, message: 'Invalid restaurant location' };
       }
@@ -91,9 +91,9 @@ export class DeliveryTrackingController implements IDeliveryTrackingController {
     }
   }
 
-  async updateLocation(data: UpdateLocationDto): Promise<UpdateLocationResponseDto> {
+  async updateLocation(locationUpdate: UpdateLocationDto): Promise<UpdateLocationResponseDto> {
     try {
-      const result = await this._deliveryBoyService.updateLocation(data);
+      const result = await this._deliveryBoyService.updateLocation(locationUpdate);
       if (!result.success) {
         return { success: false, message: result.message || 'Failed to update location' };
       }
@@ -130,9 +130,9 @@ export class DeliveryTrackingController implements IDeliveryTrackingController {
     }
   }
 
-  async updateDeliveryBoyLocation(data: UpdateLocationDto): Promise<UpdateLocationResponseDto> {
+  async updateDeliveryBoyLocation(locationUpdate: UpdateLocationDto): Promise<UpdateLocationResponseDto> {
     try {
-      const result = await this._deliveryBoyService.updateDeliveryBoyLocation(data);
+      const result = await this._deliveryBoyService.updateDeliveryBoyLocation(locationUpdate);
       return result;
     } catch (error) {
       console.error('Error in updateDeliveryBoyLocation:', error);
@@ -140,12 +140,12 @@ export class DeliveryTrackingController implements IDeliveryTrackingController {
     }
   }
 
-  async completeDelivery(data: completeDeliveryDTO): Promise<completeDeliveryResponseDTO> {
-    return await this._deliveryBoyService.completeDelivery(data);
+  async completeDelivery(deliveryCompletion: completeDeliveryDTO): Promise<completeDeliveryResponseDTO> {
+    return await this._deliveryBoyService.completeDelivery(deliveryCompletion);
   }
 
-  async orderEarnings(data: OrderEarningsDTO): Promise<OrderEarningsResponseDTO> {
-    return await this._deliveryBoyService.orderEarnings(data)
+  async orderEarnings(earningsRequest: OrderEarningsDTO): Promise<OrderEarningsResponseDTO> {
+    return await this._deliveryBoyService.orderEarnings(earningsRequest)
   }
 
 }

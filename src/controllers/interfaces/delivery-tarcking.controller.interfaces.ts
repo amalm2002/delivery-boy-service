@@ -8,12 +8,12 @@ import { UpdateOnlineStatusDTO, UpdateOnlineStatusResponseDto } from '../../dto/
 import { OrderEarningsDTO, OrderEarningsResponseDTO } from '../../dto/delivery-boy/order-earings.dto';
 
 export interface IDeliveryTrackingController {
-    updateOnlineStatus(data: UpdateOnlineStatusDTO): Promise<UpdateOnlineStatusResponseDto>;
-    getDeliveryBoyDetails(data: UpdateOnlineStatusDTO): Promise<GetDeliveryBoyDetailsResponseDto>;
-    findNearestDeliveryPartners(data: FindNearestDeliveryPartnersRequestDto): Promise<FindNearestDeliveryPartnersResponseDto>;
-    updateLocation(data: UpdateLocationDto): Promise<UpdateLocationResponseDto>;
+    updateOnlineStatus(statusUpdate: UpdateOnlineStatusDTO): Promise<UpdateOnlineStatusResponseDto>;
+    getDeliveryBoyDetails(detailsRequest: UpdateOnlineStatusDTO): Promise<GetDeliveryBoyDetailsResponseDto>;
+    findNearestDeliveryPartners(locationQuery: FindNearestDeliveryPartnersRequestDto): Promise<FindNearestDeliveryPartnersResponseDto>;
+    updateLocation(locationUpdate: UpdateLocationDto): Promise<UpdateLocationResponseDto>;
     assignOrder(call: ServerUnaryCall<AssignOrderDTO, AssignOrderResponseDTO>, callback: sendUnaryData<AssignOrderResponseDTO>): Promise<void>
-    updateDeliveryBoyLocation(data: UpdateLocationDto): Promise<UpdateLocationResponseDto>
-    completeDelivery(data: completeDeliveryDTO): Promise<completeDeliveryResponseDTO>;
-    orderEarnings(data: OrderEarningsDTO): Promise<OrderEarningsResponseDTO>
+    updateDeliveryBoyLocation(locationUpdate: UpdateLocationDto): Promise<UpdateLocationResponseDto>
+    completeDelivery(deliveryCompletion: completeDeliveryDTO): Promise<completeDeliveryResponseDTO>;
+    orderEarnings(earningsRequest: OrderEarningsDTO): Promise<OrderEarningsResponseDTO>
 }

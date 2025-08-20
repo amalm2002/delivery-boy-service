@@ -405,11 +405,24 @@ export class DeliveryBoyRepository extends BaseRepository<IDeliveryBoy> implemen
     }
   }
 
-  async getDeliveryBoyChartData(query: any): Promise<{ _id: string; name: string; completedDeliveries: number; totalEarnings: number }[]> {
+  async getDeliveryBoyChartData(query: any, options: {
+    sortBy?: string;
+    order?: 'asc' | 'desc';
+    limit?: number
+  } = {}
+  ): Promise<{ _id: string; name: string; completedDeliveries: number; totalEarnings: number }[]> {
     try {
+      const sortBy = options.sortBy || 'totalEarnings';
+      const orderNum = options.order === 'asc' ? 1 : -1;
+      const limitNum = options.limit || 10;
+
+      if (!['completedDeliveries', 'totalEarnings'].includes(sortBy)) {
+        throw new Error('Invalid sortBy field');
+      }
+
       const matchStage: any = {};
       if (query.createdAt) {
-        matchStage['earnings.history.date'] = query.createdAt; 
+        matchStage['earnings.history.date'] = query.createdAt;
       }
 
       const deliveries = await DeliveryBoy.aggregate([
@@ -419,18 +432,12 @@ export class DeliveryBoyRepository extends BaseRepository<IDeliveryBoy> implemen
           $group: {
             _id: '$_id',
             name: { $first: '$name' },
-            completedDeliveries: {
-              $sum: {
-                $cond: [
-                  { $eq: ['$earnings.history.paid', true] }, 
-                  1,
-                  0,
-                ],
-              },
-            },
+            completedDeliveries: { $first: '$ordersCompleted' },
             totalEarnings: { $sum: '$earnings.history.amount' },
           },
         },
+        { $sort: { [sortBy]: orderNum } },
+        { $limit: limitNum },
         {
           $project: {
             _id: 1,

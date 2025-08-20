@@ -7,13 +7,13 @@ import { VerifyConcernDTO, VerifyConcernResponseDTO } from '../../dto/chat/verif
 import { Concern } from '../../models/concern.model';
 
 export interface IChatService {
-    getChatState(data: GetChatDTO): Promise<GetChatResponseDTO>;
-    saveChatState(data: SaveChatDTO): Promise<GetChatResponseDTO>;
-    clearChatState(data: GetChatDTO): Promise<GetChatResponseDTO>;
-    submitConcern(data:SubmitConcernDTO): Promise<SubmitConcernResponseDTO>;
-    submitZoneChangeRequest(data: SubmitZoneChangeRequestDTO): Promise<SubmitZoneChangeRequestResponseDTO>;
+    getChatState(chatRequest: GetChatDTO): Promise<GetChatResponseDTO>;
+    saveChatState(chatToSave: SaveChatDTO): Promise<GetChatResponseDTO>;
+    clearChatState(chatToClear: GetChatDTO): Promise<GetChatResponseDTO>;
+    submitConcern(concern:SubmitConcernDTO): Promise<SubmitConcernResponseDTO>;
+    submitZoneChangeRequest(zoneRequest: SubmitZoneChangeRequestDTO): Promise<SubmitZoneChangeRequestResponseDTO>;
     updateConcernZone(concernId: string, zoneId: string, zoneName: string): Promise<Concern>;
     getAllConcerns(data: void): Promise<GetConcernResponseDTO>
-    verifyTheConcern(data: VerifyConcernDTO): Promise<VerifyConcernResponseDTO>
-    getDeliveryBoyConcerns(data: GetChatDTO): Promise<GetConcernResponseDTO>
+    verifyTheConcern(verifyRequest: VerifyConcernDTO): Promise<VerifyConcernResponseDTO>
+    getDeliveryBoyConcerns(deliveryBoyRequest: GetChatDTO): Promise<GetConcernResponseDTO>
 }

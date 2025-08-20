@@ -34,5 +34,5 @@ export interface IDeliveryBoyRepository {
   findReviewByUserOrderAndDeliveryBoy(deliveryBoyId: string, userId: string, orderId: string): Promise<any>
   updateOne(filter: any, update: any): Promise<IDeliveryBoy | null>
   updateZone(deliveryBoyId: string, zoneId: string, zoneName: string): Promise<IDeliveryBoy | null>
-  getDeliveryBoyChartData(query: any): Promise<{ _id: string; name: string; completedDeliveries: number; totalEarnings: number }[]>;
+  getDeliveryBoyChartData(query: any, options?: { sortBy?: string; order?: 'asc' | 'desc'; limit?: number }): Promise<{ _id: string; name: string; completedDeliveries: number; totalEarnings: number }[]>;
 }

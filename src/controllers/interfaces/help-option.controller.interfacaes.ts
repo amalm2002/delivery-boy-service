@@ -4,8 +4,8 @@ import { GetHelpOptionResponseDTO } from "../../dto/help-option/get-help-option.
 import { UpdateHelpOptionResponseDTO } from "../../dto/help-option/update-help-option.dto";
 
 export interface IHelpOptionController {
-    addDeliveryBoyHelpOption(data: AddHelpOptionDTO): Promise<AddHelpOptionControllerResponseDTO>;
-    updateDeliveryBoyHelpOption(id: string, data: AddHelpOptionDTO): Promise<UpdateHelpOptionResponseDTO>;
-    deleteDeliveryBoyHelpOption(id: string): Promise<DeleteHelpOptionResponseDTO>;
+    addDeliveryBoyHelpOption(helpOptionDetails: AddHelpOptionDTO): Promise<AddHelpOptionControllerResponseDTO>;
+    updateDeliveryBoyHelpOption(helpOptionId: string, updatedHelpOption: AddHelpOptionDTO): Promise<UpdateHelpOptionResponseDTO>;
+    deleteDeliveryBoyHelpOption(helpOptionId: string): Promise<DeleteHelpOptionResponseDTO>;
     getAllDeliveryBoyHelpOptions(): Promise<GetHelpOptionResponseDTO>;
 }

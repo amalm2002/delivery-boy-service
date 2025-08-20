@@ -9,19 +9,18 @@ export default class HelpOptionService implements IHelpOptionService {
         private readonly _helpOptionRepository: IHelpOptionRepository
     ) { }
 
-    async addDeliveryBoyHelpOptions(data: AddHelpOptionDTO): Promise<AddHelpOptionResponseDTO> {
-        const { title, description, category, isActive } = data;
+    async addDeliveryBoyHelpOptions(helpOptionDetails: AddHelpOptionDTO): Promise<AddHelpOptionResponseDTO> {
+        const { title, description, category, isActive } = helpOptionDetails;
         return await this._helpOptionRepository.addDeliveryBoyHelpOption(title, description, isActive, category);
     }
 
-    async updateDeliveryBoyHelpOption(id: string, data: AddHelpOptionDTO): Promise<IHelpOption | null> {
-        const { title, description, category, isActive } = data;
-        // console.log('update data :', await this._helpOptionRepository.updateDeliveryBoyHelpOption(id, { title, description, category, isActive }))
-        return await this._helpOptionRepository.updateDeliveryBoyHelpOption(id, { title, description, category, isActive });
+    async updateDeliveryBoyHelpOption(helpOptionId: string, updatedHelpOption: AddHelpOptionDTO): Promise<IHelpOption | null> {
+        const { title, description, category, isActive } = updatedHelpOption;
+        return await this._helpOptionRepository.updateDeliveryBoyHelpOption(helpOptionId, { title, description, category, isActive });
     }
 
-    async deleteDeliveryBoyHelpOption(id: string): Promise<boolean> {
-        return await this._helpOptionRepository.deleteDeliveryBoyHelpOption(id);
+    async deleteDeliveryBoyHelpOption(helpOptionId: string): Promise<boolean> {
+        return await this._helpOptionRepository.deleteDeliveryBoyHelpOption(helpOptionId);
     }
 
     async getAllDeliveryBoyHelpOptions(): Promise<IHelpOption[]> {

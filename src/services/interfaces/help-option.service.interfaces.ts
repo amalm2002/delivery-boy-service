@@ -2,8 +2,8 @@ import { AddHelpOptionDTO, AddHelpOptionResponseDTO } from "../../dto/help-optio
 import { IHelpOption } from "../../models/help-option.model";
 
 export interface IHelpOptionService {
-    addDeliveryBoyHelpOptions(data: AddHelpOptionDTO): Promise<AddHelpOptionResponseDTO>;
-    updateDeliveryBoyHelpOption(id: string, data: AddHelpOptionDTO): Promise<IHelpOption | null>;
-    deleteDeliveryBoyHelpOption(id: string): Promise<boolean>;
+    addDeliveryBoyHelpOptions(helpOptionDetails: AddHelpOptionDTO): Promise<AddHelpOptionResponseDTO>;
+    updateDeliveryBoyHelpOption(helpOptionId: string, updatedHelpOption: AddHelpOptionDTO): Promise<IHelpOption | null>;
+    deleteDeliveryBoyHelpOption(helpOptionId: string): Promise<boolean>;
     getAllDeliveryBoyHelpOptions(): Promise<IHelpOption[]>;
 }

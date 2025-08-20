@@ -49,8 +49,8 @@ export class DeliveryBoyService implements IDeliveryBoyService {
     };
   }
 
-  async registerDeliveryBoy(dto: CreateDeliveryBoyDto): Promise<CreateDeliveryBoyResponseDTO> {
-    const { mobile } = dto;
+  async registerDeliveryBoy(newDeliveryBoy: CreateDeliveryBoyDto): Promise<CreateDeliveryBoyResponseDTO> {
+    const { mobile } = newDeliveryBoy;
     if (!mobile) {
       return { message: 'Mobile number is required', success: false };
     }
@@ -105,9 +105,9 @@ export class DeliveryBoyService implements IDeliveryBoyService {
     };
   }
 
-  async updateLocation(dto: UpdateLocationDto): Promise<UpdateLocationResponseDto> {
+  async updateLocation(locationUpdate: UpdateLocationDto): Promise<UpdateLocationResponseDto> {
     try {
-      const result = await this._deliveryBoyRepository.deliveryBoyLocationUpdate(dto);
+      const result = await this._deliveryBoyRepository.deliveryBoyLocationUpdate(locationUpdate);
 
       if (!result.success) {
         return {
@@ -129,9 +129,9 @@ export class DeliveryBoyService implements IDeliveryBoyService {
     }
   }
 
-  async updateDetails(dto: UpdateDetailsDto): Promise<UpdateDetailsResponseDTO> {
+  async updateDetails(detailsUpdate: UpdateDetailsDto): Promise<UpdateDetailsResponseDTO> {
     try {
-      const { deliveryBoyId, ...updateFields } = dto;
+      const { deliveryBoyId, ...updateFields } = detailsUpdate;
       //   const updateData: Partial<IDeliveryBoy> = {};
       const updateData: any = {};
 
@@ -174,9 +174,9 @@ export class DeliveryBoyService implements IDeliveryBoyService {
     }
   }
 
-  async updateVehicle(dto: UpdateVehicleDto): Promise<UpdateVehicleResponseDTO> {
+  async updateVehicle(vehicleUpdate: UpdateVehicleDto): Promise<UpdateVehicleResponseDTO> {
     try {
-      const { deliveryBoyId, vehicle } = dto;
+      const { deliveryBoyId, vehicle } = vehicleUpdate;
       const updateData: Partial<IDeliveryBoy> = { vehicle };
 
       const result = await this._deliveryBoyRepository.updateById(deliveryBoyId, updateData);
@@ -201,9 +201,9 @@ export class DeliveryBoyService implements IDeliveryBoyService {
     }
   }
 
-  async updateZone(dto: UpdateZoneDto): Promise<UpdateZoneResponseDTO> {
+  async updateZone(zoneUpdate: UpdateZoneDto): Promise<UpdateZoneResponseDTO> {
     try {
-      const { deliveryBoyId, zone } = dto;
+      const { deliveryBoyId, zone } = zoneUpdate;
 
       const zoneDoc = await this._zoneRepository.findById(zone);
       if (!zoneDoc) {
@@ -258,9 +258,9 @@ export class DeliveryBoyService implements IDeliveryBoyService {
     }
   }
 
-  async updateDeliveryBoyStatus(data: FetchDeliveryBoyDTO): Promise<DeliveryBoyDto | null> {
+  async updateDeliveryBoyStatus(fetchRequest: FetchDeliveryBoyDTO): Promise<DeliveryBoyDto | null> {
     try {
-      const { id } = data
+      const { id } = fetchRequest
       const deliveryBoyId = id
       return await this._deliveryBoyRepository.updateTheDeliveryBoyStatus(deliveryBoyId);
     } catch (error) {
@@ -268,9 +268,9 @@ export class DeliveryBoyService implements IDeliveryBoyService {
     }
   }
 
-  async fetchDeliveryBoyDetails(data: FetchDeliveryBoyDTO): Promise<DeliveryBoyDto | null> {
+  async fetchDeliveryBoyDetails(fetchRequest: FetchDeliveryBoyDTO): Promise<DeliveryBoyDto | null> {
     try {
-      const deliveryBoyId = data.id ? data.id : data.deliveryBoyId
+      const deliveryBoyId = fetchRequest.id ? fetchRequest.id : fetchRequest.deliveryBoyId
       const response = await this._deliveryBoyRepository.findById(deliveryBoyId);
       return response
     } catch (error) {
@@ -278,34 +278,34 @@ export class DeliveryBoyService implements IDeliveryBoyService {
     }
   }
 
-  async verifyDocuments(dto: VerifyDocumentsDto): Promise<DeliveryBoyDto | { message: string }> {
+  async verifyDocuments(verification: VerifyDocumentsDto): Promise<DeliveryBoyDto | { message: string }> {
     try {
-      return await this._deliveryBoyRepository.verifyDeliveryBoyDocuments(dto.deliveryBoyId);
+      return await this._deliveryBoyRepository.verifyDeliveryBoyDocuments(verification.deliveryBoyId);
     } catch (error) {
       return { message: (error as Error).message };
     }
   }
 
-  async rejectDocuments(dto: RejectDocumentsDto): Promise<DeliveryBoyDto | { message: string }> {
+  async rejectDocuments(rejection: RejectDocumentsDto): Promise<DeliveryBoyDto | { message: string }> {
     try {
-      return await this._deliveryBoyRepository.rejectDeliveryBoyDocuments(dto.deliveryBoyId, dto.rejectionReason);
+      return await this._deliveryBoyRepository.rejectDeliveryBoyDocuments(rejection.deliveryBoyId, rejection.rejectionReason);
     } catch (error) {
       return { message: (error as Error).message };
     }
   }
 
-  async getRejectedDocuments(data: GetRejectedDocumentDTO): Promise<GetRejectedDocumentServiceResponseDTO> {
+  async getRejectedDocuments(query: GetRejectedDocumentDTO): Promise<GetRejectedDocumentServiceResponseDTO> {
     try {
-      const response = await this._deliveryBoyRepository.getRejectedDocuments(data.id);
+      const response = await this._deliveryBoyRepository.getRejectedDocuments(query.id);
       return response
     } catch (error) {
       return { success: false, message: (error as Error).message };
     }
   }
 
-  async addRidePaymentRule(data: AddRidePaymentRuleDTO): Promise<AddRidePaymentRuleResponseDTO> {
+  async addRidePaymentRule(rule: AddRidePaymentRuleDTO): Promise<AddRidePaymentRuleResponseDTO> {
     try {
-      const response = await this._deliveryRateRepository.createRidePaymentRule(data)
+      const response = await this._deliveryRateRepository.createRidePaymentRule(rule)
       return {
         success: true,
         message: 'Ride payment rule created successfully',
@@ -329,19 +329,19 @@ export class DeliveryBoyService implements IDeliveryBoyService {
     }
   }
 
-  async updateRidePaymentRule(data: UpdateRidePaymentRuleDTO): Promise<UpdateRidePaymentRuleResponseDTO> {
+  async updateRidePaymentRule(ruleUpdate: UpdateRidePaymentRuleDTO): Promise<UpdateRidePaymentRuleResponseDTO> {
     try {
-      const existingRule = await this._deliveryRateRepository.findOne({ _id: data.id });
+      const existingRule = await this._deliveryRateRepository.findOne({ _id: ruleUpdate.id });
       if (!existingRule) {
-        throw new Error(`Rule with ID "${data.id}" not found`);
+        throw new Error(`Rule with ID "${ruleUpdate.id}" not found`);
       }
       const response = await this._deliveryRateRepository.updateOne(
-        { _id: data.id },
+        { _id: ruleUpdate.id },
         {
-          minKm: data.KM,
-          ratePerKm: data.ratePerKm,
-          vehicleType: data.vehicleType as 'bike' | 'scooter' | 'cycle',
-          isActive: data.isActive,
+          minKm: ruleUpdate.KM,
+          ratePerKm: ruleUpdate.ratePerKm,
+          vehicleType: ruleUpdate.vehicleType as 'bike' | 'scooter' | 'cycle',
+          isActive: ruleUpdate.isActive,
         }
       );
       return {
@@ -354,24 +354,24 @@ export class DeliveryBoyService implements IDeliveryBoyService {
     }
   }
 
-  async blockRidePaymentRule(data: BlockRidePaymentRuleDTO): Promise<UpdateRidePaymentRuleResponseDTO> {
+  async blockRidePaymentRule(rule: BlockRidePaymentRuleDTO): Promise<UpdateRidePaymentRuleResponseDTO> {
     try {
 
-      const pendingOrders = await this._deliveryBoyRepository.countPendingOrdersByVehicleType(data.vehicleType);
+      const pendingOrders = await this._deliveryBoyRepository.countPendingOrdersByVehicleType(rule.vehicleType);
       if (pendingOrders > 0) {
-        throw new Error(`Cannot block rule for "${data.vehicleType}" because ${pendingOrders} delivery boy(s) have pending orders`);
+        throw new Error(`Cannot block rule for "${rule.vehicleType}" because ${pendingOrders} delivery boy(s) have pending orders`);
       }
 
-      const existingRule = await this._deliveryRateRepository.findOne({ _id: data.id });
+      const existingRule = await this._deliveryRateRepository.findOne({ _id: rule.id });
       if (!existingRule) {
-        throw new Error(`Rule with ID "${data.id}" not found`);
+        throw new Error(`Rule with ID "${rule.id}" not found`);
       }
       if (!existingRule.isActive) {
-        throw new Error(`Rule with ID "${data.id}" is already blocked`);
+        throw new Error(`Rule with ID "${rule.id}" is already blocked`);
       }
 
       const response = await this._deliveryRateRepository.updateOne(
-        { _id: data.id },
+        { _id: rule.id },
         { isActive: false, updatedAt: new Date() }
       );
       return {
@@ -384,18 +384,18 @@ export class DeliveryBoyService implements IDeliveryBoyService {
     }
   }
 
-  async unblockRidePaymentRule(data: UnblockRidePaymentRuleDTO): Promise<UpdateRidePaymentRuleResponseDTO> {
+  async unblockRidePaymentRule(rule: UnblockRidePaymentRuleDTO): Promise<UpdateRidePaymentRuleResponseDTO> {
     try {
-      const existingRule = await this._deliveryRateRepository.findOne({ _id: data.id });
+      const existingRule = await this._deliveryRateRepository.findOne({ _id: rule.id });
       if (!existingRule) {
-        throw new Error(`Rule with ID "${data.id}" not found`);
+        throw new Error(`Rule with ID "${rule.id}" not found`);
       }
       if (existingRule.isActive) {
-        throw new Error(`Rule with ID "${data.id}" is already active`);
+        throw new Error(`Rule with ID "${rule.id}" is already active`);
       }
 
       const response = await this._deliveryRateRepository.updateOne(
-        { _id: data.id },
+        { _id: rule.id },
         { isActive: true, updatedAt: new Date() }
       );
       return {
@@ -408,9 +408,9 @@ export class DeliveryBoyService implements IDeliveryBoyService {
     }
   }
 
-  async checkTheInHandCashLimit(data: CheckTheInHandCashLimitDTO): Promise<CheckTheInHandCashLimitResponseDTO> {
+  async checkTheInHandCashLimit(checkRequest: CheckTheInHandCashLimitDTO): Promise<CheckTheInHandCashLimitResponseDTO> {
     try {
-      const { deliveryBoyId } = data
+      const { deliveryBoyId } = checkRequest
       const deliveryBoy = await this._deliveryBoyRepository.findOne(deliveryBoyId)
       if (!deliveryBoy) {
         return { success: false, message: 'No deliveryBoy Found!' }
@@ -427,9 +427,9 @@ export class DeliveryBoyService implements IDeliveryBoyService {
     }
   }
 
-  async updatedeliveryBoyEarnings(data: UpdatedeliveryBoyEarningsDTO): Promise<UpdatedeliveryBoyEarningsResponseDTO> {
+  async updatedeliveryBoyEarnings(earningsUpdate: UpdatedeliveryBoyEarningsDTO): Promise<UpdatedeliveryBoyEarningsResponseDTO> {
     try {
-      const deliveryBoy = await this._deliveryBoyRepository.findById(data.deliveryBoyId);
+      const deliveryBoy = await this._deliveryBoyRepository.findById(earningsUpdate.deliveryBoyId);
       if (!deliveryBoy) {
         throw new Error('Delivery boy not found');
       }
@@ -489,9 +489,9 @@ export class DeliveryBoyService implements IDeliveryBoyService {
     }
   }
 
-  async clearInHandCashOnDeliveryBoy(data: UpdatedeliveryBoyEarningsDTO): Promise<UpdatedeliveryBoyEarningsResponseDTO> {
+  async clearInHandCashOnDeliveryBoy(clearRequest: UpdatedeliveryBoyEarningsDTO): Promise<UpdatedeliveryBoyEarningsResponseDTO> {
     try {
-      const { deliveryBoyId, amount } = data;
+      const { deliveryBoyId, amount } = clearRequest;
 
       const deliveryBoy = await this._deliveryBoyRepository.findById(deliveryBoyId);
       if (!deliveryBoy) {
@@ -533,16 +533,16 @@ export class DeliveryBoyService implements IDeliveryBoyService {
     }
   }
 
-  async userReviewForDeliveryBoy(data: UserReviewDTO): Promise<DeliveryBoyReviewResponseDTO> {
+  async userReviewForDeliveryBoy(review: UserReviewDTO): Promise<DeliveryBoyReviewResponseDTO> {
     try {
-      const deliveryBoy = await this._deliveryBoyRepository.findById(data.deliveryBoyId);
+      const deliveryBoy = await this._deliveryBoyRepository.findById(review.deliveryBoyId);
 
       if (!deliveryBoy) {
         return { success: false, message: "Delivery boy not found" };
       }
 
-      const updated = await this._deliveryBoyRepository.addReview(data.deliveryBoyId, {
-        ...data,
+      const updated = await this._deliveryBoyRepository.addReview(review.deliveryBoyId, {
+        ...review,
         createdAt: new Date()
       });
 
@@ -572,11 +572,11 @@ export class DeliveryBoyService implements IDeliveryBoyService {
     }
   }
 
-  async getDeliveryBoyReview(data: UserReviewDTO): Promise<DeliveryBoyReviewResponseDTO> {
+  async getDeliveryBoyReview(query: UserReviewDTO): Promise<DeliveryBoyReviewResponseDTO> {
     try {
-      const { deliveryBoyId, userId, orderId } = data
+      const { deliveryBoyId, userId, orderId } = query
 
-      const deliveryBoy = await this._deliveryBoyRepository.findById(data.deliveryBoyId);
+      const deliveryBoy = await this._deliveryBoyRepository.findById(query.deliveryBoyId);
 
       if (!deliveryBoy) {
         return { success: false, message: "Delivery boy not found" };
@@ -614,9 +614,9 @@ export class DeliveryBoyService implements IDeliveryBoyService {
     }
   }
 
-  async deleteDeliveryBoyReview(data: UserReviewDTO): Promise<DeliveryBoyReviewResponseDTO> {
+  async deleteDeliveryBoyReview(deleteRequest: UserReviewDTO): Promise<DeliveryBoyReviewResponseDTO> {
     try {
-      const { deliveryBoyId, userId, orderId } = data;
+      const { deliveryBoyId, userId, orderId } = deleteRequest;
 
       const deliveryBoy = await this._deliveryBoyRepository.findById(deliveryBoyId);
       if (!deliveryBoy) {
@@ -646,13 +646,17 @@ export class DeliveryBoyService implements IDeliveryBoyService {
     }
   }
 
-  async getDeliveryBoyChartData(data: GetDeliveryBoyChartDataRequestDTO): Promise<GetDeliveryBoyChartDataDTO> {
+  async getDeliveryBoyChartData(chartRequest: GetDeliveryBoyChartDataRequestDTO): Promise<GetDeliveryBoyChartDataDTO> {
     try {
       const query: any = {};
-      if (data.startDate && data.endDate) {
-        query.createdAt = { $gte: new Date(data.startDate), $lte: new Date(data.endDate) };
+      if (chartRequest.startDate && chartRequest.endDate) {
+        query.createdAt = { $gte: new Date(chartRequest.startDate), $lte: new Date(chartRequest.endDate) };
       }
-      const deliveries = await this._deliveryBoyRepository.getDeliveryBoyChartData(query);
+      const deliveries = await this._deliveryBoyRepository.getDeliveryBoyChartData(query, {
+        sortBy: chartRequest.sortBy,
+        order: chartRequest.order,
+        limit: chartRequest.limit,
+      });
       return {
         message: 'success',
         response: deliveries,

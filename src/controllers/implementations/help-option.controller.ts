@@ -11,9 +11,9 @@ export default class HelpOptionController implements IHelpOptionController {
         private readonly _helpOptionService: IHelpOptionService
     ) { }
 
-    async addDeliveryBoyHelpOption(data: AddHelpOptionDTO): Promise<AddHelpOptionControllerResponseDTO> {
+    async addDeliveryBoyHelpOption(helpOptionDetails: AddHelpOptionDTO): Promise<AddHelpOptionControllerResponseDTO> {
         try {
-            const helpOption = await this._helpOptionService.addDeliveryBoyHelpOptions(data);
+            const helpOption = await this._helpOptionService.addDeliveryBoyHelpOptions(helpOptionDetails);
             return {
                 success: true,
                 data: helpOption,
@@ -24,9 +24,9 @@ export default class HelpOptionController implements IHelpOptionController {
         }
     }
 
-    async updateDeliveryBoyHelpOption(id: string, data: AddHelpOptionDTO): Promise<UpdateHelpOptionResponseDTO> {
+    async updateDeliveryBoyHelpOption(helpOptionId: string, updatedHelpOption: AddHelpOptionDTO): Promise<UpdateHelpOptionResponseDTO> {
         try {
-            const helpOption = await this._helpOptionService.updateDeliveryBoyHelpOption(id, data);
+            const helpOption = await this._helpOptionService.updateDeliveryBoyHelpOption(helpOptionId, updatedHelpOption);
             if (!helpOption) {
                 return {
                     success: false,
@@ -43,9 +43,9 @@ export default class HelpOptionController implements IHelpOptionController {
         }
     }
 
-    async deleteDeliveryBoyHelpOption(id: string): Promise<DeleteHelpOptionResponseDTO> {
+    async deleteDeliveryBoyHelpOption(helpOptionId: string): Promise<DeleteHelpOptionResponseDTO> {
         try {
-            const result = await this._helpOptionService.deleteDeliveryBoyHelpOption(id);
+            const result = await this._helpOptionService.deleteDeliveryBoyHelpOption(helpOptionId);
             if (!result) {
                 return {
                     success: false,

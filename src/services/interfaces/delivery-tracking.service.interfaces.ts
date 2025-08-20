@@ -8,12 +8,12 @@ import { OrderEarningsDTO, OrderEarningsResponseDTO } from '../../dto/delivery-b
 
 
 export interface IDeliveryBoyTrackingService {
-    updateOnlineStatus(dto: UpdateOnlineStatusDTO): Promise<UpdateOnlineStatusResponseDto>;
-    getDeliveryBoyDetails(dto: UpdateOnlineStatusDTO): Promise<GetDeliveryBoyDetailsResponseDto>;
+    updateOnlineStatus(statusUpdate: UpdateOnlineStatusDTO): Promise<UpdateOnlineStatusResponseDto>;
+    getDeliveryBoyDetails(detailsRequest: UpdateOnlineStatusDTO): Promise<GetDeliveryBoyDetailsResponseDto>;
     findNearestDeliveryPartners(location: FindNearestDeliveryPartnersRequestDto['location']): Promise<FindNearestDeliveryPartnersResponseDto>;
-    updateLocation(data: UpdateLocationDto): Promise<UpdateLocationResponseDto>;
-    assignOrder(data: AssignOrderDTO): Promise<AssignOrderResponseDTO>;
-    updateDeliveryBoyLocation(data: UpdateLocationDto): Promise<UpdateLocationResponseDto>;
-    completeDelivery(data: completeDeliveryDTO): Promise<completeDeliveryResponseDTO>;
-    orderEarnings(data: OrderEarningsDTO): Promise<OrderEarningsResponseDTO>
+    updateLocation(locationUpdate: UpdateLocationDto): Promise<UpdateLocationResponseDto>;
+    assignOrder(assignOrder: AssignOrderDTO): Promise<AssignOrderResponseDTO>;
+    updateDeliveryBoyLocation(locationUpdate: UpdateLocationDto): Promise<UpdateLocationResponseDto>;
+    completeDelivery(deliveryCompletion: completeDeliveryDTO): Promise<completeDeliveryResponseDTO>;
+    orderEarnings(earningsRequest: OrderEarningsDTO): Promise<OrderEarningsResponseDTO>
 }

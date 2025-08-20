@@ -17,9 +17,9 @@ export class DeliveryBoyTrackingService implements IDeliveryBoyTrackingService {
     private readonly _rideRateRepository: IDeliveryRateModelRepository
   ) { }
 
-  async updateOnlineStatus(dto: UpdateOnlineStatusDTO): Promise<UpdateOnlineStatusResponseDto> {
+  async updateOnlineStatus(statusUpdate: UpdateOnlineStatusDTO): Promise<UpdateOnlineStatusResponseDto> {
     try {
-      const { deliveryBoyId, isOnline } = dto;
+      const { deliveryBoyId, isOnline } = statusUpdate;
       const deliveryBoy = await this._deliveryBoyRepository.findById(deliveryBoyId);
 
       if (!deliveryBoy) {
@@ -38,9 +38,9 @@ export class DeliveryBoyTrackingService implements IDeliveryBoyTrackingService {
     }
   }
 
-  async getDeliveryBoyDetails(dto: UpdateOnlineStatusDTO): Promise<GetDeliveryBoyDetailsResponseDto> {
+  async getDeliveryBoyDetails(detailsRequest: UpdateOnlineStatusDTO): Promise<GetDeliveryBoyDetailsResponseDto> {
     try {
-      const { deliveryBoyId } = dto;
+      const { deliveryBoyId } = detailsRequest;
       const deliveryBoy = await this._deliveryBoyRepository.findById(deliveryBoyId);
 
       if (!deliveryBoy) {
@@ -154,9 +154,9 @@ export class DeliveryBoyTrackingService implements IDeliveryBoyTrackingService {
     return R * c;
   }
 
-  async updateLocation(data: UpdateLocationDto): Promise<UpdateLocationResponseDto> {
+  async updateLocation(locationUpdate: UpdateLocationDto): Promise<UpdateLocationResponseDto> {
     try {
-      const { deliveryBoyId, latitude, longitude } = data;
+      const { deliveryBoyId, latitude, longitude } = locationUpdate;
       const result = await this._deliveryBoyRepository.deliveryBoyLocationUpdate({ deliveryBoyId, latitude, longitude });
 
       if (result.success && result.data) {
@@ -175,9 +175,9 @@ export class DeliveryBoyTrackingService implements IDeliveryBoyTrackingService {
     }
   }
 
-  async assignOrder(data: AssignOrderDTO): Promise<AssignOrderResponseDTO> {
+  async assignOrder(assignOrder: AssignOrderDTO): Promise<AssignOrderResponseDTO> {
     try {
-      const { deliveryBoyId } = data;
+      const { deliveryBoyId } = assignOrder;
 
       const deliveryBoy = await this._deliveryBoyRepository.findById(deliveryBoyId);
 
@@ -203,9 +203,9 @@ export class DeliveryBoyTrackingService implements IDeliveryBoyTrackingService {
     }
   }
 
-  async updateDeliveryBoyLocation(data: UpdateLocationDto): Promise<UpdateLocationResponseDto> {
+  async updateDeliveryBoyLocation(locationUpdate: UpdateLocationDto): Promise<UpdateLocationResponseDto> {
     try {
-      const { deliveryBoyId, latitude, longitude } = data;
+      const { deliveryBoyId, latitude, longitude } = locationUpdate;
 
       if (!deliveryBoyId || typeof latitude !== 'number' || typeof longitude !== 'number') {
         return { success: false, message: 'Invalid request: deliveryBoyId, latitude, and longitude are required' };
@@ -225,9 +225,9 @@ export class DeliveryBoyTrackingService implements IDeliveryBoyTrackingService {
     }
   }
 
-  async completeDelivery(data: completeDeliveryDTO): Promise<completeDeliveryResponseDTO> {
+  async completeDelivery(deliveryCompletion: completeDeliveryDTO): Promise<completeDeliveryResponseDTO> {
     try {
-      const { deliveryBoyId } = data;
+      const { deliveryBoyId } = deliveryCompletion;
 
       const deliveryBoy = await this._deliveryBoyRepository.findById(deliveryBoyId);
       if (!deliveryBoy) {
@@ -255,9 +255,9 @@ export class DeliveryBoyTrackingService implements IDeliveryBoyTrackingService {
     }
   }
 
-  async orderEarnings(data: OrderEarningsDTO): Promise<OrderEarningsResponseDTO> {
+  async orderEarnings(earningsRequest: OrderEarningsDTO): Promise<OrderEarningsResponseDTO> {
     try {
-      const { paymentMethod, deliveryBoyId, finalTotalDistance, orderAmount, order_id } = data;
+      const { paymentMethod, deliveryBoyId, finalTotalDistance, orderAmount, order_id } = earningsRequest;
 
       const deliveryBoy = await this._deliveryBoyRepository.findById(deliveryBoyId);
       if (!deliveryBoy) {

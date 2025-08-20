@@ -5,7 +5,7 @@ export interface IChatRepository {
     getChatState(deliveryBoyId: string): Promise<ChatState | null>;
     saveChatState(deliveryBoyId: string, state: Partial<ChatState>): Promise<ChatState>;
     clearChatState(deliveryBoyId: string): Promise<void>;
-    saveConcern(data: {
+    saveConcern(concern: {
         deliveryBoyId: string;
         selectedOption: { _id?: string; title: string; description?: string; category?: string; isActive?: boolean; responseMessage?: string } | null;
         reason: string;
