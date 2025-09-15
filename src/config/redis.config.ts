@@ -23,24 +23,11 @@
 
 
 import { createClient } from "redis";
-import { URL } from "url";
 
 const redisUrl = process.env.REDIS_URL!;
-const isTls = redisUrl.startsWith("rediss://");
-
-
-const { hostname, port } = new URL(redisUrl);
 
 const redisClient = createClient({
   url: redisUrl,
-  socket: isTls
-    ? {
-        host: hostname,
-        port: Number(port),
-        tls: true,
-        rejectUnauthorized: false,
-      }
-    : undefined,
 });
 
 redisClient.on("error", (err) => console.error("Redis Client Error:", err));
