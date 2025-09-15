@@ -164,8 +164,10 @@ export class DeliveryBoyTrackingService implements IDeliveryBoyTrackingService {
         const x = await redisClient.set(
           `deliveryBoy:${deliveryBoyId}:location`,
           JSON.stringify({ latitude, longitude }),
-          { EX: 60 }
+          "EX",
+          60
         );
+
         console.log('redis data :', x);
       }
 
@@ -212,11 +214,19 @@ export class DeliveryBoyTrackingService implements IDeliveryBoyTrackingService {
       }
 
 
+      // await redisClient.set(
+      //   `deliveryBoy:${deliveryBoyId}:location`,
+      //   JSON.stringify({ latitude, longitude }),
+      //   { EX: 60 }
+      // );
+
       await redisClient.set(
         `deliveryBoy:${deliveryBoyId}:location`,
         JSON.stringify({ latitude, longitude }),
-        { EX: 60 }
+        "EX",
+        60
       );
+
 
       return { success: true, message: 'Location updated in Redis successfully' };
     } catch (error) {
