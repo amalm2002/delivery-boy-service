@@ -26,7 +26,11 @@ export class DeliveryBoyService implements IDeliveryBoyService {
     private readonly _authService: IAuthService,
     private readonly _deliveryRateRepository: IDeliveryRateModelRepository,
   ) { }
-
+/**
+ * 
+ * @param deliveryBoy 
+ * @returns 
+ */
   private async handleLogin(deliveryBoy: IDeliveryBoy): Promise<CreateDeliveryBoyResponseDTO> {
     const role = 'DeliveryBoy';
     const token = await this._authService.createToken(deliveryBoy._id.toString(), '15m', role);
