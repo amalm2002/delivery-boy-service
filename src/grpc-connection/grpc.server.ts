@@ -20,10 +20,10 @@ const deliveryBoyZoneRepository = new ZoneRepository()
 const deliveryRateModelRepository = new DeliveryRateModelRepository()
 const authService = new AuthService();
 const deliveryBoyService = new DeliveryBoyService(deliveryBoyRepository, deliveryBoyZoneRepository, authService, deliveryRateModelRepository)
-const deliveryBoytrackingService=new DeliveryBoyTrackingService(deliveryBoyRepository,deliveryRateModelRepository)
+const deliveryBoytrackingService = new DeliveryBoyTrackingService(deliveryBoyRepository, deliveryRateModelRepository)
 
 const deliveryBoyController = new DeliveryBoyController(deliveryBoyService)
-const deliveryBoytrackingController=new DeliveryTrackingController(deliveryBoytrackingService)
+const deliveryBoytrackingController = new DeliveryTrackingController(deliveryBoytrackingService)
 
 
 
@@ -46,15 +46,16 @@ if (!deliveryProto || !deliveryProto.DeliveryBoyService || !deliveryProto.Delive
 const server = new grpc.Server()
 
 server.addService(deliveryProto.DeliveryBoyService.service, {
-    FetchDeliveryBoy:deliveryBoyController.fetchDeliveryBoyDetailsGrpc.bind(deliveryBoyController),
-    DeliveryBoyUpdate:deliveryBoytrackingController.assignOrder.bind(deliveryBoytrackingController)
+    FetchDeliveryBoy: deliveryBoyController.fetchDeliveryBoyDetailsGrpc.bind(deliveryBoyController),
+    DeliveryBoyUpdate: deliveryBoytrackingController.assignOrder.bind(deliveryBoytrackingController)
 })
 
 export const grpcServer = () => {
     const port = process.env.DELIVERY_GRPC_PORT || '4000'
     const Domain = process.env.NODE_ENV === 'dev' ? process.env.DEV_DOMAIN : process.env.PRO_DOMAIN_USER;
 
-    server.bindAsync(`${Domain}:${port}`, grpc.ServerCredentials.createInsecure(), (err, bindPort) => {
+    // server.bindAsync(`${Domain}:${port}`, grpc.ServerCredentials.createInsecure(), (err, bindPort) => {
+    server.bindAsync(`0.0.0.0:${port}`, grpc.ServerCredentials.createInsecure(), (err, bindPort) => {
         if (err) {
             console.error("Error starting gRPC server:", err)
             return
