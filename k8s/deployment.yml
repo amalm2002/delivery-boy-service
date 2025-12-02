@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: delivery-boy-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: delivery-boy-service
+  template:
+    metadata:
+      labels:
+        app: delivery-boy-service
+    spec:
+      containers:
+        - name: delivery-boy-service
+          image: amalm2002/delivery-boy-service:latest
+          ports:
+            - containerPort: 3006   # RabbitMQ port
+            - containerPort: 4000   # gRPC port
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: PORT
+              value: "3006" 
+            - name: DELIVERY_GRPC_PORT
+              value: "4000"
+            
+            # Secrets
+            - name: MONGO_URL_PRO
+              valueFrom:
+                secretKeyRef:
+                  name: delivery-boy-secrets
+                  key: MONGO_URL_PRO
+            - name: RABBITMQ_URL
+              valueFrom:
+                secretKeyRef:
+                  name: delivery-boy-secrets
+                  key: RABBITMQ_URL
+            - name: REDIS_URL
+              valueFrom:
+                secretKeyRef:
+                  name: delivery-boy-secrets
+                  key: REDIS_URL
+            - name: USER_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: delivery-boy-secrets
+                  key: USER_SECRET_KEY
+            - name: NODEMAILER_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: delivery-boy-secrets
+                  key: NODEMAILER_EMAIL
+            - name: NODEMAILER_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: delivery-boy-secrets
+                  key: NODEMAILER_PASS
